@@ -1,331 +1,656 @@
 <!doctype html>
 <html lang="pl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>godwifi</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>godwifi</title>
 
-  <!-- Preload logo -->
-  <link rel="preload" as="image" href="freewifi.png" />
+<link rel="preload" as="image" href="freewifi.png" />
+<link rel="icon" type="image/png" href="favicon.png">
 
-  <!-- Favicon (opcjonalnie: wrzuć favicon.png) -->
-  <link rel="icon" type="image/png" href="favicon.png">
+<style>
+  :root{
+    --shadow: 0 50px 140px rgba(0,0,0,.55);
+    --border: rgba(255,255,255,.22);
+    --text: rgba(255,255,255,.92);
+    --muted: rgba(255,255,255,.72);
+    --menuBg: rgba(255,255,255,.16);
+    --menuBorder: rgba(255,255,255,.18);
+    --dockBg: rgba(255,255,255,.12);
+    --dockBorder: rgba(255,255,255,.16);
+    --glassA: rgba(255,255,255,.28);
+    --glassB: rgba(255,255,255,.14);
+  }
 
-  <style>
-    :root{
-      --bg: #0b0c10;
-      --text: rgba(255,255,255,0.92);
-      --muted: rgba(255,255,255,0.62);
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Segoe UI, Roboto, Arial, sans-serif;
+    overflow:hidden;
+    color:var(--text);
+    user-select:none;
+  }
 
-      /* Liquid glass */
-      --glass: rgba(255,255,255,0.10);
-      --glass2: rgba(255,255,255,0.14);
-      --border: rgba(255,255,255,0.14);
-      --shadow: 0 30px 90px rgba(0,0,0,0.55);
+  /* ===== Desktop wallpaper ===== */
+  .wallpaper{
+    position:fixed; inset:-80px;
+    background:
+      radial-gradient(900px 520px at 18% 18%, rgba(120,122,255,.28), transparent 60%),
+      radial-gradient(780px 420px at 86% 28%, rgba(255,120,200,.22), transparent 62%),
+      radial-gradient(820px 520px at 52% 86%, rgba(120,255,210,.18), transparent 62%),
+      radial-gradient(700px 500px at 45% 45%, rgba(255,255,255,.08), transparent 60%),
+      linear-gradient(180deg,#0f1220,#050509);
+    filter:saturate(125%) contrast(105%);
+    transform:translateZ(0);
+  }
 
-      /* Bubble buttons */
-      --pill: rgba(255,255,255,0.14);
-      --pillHover: rgba(255,255,255,0.20);
-    }
+  .grain{
+    position:fixed; inset:0;
+    pointer-events:none;
+    opacity:.12;
+    background-image:
+      radial-gradient(circle at 15% 25%, rgba(255,255,255,.08), transparent 35%),
+      radial-gradient(circle at 70% 65%, rgba(255,255,255,.06), transparent 40%);
+    mix-blend-mode: overlay;
+  }
 
-    @media (prefers-color-scheme: light){
-      :root{
-        --bg: #f6f7fb;
-        --text: rgba(10,10,12,0.92);
-        --muted: rgba(10,10,12,0.62);
+  /* blurred brand logo in background */
+  .brandBlur{
+    position:fixed; inset:0;
+    display:grid; place-items:center;
+    pointer-events:none;
+  }
+  .brandBlur::before{
+    content:"";
+    width:min(520px,78vw);
+    height:min(520px,78vw);
+    background:url("freewifi.png") center/contain no-repeat;
+    opacity:.20;
+    filter: blur(120px) saturate(140%);
+    transform: scale(1.12);
+  }
 
-        --glass: rgba(255,255,255,0.60);
-        --glass2: rgba(255,255,255,0.70);
-        --border: rgba(0,0,0,0.08);
-        --shadow: 0 30px 90px rgba(0,0,0,0.18);
+  /* ===== Top menu bar ===== */
+  .menubar{
+    position:fixed; top:0; left:0; right:0;
+    height:32px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 12px;
+    background: rgba(255,255,255,.10);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom:1px solid rgba(255,255,255,.12);
+    z-index:50;
+  }
 
-        --pill: rgba(255,255,255,0.78);
-        --pillHover: rgba(255,255,255,0.92);
-      }
-    }
+  .menubar .left, .menubar .right{
+    display:flex; align-items:center; gap:12px;
+    font-size:13px;
+    color: rgba(255,255,255,.92);
+  }
 
-    html[data-theme="light"]{ color-scheme: light; }
-    html[data-theme="dark"]{ color-scheme: dark; }
+  .apple{
+    width:14px; height:14px;
+    display:inline-block;
+    border-radius:4px;
+    background: rgba(255,255,255,.85);
+    clip-path: polygon(55% 3%, 66% 10%, 64% 20%, 74% 25%, 82% 36%, 76% 52%, 66% 61%, 66% 76%, 57% 95%, 43% 95%, 35% 75%, 35% 60%, 24% 52%, 18% 36%, 26% 25%, 36% 20%, 34% 10%, 45% 3%);
+    opacity:.9;
+  }
 
-    *{ box-sizing:border-box; }
-    body{
-      margin:0;
-      min-height:100vh;
-      display:grid;
-      place-items:center;
-      background: var(--bg);
-      color: var(--text);
-      overflow:hidden;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    }
+  /* Dropdown menu items */
+  .menuItem{
+    position:relative;
+    padding:4px 8px;
+    border-radius:8px;
+    cursor:default;
+  }
+  .menuItem.active,
+  .menuItem:hover{
+    background: rgba(255,255,255,.12);
+  }
 
-    /* Subtelny "grain" jak w UI */
-    .grain{
-      position:fixed; inset:0;
-      pointer-events:none;
-      opacity:0.10;
-      mix-blend-mode: overlay;
-      background-image:
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.08), transparent 35%),
-        radial-gradient(circle at 70% 60%, rgba(255,255,255,0.06), transparent 40%);
-      filter: blur(0.6px);
-    }
+  .dropdown{
+    position:absolute;
+    top:30px;
+    left:0;
+    min-width:190px;
+    padding:8px;
+    border-radius:14px;
+    background: var(--menuBg);
+    border:1px solid var(--menuBorder);
+    box-shadow: 0 30px 90px rgba(0,0,0,.45);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    display:none;
+  }
+  .menuItem.active .dropdown{
+    display:block;
+  }
+  .dropdown a, .dropdown button{
+    display:flex;
+    width:100%;
+    gap:10px;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 10px;
+    border-radius:12px;
+    color: rgba(255,255,255,.92);
+    text-decoration:none;
+    font-size:13px;
+    background: transparent;
+    border:0;
+    cursor:default;
+  }
+  .dropdown a:hover, .dropdown button:hover{
+    background: rgba(255,255,255,.12);
+  }
+  .kbd{
+    opacity:.7;
+    font-variant-numeric: tabular-nums;
+    font-size:12px;
+  }
 
-    /* Liquid blobs + logo blur w tle */
-    .backdrop{
-      position:fixed;
-      inset:-80px;
-      pointer-events:none;
-      z-index:-2;
-      background:
-        radial-gradient(900px 520px at 18% 22%, rgba(120,122,255,0.22), transparent 60%),
-        radial-gradient(780px 420px at 82% 28%, rgba(255,120,200,0.18), transparent 62%),
-        radial-gradient(820px 520px at 52% 82%, rgba(120,255,210,0.14), transparent 62%);
-      filter: blur(20px);
-      opacity: 0.95;
-      transform: translateZ(0);
-    }
+  /* ===== Desktop icons ===== */
+  .icons{
+    position:fixed;
+    top:56px;
+    left:20px;
+    display:grid;
+    gap:14px;
+    z-index:1;
+    font-size:12px;
+    color:rgba(255,255,255,.85);
+  }
+  .icon{
+    width:72px;
+    text-align:center;
+  }
+  .icon .pic{
+    width:56px; height:56px;
+    margin:0 auto 6px;
+    border-radius:14px;
+    background: rgba(255,255,255,.16);
+    border:1px solid rgba(255,255,255,.18);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 12px 30px rgba(0,0,0,.28);
+  }
 
-    .brandBlur{
-      position:fixed;
-      inset:0;
-      display:grid;
-      place-items:center;
-      pointer-events:none;
-      z-index:-1;
-    }
-    .brandBlur::before{
-      content:"";
-      width:min(520px, 78vw);
-      height:min(520px, 78vw);
-      background:url("freewifi.png") center/contain no-repeat;
-      opacity:0.22;
-      filter: blur(110px) saturate(140%);
-      transform: scale(1.10);
-    }
+  /* ===== App window container (positioned & draggable) ===== */
+  .stage{
+    position:fixed;
+    inset:0;
+    padding: 72px 16px 92px;
+    display:grid;
+    place-items:center;
+    z-index:10;
+  }
 
-    /* Karta glass */
-    .card{
-      width: min(520px, 86vw);
-      border-radius: 32px;
-      padding: 34px 30px 24px;
-      background: linear-gradient(180deg, var(--glass2), var(--glass));
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+  .app{
+    width:min(560px, 92vw);
+    border-radius:22px;
+    overflow:hidden;
+    background: linear-gradient(180deg, var(--glassA), var(--glassB));
+    border:1px solid var(--border);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(26px);
+    -webkit-backdrop-filter: blur(26px);
 
-      transform: translateY(10px) scale(0.985);
-      opacity: 0;
-      transition: transform .65s cubic-bezier(.2,.9,.2,1), opacity .65s ease;
-    }
-    .card.ready{
-      transform: translateY(0) scale(1);
-      opacity: 1;
-    }
+    opacity:0;
+    transform: translate3d(var(--x, 0px), var(--y, 0px), 0) translateY(10px) scale(.985);
+    transition: transform .65s cubic-bezier(.2,.9,.2,1), opacity .65s ease;
+    will-change: transform;
+  }
+  .app.ready{
+    opacity:1;
+    transform: translate3d(var(--x, 0px), var(--y, 0px), 0) translateY(0) scale(1);
+  }
+  .app.dragging{
+    transition:none;
+    cursor:grabbing;
+  }
 
-    .top{
-      display:grid;
-      place-items:center;
-      text-align:center;
-      gap:12px;
-    }
+  .titlebar{
+    height:44px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 14px;
+    background: rgba(255,255,255,.14);
+    border-bottom:1px solid rgba(255,255,255,.14);
+    cursor:grab;
+  }
 
-    .logoBtn{
-      display:inline-block;
-      border:0;
-      background:transparent;
-      padding:0;
-      cursor:pointer;
-      outline:none;
-    }
+  .traffic{ display:flex; gap:8px; align-items:center; }
+  .dot{ width:12px; height:12px; border-radius:50%; }
+  .red{ background:#ff5f57; }
+  .yellow{ background:#ffbd2e; }
+  .green{ background:#28c840; }
 
-    .logo{
-      width: min(320px, 72vw);
-      height:auto;
-      display:block;
-      filter: drop-shadow(0 18px 35px rgba(0,0,0,0.35));
-      transition: transform .22s ease, opacity .22s ease;
-    }
-    .logoBtn:hover .logo{
-      transform: scale(1.04);
-      opacity: 0.96;
-    }
+  .title{
+    font-size:13px;
+    color: rgba(255,255,255,.85);
+    letter-spacing:.2px;
+  }
 
-    .hint{
-      font-size: 13px;
-      color: var(--muted);
-      letter-spacing: 0.2px;
-    }
+  .content{
+    padding: 34px 28px 26px;
+    text-align:center;
+  }
 
-    /* Menu liquid bubble */
-    .menuWrap{
-      margin-top: 18px;
-      overflow:hidden;
-      max-height: 0;
-      opacity: 0;
-      transform: translateY(-10px) scale(0.97);
-      transition: all .40s cubic-bezier(.2,.9,.2,1);
-    }
-    .menuWrap.open{
-      max-height: 360px;
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
+  .logoBtn{
+    border:0;
+    background:transparent;
+    padding:0;
+    cursor:pointer;
+  }
+  .logo{
+    width:min(320px, 72vw);
+    height:auto;
+    display:block;
+    margin:0 auto;
+    filter: drop-shadow(0 18px 35px rgba(0,0,0,.35));
+    transition: transform .22s ease, opacity .22s ease;
+  }
+  .logoBtn:hover .logo{ transform: scale(1.04); opacity:.96; }
+  .hint{ margin-top:12px; font-size:13px; color: var(--muted); }
 
-    .menu{
-      display:grid;
-      gap:14px;
-    }
+  /* Liquid bubble menu */
+  .menuWrap{
+    margin-top:18px;
+    overflow:hidden;
+    max-height:0;
+    opacity:0;
+    transform: translateY(-10px) scale(.97);
+    transition: all .40s cubic-bezier(.2,.9,.2,1);
+  }
+  .menuWrap.open{
+    max-height:420px;
+    opacity:1;
+    transform: translateY(0) scale(1);
+  }
+  .menu{ display:grid; gap:14px; }
 
-    .menu a{
-      text-decoration:none;
-      color: var(--text);
-      border-radius: 999px;
-      padding: 14px 18px;
-      font-size: 15px;
-      font-weight: 550;
-      text-align:center;
+  .menu a{
+    text-decoration:none;
+    color: rgba(255,255,255,.92);
+    border-radius:999px;
+    padding:14px 18px;
+    font-size:15px;
+    font-weight:600;
+    text-align:center;
 
-      background: var(--pill);
-      border: 1px solid rgba(255,255,255,0.18);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+    background: rgba(255,255,255,.16);
+    border:1px solid rgba(255,255,255,.20);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
 
-      box-shadow:
-        0 12px 30px rgba(0,0,0,0.30),
-        inset 0 1px 0 rgba(255,255,255,0.35);
+    box-shadow:
+      0 14px 34px rgba(0,0,0,.32),
+      inset 0 1px 0 rgba(255,255,255,.28);
 
-      transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
-    }
-    .menu a:hover{
-      background: var(--pillHover);
-      transform: translateY(-2px) scale(1.01);
-      box-shadow:
-        0 18px 44px rgba(0,0,0,0.36),
-        inset 0 1px 0 rgba(255,255,255,0.45);
-    }
-    .menu a:active{
-      transform: scale(0.985);
-    }
+    transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+  }
+  .menu a:hover{
+    background: rgba(255,255,255,.22);
+    transform: translateY(-2px) scale(1.01);
+    box-shadow:
+      0 20px 50px rgba(0,0,0,.38),
+      inset 0 1px 0 rgba(255,255,255,.38);
+  }
+  .menu a:active{ transform: scale(.985); }
 
-    .menu a.discord{
-      background: rgba(88,101,242,0.88);
-      border: 1px solid rgba(255,255,255,0.20);
-      color: white;
-      box-shadow:
-        0 14px 38px rgba(88,101,242,0.30),
-        inset 0 1px 0 rgba(255,255,255,0.35);
-    }
-    .menu a.discord:hover{
-      background: rgba(88,101,242,0.96);
-    }
+  .menu a.discord{
+    background: rgba(88,101,242,.92);
+    border:1px solid rgba(255,255,255,.22);
+    box-shadow:
+      0 18px 44px rgba(88,101,242,.32),
+      inset 0 1px 0 rgba(255,255,255,.26);
+  }
+  .menu a.discord:hover{ background: rgba(88,101,242,1); }
 
-    /* Preloader */
-    .loader{
-      position:fixed;
-      inset:0;
-      display:grid;
-      place-items:center;
-      background: var(--bg);
-      transition: opacity .35s ease;
-      z-index: 20;
-    }
-    .loader.hidden{ opacity:0; pointer-events:none; }
-    .spinner{
-      width: 44px; height: 44px;
-      border-radius: 50%;
-      border: 3px solid rgba(127,127,127,0.20);
-      border-top-color: rgba(127,127,127,0.75);
-      animation: spin 0.9s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+  /* ===== Dock (magnification) ===== */
+  .dock{
+    position:fixed;
+    left:50%;
+    bottom:14px;
+    transform:translateX(-50%);
+    display:flex;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:22px;
+    background: var(--dockBg);
+    border:1px solid var(--dockBorder);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    box-shadow: 0 30px 90px rgba(0,0,0,.45);
+    z-index:60;
+    align-items:flex-end;
+  }
 
-    @media (prefers-reduced-motion: reduce){
-      .card, .logo, .loader, .menuWrap, .menu a{ transition:none !important; }
-      .spinner{ animation:none !important; }
-    }
-  </style>
+  .appicon{
+    width:46px; height:46px;
+    border-radius:14px;
+    background: rgba(255,255,255,.16);
+    border:1px solid rgba(255,255,255,.18);
+    display:grid;
+    place-items:center;
+    position:relative;
+    transform: translateY(var(--lift, 0px)) scale(var(--scale, 1));
+    transform-origin: 50% 100%;
+    transition: background .12s ease;
+    cursor:default;
+    will-change: transform;
+  }
+  .appicon:hover{ background: rgba(255,255,255,.22); }
+
+  .appicon .runDot{
+    position:absolute;
+    bottom:-7px;
+    width:6px; height:6px;
+    border-radius:50%;
+    background: rgba(255,255,255,.75);
+    opacity:.55;
+  }
+
+  .glyph{
+    width:22px; height:22px;
+    border-radius:6px;
+    background: rgba(255,255,255,.85);
+    opacity:.9;
+  }
+
+  @media (max-width:420px){
+    .icons{ display:none; }
+    .dock{ gap:8px; padding:8px 10px; }
+    .appicon{ width:42px; height:42px; border-radius:13px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .app, .menuWrap, .logo{ transition:none !important; }
+  }
+</style>
 </head>
 
 <body>
-  <div class="backdrop" aria-hidden="true"></div>
+  <div class="wallpaper" aria-hidden="true"></div>
   <div class="brandBlur" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
 
-  <div class="loader" id="loader" aria-label="Ładowanie">
-    <div class="spinner" aria-hidden="true"></div>
+  <!-- Top menu bar -->
+  <div class="menubar" role="banner" aria-label="macOS menu bar">
+    <div class="left">
+      <span class="apple" aria-hidden="true"></span>
+      <strong style="font-weight:600">Finder</strong>
+
+      <div class="menuItem" data-menu="file">Plik
+        <div class="dropdown" role="menu" aria-label="Plik">
+          <button type="button">Nowe okno <span class="kbd">⌘N</span></button>
+          <button type="button">Odśwież <span class="kbd">⌘R</span></button>
+          <button type="button">Zamknij menu <span class="kbd">Esc</span></button>
+        </div>
+      </div>
+
+      <div class="menuItem" data-menu="edit">Edycja
+        <div class="dropdown" role="menu" aria-label="Edycja">
+          <button type="button">Kopiuj <span class="kbd">⌘C</span></button>
+          <button type="button">Wklej <span class="kbd">⌘V</span></button>
+          <button type="button">Zaznacz wszystko <span class="kbd">⌘A</span></button>
+        </div>
+      </div>
+
+      <div class="menuItem" data-menu="view">Widok
+        <div class="dropdown" role="menu" aria-label="Widok">
+          <button type="button">Pokaż/ukryj menu <span class="kbd">⌘E</span></button>
+          <button type="button">Tryb jasny <span class="kbd">?theme=light</span></button>
+          <button type="button">Tryb ciemny <span class="kbd">?theme=dark</span></button>
+        </div>
+      </div>
+
+      <div class="menuItem" data-menu="help">Pomoc
+        <div class="dropdown" role="menu" aria-label="Pomoc">
+          <a href="https://instagram.com/god.wifi" target="_blank" rel="noopener">Instagram god wifi</a>
+          <a href="https://instagram.com/tokarz_k" target="_blank" rel="noopener">Instagram Gumisia</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <span style="opacity:.9">Wi-Fi</span>
+      <span style="opacity:.9">🔋</span>
+      <span id="clock" style="opacity:.92; font-variant-numeric: tabular-nums;"></span>
+    </div>
   </div>
 
-  <main class="card" id="card">
-    <div class="top">
-      <button class="logoBtn" id="toggle" aria-expanded="false" aria-controls="menuWrap">
-        <img class="logo" id="logo" src="freewifi.png" alt="godwifi logo" />
-      </button>
-      <div class="hint" id="hint">Kliknij logo, aby rozwinąć</div>
-    </div>
+  <!-- Fake desktop icons -->
+  <div class="icons" aria-hidden="true">
+    <div class="icon"><div class="pic"></div><div>Dysk</div></div>
+    <div class="icon"><div class="pic"></div><div>Folder</div></div>
+  </div>
 
-    <div class="menuWrap" id="menuWrap">
-      <nav class="menu" aria-label="Linki">
-        <a href="https://instagram.com/tokarz_k" target="_blank" rel="noopener">Sprawdź Instagram Gumisia</a>
-        <a href="https://instagram.com/god.wifi" target="_blank" rel="noopener">Sprawdź Instagram god wifi</a>
-        <a href="https://open.spotify.com/artist/6iz52ADwFl483ghAI7NuS1?si=Jf634TqFTD63d_HqaBObVA&nd=1&dlsi=e4bd17078c184603" target="_blank" rel="noopener">Sprawdź Spotify</a>
-        <a class="discord" href="https://discord.com/invite/4PTQRsUq9t" target="_blank" rel="noopener">Wejdź na Discord</a>
-      </nav>
-    </div>
-  </main>
+  <!-- Center stage -->
+  <div class="stage">
+    <section class="app" id="app" aria-label="Okno aplikacji">
+      <div class="titlebar" id="titlebar">
+        <div class="traffic" aria-hidden="true">
+          <div class="dot red"></div>
+          <div class="dot yellow"></div>
+          <div class="dot green"></div>
+        </div>
+        <div class="title">godwifi</div>
+        <div style="width:52px;"></div>
+      </div>
 
-  <script>
-    // theme override: ?theme=light / ?theme=dark
-    const params = new URLSearchParams(location.search);
-    const theme = params.get("theme");
-    if (theme === "light" || theme === "dark") {
-      document.documentElement.setAttribute("data-theme", theme);
-    }
+      <div class="content">
+        <button class="logoBtn" id="toggle" aria-expanded="false" aria-controls="menuWrap">
+          <img class="logo" id="logo" src="freewifi.png" alt="godwifi logo">
+        </button>
+        <div class="hint" id="hint">Kliknij logo, aby rozwinąć</div>
 
-    // PODMIEŃ LINKI:
-    const SPOTIFY_URL = "https://open.spotify.com/artist/6iz52ADwFl483ghAI7NuS1?si=Jf634TqFTD63d_HqaBObVA&nd=1&dlsi=e4bd17078c184603";   // <- wstaw swój
-    const DISCORD_URL = "https://discord.com/invite/4PTQRsUq9t"; // <- wstaw swój
+        <div class="menuWrap" id="menuWrap">
+          <nav class="menu" aria-label="Linki">
+            <a href="https://instagram.com/tokarz_k" target="_blank" rel="noopener">Sprawdź Instagram Gumisia</a>
+            <a href="https://instagram.com/god.wifi" target="_blank" rel="noopener">Sprawdź Instagram god wifi</a>
+            <a id="spotifyLink" href="#" target="_blank" rel="noopener">Sprawdź Spotify</a>
+            <a id="discordLink" class="discord" href="#" target="_blank" rel="noopener">Wejdź na Discord</a>
+          </nav>
+        </div>
+      </div>
+    </section>
+  </div>
 
-    const loader = document.getElementById("loader");
-    const card = document.getElementById("card");
-    const logo = document.getElementById("logo");
+  <!-- Dock -->
+  <div class="dock" id="dock" aria-label="Dock">
+    <div class="appicon" title="Finder"><div class="glyph"></div><div class="runDot"></div></div>
+    <div class="appicon" title="Safari"><div class="glyph"></div><div class="runDot"></div></div>
+    <div class="appicon" title="Music"><div class="glyph"></div><div class="runDot"></div></div>
+    <div class="appicon" title="Discord"><div class="glyph"></div><div class="runDot"></div></div>
+    <div class="appicon" title="Settings"><div class="glyph"></div><div class="runDot"></div></div>
+  </div>
 
-    const toggle = document.getElementById("toggle");
-    const menuWrap = document.getElementById("menuWrap");
-    const hint = document.getElementById("hint");
+<script>
+  // ======= PODMIEŃ LINKI TUTAJ =======
+  const SPOTIFY_URL = "WSTAW_TUTAJ_LINK_SPOTIFY";
+  const DISCORD_URL = "https://discord.gg/TWOJ_LINK";
 
-    function setOpen(open){
-      menuWrap.classList.toggle("open", open);
-      toggle.setAttribute("aria-expanded", String(open));
-      hint.textContent = open ? "Wybierz link" : "Kliknij logo, aby rozwinąć";
-    }
+  document.getElementById("spotifyLink").href = https://open.spotify.com/artist/6iz52ADwFl483ghAI7NuS1?si=V1A-TzIoRNqL1iQ_ptCGng;
+  document.getElementById("discordLink").href = https://discord.gg/4PTQRsUq9t;
 
-    toggle.addEventListener("click", () => {
-      setOpen(!menuWrap.classList.contains("open"));
+  // ======= Theme override: ?theme=light / ?theme=dark =======
+  const params = new URLSearchParams(location.search);
+  const theme = params.get("theme");
+  if (theme === "light" || theme === "dark") {
+    document.documentElement.setAttribute("data-theme", theme);
+  }
+
+  // ======= Toggle menu =======
+  const toggle = document.getElementById("toggle");
+  const menuWrap = document.getElementById("menuWrap");
+  const hint = document.getElementById("hint");
+  const app = document.getElementById("app");
+
+  function setOpen(open){
+    menuWrap.classList.toggle("open", open);
+    toggle.setAttribute("aria-expanded", String(open));
+    hint.textContent = open ? "Wybierz link" : "Kliknij logo, aby rozwinąć";
+  }
+  toggle.addEventListener("click", () => setOpen(!menuWrap.classList.contains("open")));
+  document.addEventListener("click", (e) => { if (!app.contains(e.target)) setOpen(false); });
+
+  // ======= Window show when logo ready =======
+  const logo = document.getElementById("logo");
+  function show(){ app.classList.add("ready"); }
+  if (logo.complete) show();
+  else logo.addEventListener("load", show);
+
+  // ======= Live clock in menubar =======
+  const clock = document.getElementById("clock");
+  function tick(){
+    const d = new Date();
+    const hh = String(d.getHours()).padStart(2,"0");
+    const mm = String(d.getMinutes()).padStart(2,"0");
+    clock.textContent = `${hh}:${mm}`;
+  }
+  tick();
+  setInterval(tick, 1000 * 10);
+
+  // ======= Dropdown menus =======
+  const menuItems = Array.from(document.querySelectorAll(".menuItem"));
+  function closeAll(){
+    menuItems.forEach(i => i.classList.remove("active"));
+  }
+
+  menuItems.forEach(item => {
+    item.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isActive = item.classList.contains("active");
+      closeAll();
+      item.classList.toggle("active", !isActive);
     });
+  });
 
-    // Close when clicking outside
-    document.addEventListener("click", (e) => {
-      if (!card.contains(e.target)) setOpen(false);
+  document.addEventListener("click", () => closeAll());
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { closeAll(); setOpen(false); }
+  });
+
+  // Dropdown actions
+  document.querySelectorAll('[data-menu="file"] .dropdown button')[0].addEventListener("click", () => {
+    // fake "new window": small bounce
+    app.animate([{transform: getComputedStyle(app).transform}, {transform: "translate3d(var(--x, 0px), var(--y, 0px), 0) scale(1.01)"}], {duration: 180, direction:"alternate", easing:"ease-out"});
+    closeAll();
+  });
+
+  document.querySelectorAll('[data-menu="file"] .dropdown button')[1].addEventListener("click", () => {
+    location.reload();
+  });
+
+  document.querySelectorAll('[data-menu="file"] .dropdown button')[2].addEventListener("click", () => {
+    closeAll();
+  });
+
+  document.querySelectorAll('[data-menu="view"] .dropdown button')[0].addEventListener("click", () => {
+    setOpen(!menuWrap.classList.contains("open"));
+    closeAll();
+  });
+  document.querySelectorAll('[data-menu="view"] .dropdown button')[1].addEventListener("click", () => {
+    const u = new URL(location.href); u.searchParams.set("theme","light"); location.href = u.toString();
+  });
+  document.querySelectorAll('[data-menu="view"] .dropdown button')[2].addEventListener("click", () => {
+    const u = new URL(location.href); u.searchParams.set("theme","dark"); location.href = u.toString();
+  });
+
+  // ======= Draggable window (titlebar) =======
+  const titlebar = document.getElementById("titlebar");
+  let dragging = false;
+  let startX = 0, startY = 0;
+  let baseX = 0, baseY = 0;
+
+  function getVarPx(name){
+    const v = getComputedStyle(app).getPropertyValue(name).trim();
+    return v ? parseFloat(v.replace("px","")) : 0;
+  }
+  function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+  titlebar.addEventListener("pointerdown", (e) => {
+    // avoid drag when clicking traffic lights (still ok, but feels nicer)
+    dragging = true;
+    titlebar.setPointerCapture(e.pointerId);
+    app.classList.add("dragging");
+
+    startX = e.clientX;
+    startY = e.clientY;
+
+    baseX = getVarPx("--x");
+    baseY = getVarPx("--y");
+  });
+
+  titlebar.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+
+    // clamp so it doesn't fly off-screen
+    const maxX = (window.innerWidth / 2) - 60;
+    const maxY = (window.innerHeight / 2) - 80;
+
+    const nx = clamp(baseX + dx, -maxX, maxX);
+    const ny = clamp(baseY + dy, -maxY, maxY);
+
+    app.style.setProperty("--x", nx + "px");
+    app.style.setProperty("--y", ny + "px");
+  });
+
+  function stopDrag(){
+    dragging = false;
+    app.classList.remove("dragging");
+  }
+  titlebar.addEventListener("pointerup", stopDrag);
+  titlebar.addEventListener("pointercancel", stopDrag);
+
+  // ======= Dock magnification =======
+  const dock = document.getElementById("dock");
+  const icons = Array.from(dock.querySelectorAll(".appicon"));
+
+  function setDockScales(clientX){
+    const rect = dock.getBoundingClientRect();
+    const x = clientX - rect.left;
+
+    icons.forEach(icon => {
+      const ir = icon.getBoundingClientRect();
+      const center = (ir.left + ir.width/2) - rect.left;
+
+      const dist = Math.abs(center - x);
+
+      // dist 0 -> big, dist > 160 -> normal
+      const maxDist = 160;
+      const t = Math.max(0, 1 - (dist / maxDist));
+
+      // mac-like curve
+      const scale = 1 + (t*t) * 0.9;     // up to ~1.9
+      const lift  = - (t*t) * 12;        // lift up a bit
+
+      icon.style.setProperty("--scale", scale.toFixed(3));
+      icon.style.setProperty("--lift", lift.toFixed(2) + "px");
     });
+  }
 
-    // Preload show
-    let shown = false;
-    function show(){
-      if (shown) return;
-      shown = true;
-      loader.classList.add("hidden");
-      setTimeout(() => card.classList.add("ready"), 40);
-    }
+  dock.addEventListener("mousemove", (e) => {
+    setDockScales(e.clientX);
+  });
 
-    const timeout = setTimeout(show, 1200);
-    if (logo.complete) {
-      clearTimeout(timeout); show();
-    } else {
-      logo.addEventListener("load", () => { clearTimeout(timeout); show(); });
-      logo.addEventListener("error", () => { clearTimeout(timeout); show(); });
-    }
-  </script>
+  dock.addEventListener("mouseleave", () => {
+    icons.forEach(icon => {
+      icon.style.setProperty("--scale", "1");
+      icon.style.setProperty("--lift", "0px");
+    });
+  });
+</script>
+
 </body>
 </html>
