@@ -213,6 +213,11 @@
     transition:none;
     cursor:grabbing;
   }
+  .app.minimized{
+    opacity:0;
+    pointer-events:none;
+    transform: translate3d(var(--x, 0px), var(--y, 0px), 0) translateY(20px) scale(.98);
+  }
 
   .titlebar{
     height:44px;
@@ -226,7 +231,13 @@
   }
 
   .traffic{ display:flex; gap:8px; align-items:center; }
-  .dot{ width:12px; height:12px; border-radius:50%; }
+  .dot{
+    width:12px; height:12px; border-radius:50%;
+    border:0; padding:0;
+    cursor:pointer;
+  }
+  .dot:active{ transform: scale(.95); }
+
   .red{ background:#ff5f57; }
   .yellow{ background:#ffbd2e; }
   .green{ background:#28c840; }
@@ -320,7 +331,7 @@
     bottom:14px;
     transform:translateX(-50%);
     display:flex;
-    gap:10px;
+    gap: var(--dockGap, 10px);
     padding:10px 12px;
     border-radius:22px;
     background: var(--dockBg);
@@ -345,6 +356,8 @@
     transition: background .12s ease;
     cursor:pointer;
     will-change: transform;
+    margin-left: var(--ml, 0px);
+    margin-right: var(--mr, 0px);
   }
   .appicon:hover{ background: rgba(255,255,255,.22); }
 
@@ -357,7 +370,6 @@
     opacity:.55;
   }
 
-  /* Dock icon images */
   .dockimg{
     width:28px;
     height:28px;
@@ -366,6 +378,10 @@
     pointer-events:none;
     filter: drop-shadow(0 10px 18px rgba(0,0,0,.20));
   }
+
+  /* Minimised app dock slot */
+  .appslot{ display:none; }
+  .appslot.visible{ display:grid; }
 
   /* macOS-like IG popup */
   .dockPopup{
@@ -517,10 +533,10 @@
   <div class="stage">
     <section class="app" id="app" aria-label="Okno aplikacji">
       <div class="titlebar" id="titlebar">
-        <div class="traffic" aria-hidden="true">
-          <div class="dot red"></div>
-          <div class="dot yellow"></div>
-          <div class="dot green"></div>
+        <div class="traffic" aria-label="Sterowanie oknem">
+          <button class="dot red" id="btnClose" type="button" aria-label="Zamknij"></button>
+          <button class="dot yellow" id="btnMin" type="button" aria-label="Minimalizuj"></button>
+          <button class="dot green" id="btnMax" type="button" aria-label="Powiększ"></button>
         </div>
         <div class="title">godwifi</div>
         <div style="width:52px;"></div>
@@ -584,16 +600,22 @@
       <img src="discord-logo-icon-editorial-free-vector.png" class="dockimg" alt="">
       <div class="runDot"></div>
     </div>
+
+    <!-- Minimised app slot (pojawia się po minimalizacji) -->
+    <div class="appicon appslot" id="dockApp" title="godwifi" aria-hidden="true">
+      <img src="freewifi.png" class="dockimg" alt="">
+      <div class="runDot"></div>
+    </div>
   </div>
 
 <script>
-  // ======= LINKI  =======
+  // ======= LINKI =======
   const IG_GUMIS = "https://instagram.com/tokarz_k";
   const IG_GODWIFI = "https://instagram.com/god.wifi";
   const SPOTIFY_URL = "https://open.spotify.com/artist/6iz52ADwFl483ghAI7NuS1?si=V1A-TzIoRNqL1iQ_ptCGng";
   const DISCORD_URL = "https://discord.gg/4PTQRsUq9t";
 
- 
+  // Linki w menu okna
   document.getElementById("spotifyLink").href = SPOTIFY_URL;
   document.getElementById("discordLink").href = DISCORD_URL;
 
@@ -615,6 +637,7 @@
     toggle.setAttribute("aria-expanded", String(open));
     hint.textContent = open ? "Wybierz link" : "Kliknij logo, aby rozwinąć";
   }
+
   toggle.addEventListener("click", (e) => {
     e.stopPropagation();
     setOpen(!menuWrap.classList.contains("open"));
@@ -626,7 +649,7 @@
   if (logo.complete) show();
   else logo.addEventListener("load", show);
 
-  // ======= Live clock in menubar =======
+  // ======= Live clock =======
   const clock = document.getElementById("clock");
   function tick(){
     const d = new Date();
@@ -639,9 +662,11 @@
 
   // ======= Dropdown menus (menu bar) =======
   const menuItems = Array.from(document.querySelectorAll(".menuItem"));
+
   function closeAllMenus(){
     menuItems.forEach(i => i.classList.remove("active"));
   }
+
   menuItems.forEach(item => {
     item.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -683,6 +708,9 @@
   function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 
   titlebar.addEventListener("pointerdown", (e) => {
+    // jeśli kliknięto w kropki, nie zaczynaj drag
+    if (e.target && e.target.classList && e.target.classList.contains("dot")) return;
+
     dragging = true;
     titlebar.setPointerCapture(e.pointerId);
     app.classList.add("dragging");
@@ -709,31 +737,27 @@
   titlebar.addEventListener("pointerup", stopDrag);
   titlebar.addEventListener("pointercancel", stopDrag);
 
-  // ======= Dock clicks + IG popup =======
+  // ======= Dock + IG popup =======
   const dockIg = document.getElementById("dockIg");
   const igPopup = document.getElementById("igPopup");
   const dockSpotify = document.getElementById("dockSpotify");
   const dockDiscord = document.getElementById("dockDiscord");
+  const dockApp = document.getElementById("dockApp");
 
-  function closeIgPopup(){
-    dockIg.classList.remove("showPopup");
-  }
+  function closeIgPopup(){ dockIg.classList.remove("showPopup"); }
 
   dockSpotify.addEventListener("click", (e) => {
     e.stopPropagation();
-    closeAllMenus();
-    closeIgPopup();
+    closeAllMenus(); closeIgPopup(); setOpen(false);
     window.open(SPOTIFY_URL, "_blank", "noopener");
   });
 
   dockDiscord.addEventListener("click", (e) => {
     e.stopPropagation();
-    closeAllMenus();
-    closeIgPopup();
+    closeAllMenus(); closeIgPopup(); setOpen(false);
     window.open(DISCORD_URL, "_blank", "noopener");
   });
 
-  // Instagram: klik -> pokaż/ukryj menu wyboru
   dockIg.addEventListener("click", (e) => {
     e.stopPropagation();
     closeAllMenus();
@@ -742,7 +766,6 @@
     dockIg.classList.toggle("showPopup", open);
   });
 
-  // Klik w opcję
   igPopup.querySelectorAll(".dockItem").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -753,7 +776,7 @@
     });
   });
 
-  // Klik gdziekolwiek poza: zamknij dropdowny + IG popup (i niech nie wywala menu okna)
+  // Klik poza: zamknij popup IG + dropdowny
   document.addEventListener("click", (e) => {
     if (!dockIg.contains(e.target)) closeIgPopup();
     closeAllMenus();
@@ -764,10 +787,48 @@
       closeIgPopup();
       closeAllMenus();
       setOpen(false);
+      restoreApp();
     }
   });
 
-  // ======= Dock magnification =======
+  // ======= Minimalizacja (żółte kółko) =======
+  const btnMin = document.getElementById("btnMin");
+  const btnClose = document.getElementById("btnClose");
+  const btnMax = document.getElementById("btnMax");
+
+  function minimizeApp(){
+    app.classList.add("minimized");
+    dockApp.classList.add("visible");
+    dockApp.setAttribute("aria-hidden", "false");
+    closeAllMenus(); closeIgPopup(); setOpen(false);
+  }
+
+  function restoreApp(){
+    app.classList.remove("minimized");
+    dockApp.classList.remove("visible");
+    dockApp.setAttribute("aria-hidden", "true");
+  }
+
+  btnMin.addEventListener("click", (e) => { e.stopPropagation(); minimizeApp(); });
+
+  dockApp.addEventListener("click", (e) => { e.stopPropagation(); restoreApp(); });
+
+  // (opcjonalnie) czerwone = minimalizacja też (żeby nie "zamykać" strony)
+  btnClose.addEventListener("click", (e) => { e.stopPropagation(); minimizeApp(); });
+
+  // zielone = szybki "max" (powiększ/zmniejsz)
+  let isMax = false;
+  btnMax.addEventListener("click", (e) => {
+    e.stopPropagation();
+    isMax = !isMax;
+    if (isMax){
+      app.style.width = "min(860px, 96vw)";
+    } else {
+      app.style.width = "min(560px, 92vw)";
+    }
+  });
+
+  // ======= Dock magnification (NO overlap) =======
   const dock = document.getElementById("dock");
   const icons = Array.from(dock.querySelectorAll(".appicon"));
 
@@ -776,30 +837,48 @@
     const x = clientX - rect.left;
 
     icons.forEach(icon => {
+      icon.style.setProperty("--ml", "0px");
+      icon.style.setProperty("--mr", "0px");
+    });
+
+    let maxT = 0;
+
+    icons.forEach(icon => {
       const ir = icon.getBoundingClientRect();
       const center = (ir.left + ir.width/2) - rect.left;
-
       const dist = Math.abs(center - x);
+
       const maxDist = 160;
       const t = Math.max(0, 1 - (dist / maxDist));
+      maxT = Math.max(maxT, t);
 
-      const scale = 1 + (t*t) * 0.9; // max ~1.9
+      const scale = 1 + (t*t) * 0.8;
       const lift  = - (t*t) * 12;
 
       icon.style.setProperty("--scale", scale.toFixed(3));
       icon.style.setProperty("--lift", lift.toFixed(2) + "px");
+
+      const push = (t*t) * 14;
+      icon.style.setProperty("--ml", push.toFixed(2) + "px");
+      icon.style.setProperty("--mr", push.toFixed(2) + "px");
     });
+
+    const extraGap = 10 + maxT * 10; // 10..20
+    dock.style.setProperty("--dockGap", extraGap.toFixed(2) + "px");
   }
 
   dock.addEventListener("mousemove", (e) => setDockScales(e.clientX));
+
   dock.addEventListener("mouseleave", () => {
+    dock.style.setProperty("--dockGap", "10px");
     icons.forEach(icon => {
       icon.style.setProperty("--scale", "1");
       icon.style.setProperty("--lift", "0px");
+      icon.style.setProperty("--ml", "0px");
+      icon.style.setProperty("--mr", "0px");
     });
   });
 </script>
 
 </body>
 </html>
-
