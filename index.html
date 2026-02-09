@@ -2026,6 +2026,17 @@
 
   resetGame();
   requestAnimationFrame(step);
+  const notesWin = document.getElementById("notesWin");
+const openSetlista = document.getElementById("openSetlista");
+
+openSetlista.addEventListener("click", (e)=>{
+  e.stopPropagation();
+  toggleWindow(notesWin, openSetlista);
+});
+
+document.getElementById("notesClose").onclick = ()=> minimizeWindow(notesWin, openSetlista);
+document.getElementById("notesMin").onclick = ()=> minimizeWindow(notesWin, openSetlista);
+
 
 </script>
 </body>
