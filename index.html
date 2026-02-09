@@ -1037,52 +1037,34 @@
     win.style.zIndex = String(z);
   }
 
- function openWindow(win, fromEl){
-  if (win.classList.contains("open")) {
+  function openWindow(win, fromEl){
+    if (win.classList.contains("open")) { bringToFront(win); ensureStageActive(); return; }
+
     bringToFront(win);
+    win.classList.add("open");
     ensureStageActive();
-    return;
+
+    if (prefersReduced) return;
+
+    win.style.visibility = "hidden";
+    win.style.opacity = "1";
+    win.style.transform = "translate3d(0,0,0) scale(1)";
+
+    requestAnimationFrame(() => {
+      const fromRect = fromEl.getBoundingClientRect();
+      const toRect = win.getBoundingClientRect();
+      win.style.visibility = "visible";
+
+      win.animate([
+        { transform: `translate(${(fromRect.left+fromRect.width/2)-(toRect.left+toRect.width/2)}px, ${(fromRect.top+fromRect.height/2)-(toRect.top+toRect.height/2)}px) scale(${Math.min(fromRect.width/toRect.width, fromRect.height/toRect.height)})`, opacity: 0.0 },
+        { transform: "translate(0px, 0px) scale(1)", opacity: 1.0 }
+      ], {
+        duration: 360,
+        easing: "cubic-bezier(.2,.9,.2,1)",
+        fill: "both"
+      });
+    });
   }
-
-  bringToFront(win);
-
-  // WAŻNE: zanim pokażemy okno, ustawiamy je na środek (reset offsetów)
-  centerWindow(win);
-
-  win.classList.add("open");
-  ensureStageActive();
-
-  if (prefersReduced) return;
-
-  // animacja "z ikonki"
-  win.style.visibility = "hidden";
-  win.style.opacity = "1";
-  win.style.transform = "translate3d(0,0,0) scale(1)";
-
-  requestAnimationFrame(() => {
-    const fromRect = fromEl.getBoundingClientRect();
-    const toRect = win.getBoundingClientRect();
-    win.style.visibility = "visible";
-
-    win.animate([
-      {
-        transform: `translate(${(fromRect.left+fromRect.width/2)-(toRect.left+toRect.width/2)}px,
-                              ${(fromRect.top+fromRect.height/2)-(toRect.top+toRect.height/2)}px)
-                    scale(${Math.min(fromRect.width/toRect.width, fromRect.height/toRect.height)})`,
-        opacity: 0.0
-      },
-      { transform: "translate(0px, 0px) scale(1)", opacity: 1.0 }
-    ], {
-      duration: 360,
-      easing: "cubic-bezier(.2,.9,.2,1)",
-      fill: "both"
-    }).onfinish = () => {
-      // po animacji ZAWSZE reset do środka (to naprawia Twoją sytuację)
-      centerWindow(win);
-    };
-  });
-}
-
 
   function minimizeWindow(win, toEl){
     if (!win.classList.contains("open")) return;
@@ -1185,67 +1167,54 @@
 
   // ======= Dragging for ANY window =======
   function makeDraggable(titlebarEl){
-  const id = titlebarEl.getAttribute("data-drag");
-  const win = document.getElementById(id);
+    const id = titlebarEl.getAttribute("data-drag");
+    const win = document.getElementById(id);
+    let dragging = false;
+    let startX = 0, startY = 0;
+    let baseX = 0, baseY = 0;
 
-  let dragging = false;
-  let startX = 0, startY = 0;
-  let baseX = 0, baseY = 0;
+    function getVarPx(name){
+      const v = getComputedStyle(win).getPropertyValue(name).trim();
+      return v ? parseFloat(v.replace("px","")) : 0;
+    }
+    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 
-  function getVarPx(name){
-    const v = getComputedStyle(win).getPropertyValue(name).trim();
-    return v ? parseFloat(v.replace("px","")) : 0;
-  }
-  function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+    titlebarEl.addEventListener("pointerdown", (e)=>{
+      if (!win.classList.contains("open")) return;
+      if (e.target && e.target.classList && e.target.classList.contains("dot")) return;
 
-  titlebarEl.addEventListener("pointerdown", (e)=>{
-    if (!win.classList.contains("open")) return;
+      dragging = true;
+      bringToFront(win);
+      titlebarEl.setPointerCapture(e.pointerId);
+      win.classList.add("dragging");
 
-    // jak klikniesz w kółka – nie draguj
-    if (e.target && e.target.classList && e.target.classList.contains("dot")) return;
+      startX = e.clientX;
+      startY = e.clientY;
+      baseX = getVarPx("--x");
+      baseY = getVarPx("--y");
+    });
 
-    dragging = true;
-    bringToFront(win);
+    titlebarEl.addEventListener("pointermove", (e)=>{
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
 
-    // KLUCZ: łapiemy pointera, żeby drag działał nawet jak kursor wyjedzie poza titlebar
-    titlebarEl.setPointerCapture(e.pointerId);
-    win.classList.add("dragging");
+      const maxX = (window.innerWidth / 2) - 60;
+      const maxY = (window.innerHeight / 2) - 80;
 
-    startX = e.clientX;
-    startY = e.clientY;
+      const nx = clamp(baseX + dx, -maxX, maxX);
+      const ny = clamp(baseY + dy, -maxY, maxY);
 
-    baseX = getVarPx("--x");
-    baseY = getVarPx("--y");
-  });
+      win.style.setProperty("--x", nx + "px");
+      win.style.setProperty("--y", ny + "px");
+    });
 
-  titlebarEl.addEventListener("pointermove", (e)=>{
-    if (!dragging) return;
-
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
-
-    // ogranicz, żeby nie uciekło poza ekran
-    const maxX = (window.innerWidth / 2) - 60;
-    const maxY = (window.innerHeight / 2) - 60;
-
-    const nx = clamp(baseX + dx, -maxX, maxX);
-    const ny = clamp(baseY + dy, -maxY, maxY);
-
-    win.style.setProperty("--x", nx + "px");
-    win.style.setProperty("--y", ny + "px");
-  });
-
-  function stop(){
-    dragging = false;
-    win.classList.remove("dragging");
-  }
-  titlebarEl.addEventListener("pointerup", stop);
-  titlebarEl.addEventListener("pointercancel", stop);
-
-  // klik w okno -> focus
-  win.addEventListener("pointerdown", ()=> bringToFront(win));
-}
-
+    function stop(){
+      dragging = false;
+      win.classList.remove("dragging");
+    }
+    titlebarEl.addEventListener("pointerup", stop);
+    titlebarEl.addEventListener("pointercancel", stop);
 
     // focus on click
     win.addEventListener("pointerdown", ()=> bringToFront(win));
