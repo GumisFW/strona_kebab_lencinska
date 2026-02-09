@@ -1037,34 +1037,52 @@
     win.style.zIndex = String(z);
   }
 
-  function openWindow(win, fromEl){
-    if (win.classList.contains("open")) { bringToFront(win); ensureStageActive(); return; }
-
+ function openWindow(win, fromEl){
+  if (win.classList.contains("open")) {
     bringToFront(win);
-    win.classList.add("open");
     ensureStageActive();
-
-    if (prefersReduced) return;
-
-    win.style.visibility = "hidden";
-    win.style.opacity = "1";
-    win.style.transform = "translate3d(0,0,0) scale(1)";
-
-    requestAnimationFrame(() => {
-      const fromRect = fromEl.getBoundingClientRect();
-      const toRect = win.getBoundingClientRect();
-      win.style.visibility = "visible";
-
-      win.animate([
-        { transform: `translate(${(fromRect.left+fromRect.width/2)-(toRect.left+toRect.width/2)}px, ${(fromRect.top+fromRect.height/2)-(toRect.top+toRect.height/2)}px) scale(${Math.min(fromRect.width/toRect.width, fromRect.height/toRect.height)})`, opacity: 0.0 },
-        { transform: "translate(0px, 0px) scale(1)", opacity: 1.0 }
-      ], {
-        duration: 360,
-        easing: "cubic-bezier(.2,.9,.2,1)",
-        fill: "both"
-      });
-    });
+    return;
   }
+
+  bringToFront(win);
+
+  // WAŻNE: zanim pokażemy okno, ustawiamy je na środek (reset offsetów)
+  centerWindow(win);
+
+  win.classList.add("open");
+  ensureStageActive();
+
+  if (prefersReduced) return;
+
+  // animacja "z ikonki"
+  win.style.visibility = "hidden";
+  win.style.opacity = "1";
+  win.style.transform = "translate3d(0,0,0) scale(1)";
+
+  requestAnimationFrame(() => {
+    const fromRect = fromEl.getBoundingClientRect();
+    const toRect = win.getBoundingClientRect();
+    win.style.visibility = "visible";
+
+    win.animate([
+      {
+        transform: `translate(${(fromRect.left+fromRect.width/2)-(toRect.left+toRect.width/2)}px,
+                              ${(fromRect.top+fromRect.height/2)-(toRect.top+toRect.height/2)}px)
+                    scale(${Math.min(fromRect.width/toRect.width, fromRect.height/toRect.height)})`,
+        opacity: 0.0
+      },
+      { transform: "translate(0px, 0px) scale(1)", opacity: 1.0 }
+    ], {
+      duration: 360,
+      easing: "cubic-bezier(.2,.9,.2,1)",
+      fill: "both"
+    }).onfinish = () => {
+      // po animacji ZAWSZE reset do środka (to naprawia Twoją sytuację)
+      centerWindow(win);
+    };
+  });
+}
+
 
   function minimizeWindow(win, toEl){
     if (!win.classList.contains("open")) return;
