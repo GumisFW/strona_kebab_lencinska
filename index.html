@@ -1034,85 +1034,57 @@
       }
     });
   }
-
-  function openWindow(win, fromEl){
-    bringToFront(win);
-
-    // pokaż od razu (żeby mieć poprawne wymiary)
-    win.classList.add("open");
-    ensureStageActive();
-
-    // zawsze na środek po otwarciu
-    centerWindow(win);
-
-    if (prefersReduced) return;
-
-    // animacja "z ikonki"
-    win.style.visibility = "hidden";
-    requestAnimationFrame(() => {
-      const fromRect = fromEl.getBoundingClientRect();
-      const toRect = win.getBoundingClientRect();
-      win.style.visibility = "visible";
-
-      win.animate([
-        {
-          transform: `translate(${(fromRect.left+fromRect.width/2)-(toRect.left+toRect.width/2)}px,
-                              ${(fromRect.top+fromRect.height/2)-(toRect.top+toRect.height/2)}px)
-                    scale(${Math.min(fromRect.width/toRect.width, fromRect.height/toRect.height)})`,
-          opacity: 0.0
-        },
-        { transform: "translate(0px, 0px) scale(1)", opacity: 1.0 }
-      ], {
-        duration: 360,
-        easing: "cubic-bezier(.2,.9,.2,1)",
-        fill: "both"
-      }).onfinish = () => {
-        // po animacji jeszcze raz dociągnij środek
-        centerWindow(win);
-      };
-    });
+function openWindow(win, fromEl){
+  // TOGGLE: jeśli już otwarte -> zamknij do ikonki
+  if (win.classList.contains("open")){
+    minimizeWindow(win, fromEl);
+    return;
   }
 
-  function minimizeWindow(win, toEl){
-    if (!win.classList.contains("open")) return;
+  bringToFront(win);
 
-    if (prefersReduced){
-      win.classList.remove("open");
-      ensureStageActive();
-      return;
-    }
+  // usuń wszystkie animacje które mogły “zamrozić” transform
+  win.getAnimations().forEach(a => a.cancel());
 
-    const fromRect = win.getBoundingClientRect();
-    const toRect = toEl.getBoundingClientRect();
+  // pokaż od razu (żeby policzyć rozmiary)
+  win.classList.add("open");
+  ensureStageActive();
 
-    const fromC = rectCenter(fromRect);
-    const toC = rectCenter(toRect);
+  // wycentruj zawsze po otwarciu
+  centerWindow(win);
 
-    const dx = toC.x - fromC.x;
-    const dy = toC.y - fromC.y;
+  if (prefersReduced) return;
 
-    const s = Math.min(
-      Math.max(0.15, toRect.width / fromRect.width),
-      Math.max(0.15, toRect.height / fromRect.height)
-    );
+  // animacja "z ikonki" (UWAGA: bez fill:"both" + na końcu cancel)
+  win.style.visibility = "hidden";
+  requestAnimationFrame(() => {
+    const fromRect = fromEl.getBoundingClientRect();
+    const toRect = win.getBoundingClientRect();
+    win.style.visibility = "visible";
+
+    const startScale = Math.min(fromRect.width/toRect.width, fromRect.height/toRect.height);
 
     const anim = win.animate([
-      { transform: "translate(0px, 0px) scale(1)", opacity: 1.0 },
-      { transform: `translate(${dx}px, ${dy}px) scale(${s})`, opacity: 0.0 }
+      {
+        transform: `translate(${(fromRect.left+fromRect.width/2)-(toRect.left+toRect.width/2)}px,
+                            ${(fromRect.top+fromRect.height/2)-(toRect.top+toRect.height/2)}px)
+                  scale(${startScale})`,
+        opacity: 0.0
+      },
+      { transform: "translate(0px, 0px) scale(1)", opacity: 1.0 }
     ], {
       duration: 320,
-      easing: "cubic-bezier(.2,.9,.2,1)",
-      fill: "both"
+      easing: "cubic-bezier(.2,.9,.2,1)"
     });
 
     anim.onfinish = () => {
-      win.classList.remove("open");
-      // reset offsetów po zamknięciu
-      win.style.setProperty("--x", "0px");
-      win.style.setProperty("--y", "0px");
-      ensureStageActive();
+      anim.cancel();       // <— KLUCZ: nie zostawiaj transformu z animacji
+      centerWindow(win);   // dopnij do środka + topSafe
     };
-  }
+  });
+}
+
+ 
 
   // ======= App window controls =======
   const app = document.getElementById("app");
