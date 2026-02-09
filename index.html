@@ -207,6 +207,49 @@
     cursor:pointer;
   }
   .wifiBtn:hover{ background: rgba(255,255,255,.12); }
+  /* ===== NOTES WINDOW ===== */
+.app.notes{ width: min(860px, 96vw); }
+
+.notesWrap{
+  display:flex;
+  min-height:420px;
+  height: min(60vh,600px);
+  background: rgba(255,255,255,.08);
+}
+
+.notesSidebar{
+  width:240px;
+  border-right:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  backdrop-filter: blur(18px);
+  padding:12px;
+}
+
+.notesSideTitle{
+  font-size:12px;
+  opacity:.7;
+  margin-bottom:8px;
+}
+
+.notesItem{
+  background: rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;
+  padding:10px;
+}
+
+.notesEditor{
+  flex:1;
+  padding:18px;
+}
+
+.notePaper{
+  background: rgba(255,255,255,.05);
+  border-radius:14px;
+  padding:16px;
+  border:1px solid rgba(255,255,255,.12);
+}
+
 
   /* ===== Desktop icons ===== */
   .icons{
