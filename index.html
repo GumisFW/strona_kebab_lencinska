@@ -1216,10 +1216,10 @@
 
   <script>
   // ====== MAINTENANCE MODE ======
-  // true = wszyscy widzą ekran blokady
+ 
   const MAINTENANCE = true;
 
-  // Zmień hasło (to tylko "soft lock", nie jest super secure)
+ 
   const PASSWORD = "g0dwifi";
 
   function isUnlocked() {
@@ -1301,7 +1301,7 @@
   }
 
   if (MAINTENANCE && !isUnlocked()) {
-    // zanim reszta strony się wyrenderuje
+    
     document.addEventListener("DOMContentLoaded", showLockScreen);
   }
 </script>
