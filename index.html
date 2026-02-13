@@ -2555,7 +2555,7 @@ const icloudViewerTitle = document.getElementById("icloudViewerTitle");
 const icloudSearch = document.getElementById("icloudSearch");
 const icloudTabs = Array.from(document.querySelectorAll(".icloudTab"));
 
-// tu wpisz swoje realne pliki obok index.html
+
 const REAL_PHOTOS = ["p1.jpg","p2.jpg","p3.jpg","p4.jpg","p5.jpg","p6.jpg"];
 
 let currentFilter = ""; // z wyszukiwarki
@@ -2564,7 +2564,7 @@ function buildIcloudGrid(){
   if (!icloudGrid) return;
   icloudGrid.innerHTML = "";
 
-  const totalTiles = 36;
+  const totalTiles = 24;
   const realPhotosFiltered = REAL_PHOTOS.filter(n =>
     n.toLowerCase().includes(currentFilter.toLowerCase())
   );
