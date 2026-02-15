@@ -444,45 +444,59 @@
   }
   
   .win-btn{
-    width:32px;
-    height:32px;
+    width:12px;
+    height:12px;
     border-radius:50%;
     border:0;
     padding:0;
     cursor:pointer;
-    font-size:14px;
-    font-weight:normal;
+    font-size:9px;
+    font-weight:bold;
     display:grid;
     place-items:center;
     transition:.15s ease;
     font-family: system-ui, -apple-system, sans-serif;
+    position:relative;
+    color: transparent;
   }
   
-  .win-btn.minimize{
-    background: #FDB927;
-    color: rgba(0,0,0,.75);
-  }
-  .win-btn.minimize:hover{ 
-    background: #FDCB4A;
-    transform: scale(1.05);
-  }
-  
-  .win-btn.maximize{
-    background: #26A65B;
-    color: rgba(0,0,0,.75);
-  }
-  .win-btn.maximize:hover{ 
-    background: #36C672;
-    transform: scale(1.05);
+  .win-btn:hover{
+    color: rgba(0,0,0,.7);
   }
   
   .win-btn.close{
-    background: #E74C3C;
-    color: rgba(255,255,255,.95);
+    background: #FF5F57;
   }
   .win-btn.close:hover{ 
-    background: #EC7063;
-    transform: scale(1.05);
+    background: #FF5F57;
+  }
+  .win-btn.close::after{
+    content: "×";
+    font-size:14px;
+    font-weight:300;
+  }
+  
+  .win-btn.minimize{
+    background: #FFBD2E;
+  }
+  .win-btn.minimize:hover{ 
+    background: #FFBD2E;
+  }
+  .win-btn.minimize::after{
+    content: "−";
+    font-size:12px;
+    font-weight:700;
+  }
+  
+  .win-btn.maximize{
+    background: #28CA42;
+  }
+  .win-btn.maximize:hover{ 
+    background: #28CA42;
+  }
+  .win-btn.maximize::after{
+    content: "⤢";
+    font-size:8px;
   }
 
   .title{
@@ -930,6 +944,144 @@
   @media (prefers-reduced-motion: reduce){
     .app, .menuWrap{ transition:none !important; }
   }
+  
+  /* ===== Login Modal ===== */
+  .login-modal{
+    position:fixed;
+    inset:0;
+    z-index:9000;
+    background: rgba(0,0,0,.6);
+    backdrop-filter: blur(8px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+  }
+  
+  .login-modal.open{
+    display:flex;
+  }
+  
+  .login-box{
+    width:min(420px, 90vw);
+    background: var(--windowBg);
+    border:1px solid var(--border);
+    border-radius:12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    overflow:hidden;
+  }
+  
+  .login-header{
+    padding:20px;
+    text-align:center;
+    border-bottom:1px solid var(--iconBorder);
+  }
+  
+  .login-icon{
+    width:64px;
+    height:64px;
+    margin:0 auto 12px;
+    border-radius:50%;
+    background: var(--finderBg);
+    display:grid;
+    place-items:center;
+    font-size:32px;
+  }
+  
+  .login-title{
+    font-size:18px;
+    font-weight:700;
+    color: var(--text);
+    margin-bottom:4px;
+  }
+  
+  .login-subtitle{
+    font-size:13px;
+    color: var(--muted);
+  }
+  
+  .login-body{
+    padding:24px;
+  }
+  
+  .login-field{
+    margin-bottom:16px;
+  }
+  
+  .login-label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:13px;
+    color: var(--text);
+    margin-bottom:8px;
+    font-weight:600;
+  }
+  
+  .login-input{
+    width:100%;
+    padding:12px 14px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    background: var(--finderBg);
+    color: var(--text);
+    font-size:14px;
+    outline:none;
+    transition:.15s ease;
+    font-family: inherit;
+  }
+  
+  .login-input:focus{
+    border-color: rgba(80,150,255,.6);
+    background: var(--finderHoverBg);
+  }
+  
+  .login-actions{
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+  }
+  
+  .login-btn{
+    flex:1;
+    padding:12px 20px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.15s ease;
+    font-family: inherit;
+  }
+  
+  .login-btn.cancel{
+    background: var(--finderBg);
+    color: var(--text);
+  }
+  
+  .login-btn.cancel:hover{
+    background: var(--finderHoverBg);
+  }
+  
+  .login-btn.submit{
+    background: rgba(80,150,255,.9);
+    color: rgba(255,255,255,.98);
+    border-color: rgba(80,150,255,1);
+  }
+  
+  .login-btn.submit:hover{
+    background: rgba(80,150,255,1);
+    transform: translateY(-1px);
+  }
+  
+  .lock-icon{
+    font-size:16px;
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+  }
 </style>
 </head>
 
@@ -1250,6 +1402,40 @@
     </div>
     <div class="icloudViewerBody">
       <img id="icloudViewerImg" alt="">
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div class="login-modal" id="loginModal">
+    <div class="login-box">
+      <div class="login-header">
+        <div class="login-icon">🔒</div>
+        <div class="login-title">Zaloguj się</div>
+        <div class="login-subtitle">Wpisz login i hasło aby uzyskać dostęp</div>
+      </div>
+      
+      <div class="login-body">
+        <div class="login-field">
+          <label class="login-label">
+            <span class="lock-icon">👤</span>
+            <span>Login</span>
+          </label>
+          <input type="text" class="login-input" id="loginUsername" placeholder="Wpisz login">
+        </div>
+        
+        <div class="login-field">
+          <label class="login-label">
+            <span class="lock-icon">🔐</span>
+            <span>Hasło</span>
+          </label>
+          <input type="password" class="login-input" id="loginPassword" placeholder="Wpisz hasło">
+        </div>
+        
+        <div class="login-actions">
+          <button class="login-btn cancel" id="loginCancel">Anuluj</button>
+          <button class="login-btn submit" id="loginSubmit">Zaloguj</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1836,7 +2022,63 @@
   });
 
   driveLauncher.addEventListener("click", ()=>{
-    toggleWindow(driveWin, driveLauncher);
+    // Show login modal instead of opening drive directly
+    showLoginModal();
+  });
+
+  // ===== Login Modal =====
+  const loginModal = document.getElementById("loginModal");
+  const loginUsername = document.getElementById("loginUsername");
+  const loginPassword = document.getElementById("loginPassword");
+  const loginSubmit = document.getElementById("loginSubmit");
+  const loginCancel = document.getElementById("loginCancel");
+  
+  function showLoginModal(){
+    loginModal.classList.add("open");
+    loginUsername.value = "";
+    loginPassword.value = "";
+    setTimeout(() => loginUsername.focus(), 100);
+  }
+  
+  function hideLoginModal(){
+    loginModal.classList.remove("open");
+  }
+  
+  function attemptLogin(){
+    // Accept any input - just check if both fields have something
+    if (loginUsername.value.trim() && loginPassword.value.trim()) {
+      hideLoginModal();
+      // Open drive window after successful "login"
+      toggleWindow(driveWin, driveLauncher);
+    } else {
+      // Shake animation for empty fields
+      loginModal.querySelector(".login-box").style.animation = "shake 0.3s";
+      setTimeout(() => {
+        loginModal.querySelector(".login-box").style.animation = "";
+      }, 300);
+    }
+  }
+  
+  loginSubmit.addEventListener("click", attemptLogin);
+  
+  loginCancel.addEventListener("click", hideLoginModal);
+  
+  // Close on background click
+  loginModal.addEventListener("click", (e) => {
+    if (e.target === loginModal) {
+      hideLoginModal();
+    }
+  });
+  
+  // Enter to submit, Escape to cancel
+  loginUsername.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") attemptLogin();
+    if (e.key === "Escape") hideLoginModal();
+  });
+  
+  loginPassword.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") attemptLogin();
+    if (e.key === "Escape") hideLoginModal();
   });
 
   wifiBtn.addEventListener("click", ()=>{
