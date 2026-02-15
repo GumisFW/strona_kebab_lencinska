@@ -23,6 +23,67 @@
     
     --titlebarBg: rgba(240,240,245,.98);
     --titlebarBorder: rgba(0,0,0,.1);
+    
+    --wallpaperBg: #f2f2f2;
+    --wallpaperText: rgba(0,0,0,0.15);
+    
+    --iconBg: rgba(0,0,0,.04);
+    --iconBorder: rgba(0,0,0,.08);
+    --iconShadow: 0 2px 8px rgba(0,0,0,.08);
+    
+    --finderBg: rgba(0,0,0,.04);
+    --finderHoverBg: rgba(0,0,0,.06);
+    
+    --canvasBg: rgba(245,245,248,.95);
+    --canvasStroke: rgba(0,0,0,.25);
+    --canvasPlayer: rgba(0,0,0,.85);
+    --canvasObstacle: rgba(0,0,0,.6);
+    --canvasCloud: rgba(0,0,0,1);
+    
+    --wifiIconColor: rgba(0,0,0,.75);
+    --batteryBorder: rgba(0,0,0,.3);
+  }
+
+  /* Dark theme */
+  @media (prefers-color-scheme: dark) {
+    :root{
+      --shadow: 0 20px 60px rgba(0,0,0,.6);
+      --border: rgba(255,255,255,.15);
+      --text: rgba(255,255,255,.95);
+      --muted: rgba(255,255,255,.75);
+
+      --taskbarBg: rgba(30,30,35,.96);
+      --taskbarBorder: rgba(255,255,255,.08);
+
+      --windowBg: rgba(40,40,45,.95);
+      --windowBorder: rgba(255,255,255,.15);
+      
+      --titlebarBg: rgba(50,50,55,.98);
+      --titlebarBorder: rgba(255,255,255,.1);
+      
+      --wallpaperBg: linear-gradient(180deg,#0a0c14,#050507);
+      --wallpaperText: rgba(255,255,255,0.15);
+      
+      --iconBg: rgba(255,255,255,.1);
+      --iconBorder: rgba(255,255,255,.15);
+      --iconShadow: 0 4px 12px rgba(0,0,0,.3);
+      
+      --finderBg: rgba(255,255,255,.08);
+      --finderHoverBg: rgba(255,255,255,.14);
+      
+      --canvasBg: rgba(20,20,25,.9);
+      --canvasStroke: rgba(255,255,255,.3);
+      --canvasPlayer: rgba(255,255,255,.92);
+      --canvasObstacle: rgba(255,255,255,.6);
+      --canvasCloud: rgba(255,255,255,1);
+      
+      --wifiIconColor: rgba(255,255,255,.85);
+      --batteryBorder: rgba(255,255,255,.4);
+    }
+    
+    body {
+      color: var(--text);
+    }
   }
 
   *{ box-sizing:border-box; }
@@ -38,7 +99,7 @@
   /* ===== Wallpaper ===== */
   .wallpaper{
     position:fixed; inset:0;
-    background: #f2f2f2;
+    background: var(--wallpaperBg);
     display: grid;
     place-items: center;
   }
@@ -47,7 +108,7 @@
     content: "Macie tu Wifi?...";
     font-size: clamp(32px, 5vw, 72px);
     font-weight: 300;
-    color: rgba(0, 0, 0, 0.15);
+    color: var(--wallpaperText);
     letter-spacing: 2px;
     text-align: center;
     padding: 0 20px;
@@ -61,6 +122,14 @@
     background-image:
       radial-gradient(circle at 20% 30%, rgba(0,0,0,.03), transparent 40%);
     mix-blend-mode: overlay;
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    .grain{
+      opacity:.08;
+      background-image:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,.06), transparent 40%);
+    }
   }
 
   .brandBlur{
@@ -97,16 +166,16 @@
     height:36px;
     display:grid;
     place-items:center;
-    background: rgba(0,0,0,.05);
-    border:1px solid rgba(0,0,0,.08);
+    background: var(--finderBg);
+    border:1px solid var(--iconBorder);
     border-radius:4px;
     cursor:pointer;
     font-size:20px;
-    color: rgba(0,0,0,.7);
+    color: var(--text);
     transition:.15s ease;
   }
   .start-btn:hover{
-    background: rgba(0,0,0,.08);
+    background: var(--finderHoverBg);
   }
 
   .taskbar-app{
@@ -117,19 +186,19 @@
     display:flex;
     align-items:center;
     gap:8px;
-    background: rgba(0,0,0,.04);
-    border:1px solid rgba(0,0,0,.06);
+    background: var(--finderBg);
+    border:1px solid var(--iconBorder);
     border-radius:4px;
     cursor:pointer;
     transition:.15s ease;
     font-size:13px;
-    color: rgba(0,0,0,.85);
+    color: var(--text);
   }
   .taskbar-app:hover{
-    background: rgba(0,0,0,.06);
+    background: var(--finderHoverBg);
   }
   .taskbar-app.active{
-    background: rgba(0,0,0,.08);
+    background: var(--finderHoverBg);
     border-bottom:2px solid rgba(80,150,255,.9);
   }
 
@@ -157,10 +226,10 @@
     border-radius:4px;
     cursor:pointer;
     transition:.15s ease;
-    color: rgba(0,0,0,.8);
+    color: var(--text);
   }
   .tray-icon:hover{
-    background: rgba(0,0,0,.06);
+    background: var(--finderHoverBg);
   }
   
   .wifi-icon{
@@ -175,7 +244,7 @@
   .wifi-icon::after{
     content:"";
     position:absolute;
-    border:2px solid rgba(0,0,0,.75);
+    border:2px solid var(--wifiIconColor);
     border-radius:50%;
   }
   
@@ -207,7 +276,7 @@
     position:absolute;
     width:3px;
     height:3px;
-    background:rgba(0,0,0,.75);
+    background: var(--wifiIconColor);
     border-radius:50%;
     bottom:1px;
     left:50%;
@@ -219,16 +288,16 @@
     align-items:center;
     gap:6px;
     font-size:12px;
-    color: rgba(0,0,0,.85);
+    color: var(--text);
   }
   .batteryIcon{
     width:22px;
     height:11px;
     border-radius:3px;
-    border:1.5px solid rgba(0,0,0,.3);
+    border:1.5px solid var(--batteryBorder);
     position:relative;
     overflow:hidden;
-    background: rgba(0,0,0,.05);
+    background: var(--finderBg);
   }
   .batteryLevel{
     position:absolute;
@@ -243,7 +312,7 @@
     width:2.5px;
     height:6px;
     border-radius:2px;
-    background: rgba(0,0,0,.3);
+    background: var(--batteryBorder);
   }
   .batteryBolt{
     position:absolute;
@@ -272,8 +341,14 @@
     font-size:12px;
     line-height:1.3;
     text-shadow: 0 1px 2px rgba(255,255,255,.8);
-    color: rgba(0,0,0,.85);
+    color: var(--text);
     cursor:pointer;
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    .icon{
+      text-shadow: 0 1px 3px rgba(0,0,0,.8);
+    }
   }
 
   .icon .pic{
@@ -283,15 +358,15 @@
     border-radius:8px;
     display:grid;
     place-items:center;
-    background: rgba(0,0,0,.04);
-    border:1px solid rgba(0,0,0,.08);
+    background: var(--iconBg);
+    border:1px solid var(--iconBorder);
     backdrop-filter: blur(8px);
-    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    box-shadow: var(--iconShadow);
     transition:.15s ease;
   }
   .icon:hover .pic{
     transform: scale(1.05);
-    background: rgba(0,0,0,.06);
+    background: var(--finderHoverBg);
   }
 
   .deskIconImg{
@@ -392,14 +467,14 @@
   .title{
     font-size:13px;
     font-weight:600;
-    color: rgba(0,0,0,.85);
+    color: var(--text);
     letter-spacing:.3px;
   }
 
   .content{
     padding:32px 24px 24px;
     text-align:center;
-    color: rgba(0,0,0,.9);
+    color: var(--text);
   }
 
   .logoBtn{
@@ -436,19 +511,19 @@
 
   .menu a{
     text-decoration:none;
-    color: rgba(0,0,0,.9);
+    color: var(--text);
     border-radius:6px;
     padding:13px 16px;
     font-size:14px;
     font-weight:600;
     text-align:center;
-    background: rgba(0,0,0,.06);
-    border:1px solid rgba(0,0,0,.1);
+    background: var(--finderBg);
+    border:1px solid var(--iconBorder);
     box-shadow: 0 1px 4px rgba(0,0,0,.08);
     transition:.15s ease;
   }
   .menu a:hover{
-    background: rgba(0,0,0,.08);
+    background: var(--finderHoverBg);
     transform: translateY(-1px);
   }
   .menu a.discord{
@@ -468,11 +543,11 @@
   }
   .finderItem{
     border:0;
-    background: rgba(0,0,0,.04);
-    border:1px solid rgba(0,0,0,.08);
+    background: var(--finderBg);
+    border:1px solid var(--iconBorder);
     border-radius:6px;
     padding:14px 12px;
-    color: rgba(0,0,0,.9);
+    color: var(--text);
     display:grid;
     place-items:center;
     gap:8px;
@@ -480,7 +555,7 @@
     transition:.12s ease;
   }
   .finderItem:hover{
-    background: rgba(0,0,0,.06);
+    background: var(--finderHoverBg);
     transform: translateY(-2px);
   }
   .finderIcon{
@@ -493,9 +568,9 @@
     font-size:12px;
     opacity:.7;
     padding:10px 16px;
-    background: rgba(0,0,0,.03);
-    border-bottom:1px solid rgba(0,0,0,.06);
-    color: rgba(0,0,0,.8);
+    background: var(--finderBg);
+    border-bottom:1px solid var(--iconBorder);
+    color: var(--text);
   }
   .fileBadge{
     font-size:11px;
@@ -509,38 +584,38 @@
     display:flex;
     min-height:400px;
     height:min(58vh,580px);
-    background: rgba(250,250,252,.95);
+    background: var(--windowBg);
   }
   .notesSidebar{
     width:220px;
-    border-right:1px solid rgba(0,0,0,.08);
-    background: rgba(245,245,248,.95);
+    border-right:1px solid var(--iconBorder);
+    background: var(--finderBg);
     padding:12px;
   }
   .notesSideTitle{
     font-size:12px;
     opacity:.7;
     margin-bottom:8px;
-    color: rgba(0,0,0,.8);
+    color: var(--text);
   }
   .notesItem{
-    background: rgba(0,0,0,.04);
-    border:1px solid rgba(0,0,0,.06);
+    background: var(--finderHoverBg);
+    border:1px solid var(--iconBorder);
     border-radius:6px;
     padding:10px;
-    color: rgba(0,0,0,.9);
+    color: var(--text);
   }
   .notesEditor{
     flex:1;
     padding:16px;
-    color: rgba(0,0,0,.9);
+    color: var(--text);
   }
   .notePaper{
-    background: rgba(255,255,255,.8);
+    background: var(--finderBg);
     border-radius:6px;
     padding:16px;
-    border:1px solid rgba(0,0,0,.08);
-    color: rgba(0,0,0,.9);
+    border:1px solid var(--iconBorder);
+    color: var(--text);
   }
 
   /* ===== Game ===== */
@@ -551,17 +626,17 @@
     justify-content:space-between;
     margin-bottom:10px;
     font-size:13px;
-    color: rgba(0,0,0,.85);
+    color: var(--text);
   }
   canvas#dinoCanvas{
     width:100%;
     height:220px;
     border-radius:6px;
-    border:1px solid rgba(0,0,0,.12);
-    background: rgba(245,245,248,.95);
+    border:1px solid var(--border);
+    background: var(--canvasBg);
     box-shadow: 0 4px 16px rgba(0,0,0,.1);
   }
-  .gameHint{ margin-top:10px; font-size:12px; opacity:.7; color: rgba(0,0,0,.7); }
+  .gameHint{ margin-top:10px; font-size:12px; opacity:.7; color: var(--muted); }
 
   /* ===== Player ===== */
   .player{ padding:16px; text-align:left; }
@@ -572,8 +647,8 @@
     gap:12px;
     padding:10px 12px;
     border-radius:6px;
-    background: rgba(0,0,0,.04);
-    border:1px solid rgba(0,0,0,.08);
+    background: var(--finderBg);
+    border:1px solid var(--iconBorder);
   }
   .now{ min-width:0; }
   .now .title{
@@ -582,22 +657,22 @@
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
-    color: rgba(0,0,0,.9);
+    color: var(--text);
   }
-  .now .meta{ font-size:12px; opacity:.7; margin-top:2px; color: rgba(0,0,0,.7); }
+  .now .meta{ font-size:12px; opacity:.7; margin-top:2px; color: var(--muted); }
   .ctrl{ display:flex; gap:8px; }
   .mbtn{
     width:32px; height:32px;
     border-radius:6px;
-    border:1px solid rgba(0,0,0,.12);
-    background: rgba(0,0,0,.04);
-    color: rgba(0,0,0,.8);
+    border:1px solid var(--border);
+    background: var(--finderBg);
+    color: var(--text);
     cursor:pointer;
     display:grid;
     place-items:center;
     transition:.12s ease;
   }
-  .mbtn:hover{ background: rgba(0,0,0,.08); }
+  .mbtn:hover{ background: var(--finderHoverBg); }
   .mbtn.on{ background: rgba(80,150,255,.6); color: rgba(255,255,255,.95); }
   .playBig{ width:40px; height:40px; font-weight:700; }
   .vol{ display:flex; gap:8px; min-width:140px; align-items:center; }
@@ -607,13 +682,13 @@
     margin-top:12px;
     padding:10px 12px;
     border-radius:6px;
-    background: rgba(0,0,0,.02);
-    border:1px solid rgba(0,0,0,.06);
+    background: var(--finderBg);
+    border:1px solid var(--iconBorder);
   }
   .pbar{
     height:8px;
     border-radius:4px;
-    background: rgba(0,0,0,.06);
+    background: var(--finderHoverBg);
     overflow:hidden;
     cursor:pointer;
   }
@@ -629,21 +704,21 @@
     font-size:12px;
     opacity:.7;
     margin-top:6px;
-    color: rgba(0,0,0,.7);
+    color: var(--muted);
   }
   .trackList{
     margin-top:12px;
     border-radius:6px;
     overflow:hidden;
-    border:1px solid rgba(0,0,0,.08);
-    background: rgba(0,0,0,.02);
+    border:1px solid var(--iconBorder);
+    background: var(--finderBg);
   }
   .track{
     display:flex;
     justify-content:space-between;
     padding:12px;
     cursor:pointer;
-    border-bottom:1px solid rgba(0,0,0,.06);
+    border-bottom:1px solid var(--iconBorder);
     transition:.12s ease;
   }
   .track:last-child{ border-bottom:0; }
@@ -654,39 +729,39 @@
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
-    color: rgba(0,0,0,.9);
+    color: var(--text);
   }
-  .track .sub{ font-size:12px; opacity:.65; margin-top:2px; color: rgba(0,0,0,.65); }
-  .track .right{ font-size:12px; opacity:.7; color: rgba(0,0,0,.7); }
-  .track:hover{ background: rgba(0,0,0,.04); }
+  .track .sub{ font-size:12px; opacity:.65; margin-top:2px; color: var(--muted); }
+  .track .right{ font-size:12px; opacity:.7; color: var(--muted); }
+  .track:hover{ background: var(--finderHoverBg); }
   .track.active{ background: rgba(80,150,255,.15); }
-  .playerHint{ margin-top:10px; font-size:12px; opacity:.7; color: rgba(0,0,0,.7); }
+  .playerHint{ margin-top:10px; font-size:12px; opacity:.7; color: var(--muted); }
 
   /* ===== iCloud Photos ===== */
   .icloudTop{
     padding:12px 16px;
-    border-bottom:1px solid rgba(0,0,0,.08);
+    border-bottom:1px solid var(--iconBorder);
     display:flex;
     justify-content:space-between;
     gap:12px;
   }
-  .icloudH1{ font-size:14px; font-weight:800; color: rgba(0,0,0,.9); }
+  .icloudH1{ font-size:14px; font-weight:800; color: var(--text); }
   .icloudTabs{
     margin-top:8px;
     display:flex;
     gap:6px;
   }
   .icloudTab{
-    border:1px solid rgba(0,0,0,.12);
-    background: rgba(0,0,0,.04);
+    border:1px solid var(--border);
+    background: var(--finderBg);
     padding:6px 12px;
     border-radius:4px;
     cursor:pointer;
     font-size:12px;
     transition:.12s ease;
-    color: rgba(0,0,0,.8);
+    color: var(--text);
   }
-  .icloudTab:hover{ background: rgba(0,0,0,.06); }
+  .icloudTab:hover{ background: var(--finderHoverBg); }
   .icloudTab.active{
     background: rgba(80,150,255,.6);
     border-color: rgba(80,150,255,.8);
@@ -694,9 +769,9 @@
   }
   .icloudSearch{
     width:min(240px, 40vw);
-    border:1px solid rgba(0,0,0,.12);
-    background: rgba(255,255,255,.6);
-    color: rgba(0,0,0,.9);
+    border:1px solid var(--border);
+    background: var(--finderBg);
+    color: var(--text);
     padding:8px 12px;
     border-radius:4px;
     outline:none;
@@ -711,8 +786,8 @@
     aspect-ratio:1/1;
     border-radius:6px;
     overflow:hidden;
-    background: rgba(0,0,0,.04);
-    border:1px solid rgba(0,0,0,.08);
+    background: var(--finderBg);
+    border:1px solid var(--iconBorder);
     cursor:pointer;
     transition:.12s ease;
   }
@@ -724,13 +799,18 @@
   }
   .photoTile.loading{
     cursor:default;
-    background: linear-gradient(90deg, rgba(0,0,0,.02), rgba(0,0,0,.06), rgba(0,0,0,.02));
-    background-size:240px 100%;
-    animation: shimmer 1.2s infinite linear;
+    background: var(--finderHoverBg);
+    position:relative;
   }
-  @keyframes shimmer{
-    0%{ background-position:-240px 0; }
-    100%{ background-position:240px 0; }
+  
+  /* Simple static placeholder instead of animated shimmer */
+  .photoTile.loading::after{
+    content:"";
+    position:absolute;
+    inset:25%;
+    border-radius:50%;
+    background: var(--finderBg);
+    opacity:.5;
   }
 
   .icloudViewer{
@@ -1890,6 +1970,9 @@
   }
 
   function draw(){
+    // Get theme colors from CSS variables
+    const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
     ctx.globalAlpha = 0.9;
@@ -1897,22 +1980,22 @@
     ctx.moveTo(0, groundY+34);
     ctx.lineTo(canvas.width, groundY+34);
     ctx.lineWidth = 2;
-    ctx.strokeStyle = "rgba(0,0,0,.25)";
+    ctx.strokeStyle = isDark ? "rgba(255,255,255,.3)" : "rgba(0,0,0,.25)";
     ctx.stroke();
     ctx.globalAlpha = 1;
 
-    ctx.fillStyle = "rgba(0,0,0,.85)";
+    ctx.fillStyle = isDark ? "rgba(255,255,255,.92)" : "rgba(0,0,0,.85)";
     ctx.fillRect(player.x, player.y, player.w, player.h);
 
-    ctx.fillStyle = "rgba(0,0,0,.6)";
+    ctx.fillStyle = isDark ? "rgba(255,255,255,.6)" : "rgba(0,0,0,.6)";
     obstacles.forEach(o => ctx.fillRect(o.x, o.y, o.w, o.h));
 
-    ctx.globalAlpha = 0.08;
+    ctx.globalAlpha = isDark ? 0.1 : 0.08;
     for (let i=0;i<4;i++){
       const cx = (i*260 + (score*2)%260);
       ctx.beginPath();
       ctx.ellipse(cx, 70 + i*8, 42, 18, 0, 0, Math.PI*2);
-      ctx.fillStyle = "rgba(0,0,0,1)";
+      ctx.fillStyle = isDark ? "rgba(255,255,255,1)" : "rgba(0,0,0,1)";
       ctx.fill();
     }
     ctx.globalAlpha = 1;
