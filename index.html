@@ -33,7 +33,6 @@
     overflow:hidden;
     color:var(--text);
     user-select:none;
-    padding-bottom:44px; /* miejsce na taskbar */
   }
 
   /* ===== tapeta ===== */
@@ -75,7 +74,7 @@
     transform: scale(1.12);
   }
 
-  /* ===== Top menu bar (zostaje dla ID, ale ukryjemy theme override) ===== */
+  /* ===== Top menu bar (zostaje w DOM, ale schowamy w override) ===== */
   .menubar{
     position:fixed; top:0; left:0; right:0;
     height:32px;
@@ -155,7 +154,7 @@
     font-size:12px;
   }
 
-  /* ===== Bateryjka ===== */
+  /* ===== Bateryjka (źródło danych zostaje; na taskbarze robimy mirror) ===== */
   .battery{
     display:flex;
     align-items:center;
@@ -211,14 +210,12 @@
 
   /* ===== NOTES WINDOW ===== */
   .app.notes{ width: min(860px, 96vw); }
-
   .notesWrap{
     display:flex;
     min-height:420px;
     height: min(60vh,600px);
     background: rgba(255,255,255,.08);
   }
-
   .notesSidebar{
     width:240px;
     border-right:1px solid rgba(255,255,255,.12);
@@ -226,25 +223,21 @@
     backdrop-filter: blur(18px);
     padding:12px;
   }
-
   .notesSideTitle{
     font-size:12px;
     opacity:.7;
     margin-bottom:8px;
   }
-
   .notesItem{
     background: rgba(255,255,255,.08);
     border:1px solid rgba(255,255,255,.1);
     border-radius:12px;
     padding:10px;
   }
-
   .notesEditor{
     flex:1;
     padding:18px;
   }
-
   .notePaper{
     background: rgba(255,255,255,.05);
     border-radius:14px;
@@ -262,7 +255,6 @@
     z-index:10;
     color:rgba(255,255,255,.90);
   }
-
   .icon{
     width: clamp(64px, 7.5vw, 92px);
     text-align:center;
@@ -271,7 +263,6 @@
     text-shadow: 0 2px 10px rgba(0,0,0,.35);
     cursor:pointer;
   }
-
   .icon .pic{
     width: clamp(44px, 5.2vw, 56px);
     aspect-ratio: 1 / 1;
@@ -291,7 +282,6 @@
     transform: translateZ(0) scale(1.04);
     background: rgba(255,255,255,.18);
   }
-
   .deskIconImg{
     width: 62%;
     height: 62%;
@@ -520,7 +510,7 @@
   }
   .gameHint{ margin-top:10px; font-size:12px; opacity:.75; }
 
-  /* ===== Dock ===== */
+  /* ===== Dock (zostaje – przeniesiemy do taskbara w HTML) ===== */
   .dock{
     position:fixed;
     left:50%;
@@ -1014,6 +1004,7 @@
     100%{ background-position: 240px 0; }
   }
 
+  /* ===== iCloud Viewer ===== */
   .icloudViewer{
     position:fixed;
     inset:0;
@@ -1070,27 +1061,20 @@
   }
 
   /* =========================================================
-     WIN/UBUNTU THEME OVERRIDE (tylko wygląd)
-  ========================================================= */
+     WIN/UBUNTU THEME OVERRIDE (zostawia funkcje, zmienia wygląd)
+     ========================================================= */
 
-  /* tapeta mniej “mac” */
-  .wallpaper{
-    background:
-      radial-gradient(1000px 600px at 15% 20%, rgba(100,170,255,.22), transparent 60%),
-      radial-gradient(900px 560px at 85% 30%, rgba(255,120,80,.16), transparent 62%),
-      radial-gradient(900px 650px at 45% 90%, rgba(120,255,170,.12), transparent 62%),
-      linear-gradient(180deg,#0a0f18,#05060a);
-    filter:saturate(115%) contrast(108%);
-  }
-
-  /* ukryj górny pasek macOS */
+  /* chowamy macOS menubar */
   .menubar{ display:none !important; }
+
+  /* robimy miejsce na taskbar */
+  body{ padding-bottom:48px; }
 
   /* taskbar */
   .taskbar{
     position:fixed;
     left:0; right:0; bottom:0;
-    height:44px;
+    height:48px;
     padding:0 10px;
     display:flex;
     align-items:center;
@@ -1098,17 +1082,22 @@
     gap:10px;
     z-index: 20000;
 
-    background: rgba(20,22,28,.72);
+    background: rgba(20,22,28,.78);
     border-top: 1px solid rgba(255,255,255,.10);
     backdrop-filter: blur(18px) saturate(140%);
     -webkit-backdrop-filter: blur(18px) saturate(140%);
   }
-  .taskLeft{
-    display:flex; align-items:center; gap:10px;
-    min-width:0;
+  .taskLeft,.taskCenter,.taskRight{
+    display:flex;
+    align-items:center;
+    gap:10px;
   }
+  .taskLeft{ min-width:120px; }
+  .taskCenter{ flex:1; justify-content:center; }
+  .taskRight{ min-width:220px; justify-content:flex-end; font-size:12px; opacity:.92; font-variant-numeric: tabular-nums; }
+
   .startBtn{
-    width:34px; height:34px;
+    width:36px; height:36px;
     border-radius:10px;
     border:1px solid rgba(255,255,255,.12);
     background: rgba(255,255,255,.08);
@@ -1116,38 +1105,35 @@
     display:grid;
     place-items:center;
   }
-  .startBtn:active{ transform: scale(.98); }
+  .startBtn:active{ transform:scale(.98); }
   .startMark{
     width:16px; height:16px;
     border-radius:4px;
     background: linear-gradient(90deg, rgba(0,255,180,.95), rgba(60,140,255,.95));
     box-shadow: 0 10px 26px rgba(0,0,0,.35);
   }
-  .taskRight{
-    display:flex; align-items:center; gap:12px;
-    font-size:12px;
-    opacity:.92;
-    font-variant-numeric: tabular-nums;
+
+  #tbWifi{
+    padding:6px 8px;
+    border-radius:10px;
+    cursor:pointer;
   }
-  #tbWifi{ padding:6px 8px; border-radius:10px; }
   #tbWifi:hover{ background: rgba(255,255,255,.08); }
 
-  /* dock nad taskbarem */
+  /* dock jako pasek ikon w taskbar */
   .dock{
-    bottom: 54px !important;
-    border-radius: 14px;
-    background: rgba(30,33,40,.55);
-    border: 1px solid rgba(255,255,255,.10);
+    position:static !important;
+    left:auto !important;
+    bottom:auto !important;
+    transform:none !important;
+    padding:6px 8px;
+    border-radius:12px;
+    background: rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.10);
+    box-shadow: none;
   }
 
-  /* ikony bardziej “win” */
-  .icon .pic{
-    border-radius: 12px;
-    background: rgba(255,255,255,.10);
-    border: 1px solid rgba(255,255,255,.12);
-  }
-
-  /* okna: mniej glass apple */
+  /* okna bardziej win/ubuntu */
   .app{
     border-radius: 12px !important;
     background: rgba(18,20,26,.86) !important;
@@ -1160,10 +1146,9 @@
     height: 40px !important;
     background: rgba(255,255,255,.06) !important;
     border-bottom: 1px solid rgba(255,255,255,.10) !important;
-    cursor: grab;
   }
 
-  /* win-controls zamiast traffic lights */
+  /* przyciski jak win-controls */
   .traffic{ gap:6px; }
   .dot{
     width: 28px !important;
@@ -1176,12 +1161,10 @@
   .dot.red{ background: rgba(255,80,80,.16) !important; }
   .dot.yellow{ background: rgba(255,200,70,.14) !important; }
   .dot.green{ background: rgba(120,255,160,.12) !important; }
-
   .dot::after{
     content:"";
     position:absolute; inset:0;
-    display:grid;
-    place-items:center;
+    display:grid; place-items:center;
     font-size:12px;
     color: rgba(255,255,255,.85);
     font-weight: 800;
@@ -1189,13 +1172,6 @@
   .dot.red::after{ content:"✕"; }
   .dot.yellow::after{ content:"_"; transform: translateY(-3px); }
   .dot.green::after{ content:"□"; }
-
-  /* przyciski menu mniej “pill apple” */
-  .menu a{
-    border-radius: 12px !important;
-    background: rgba(255,255,255,.10) !important;
-    border: 1px solid rgba(255,255,255,.12) !important;
-  }
 </style>
 </head>
 
@@ -1234,7 +1210,7 @@
   <div class="brandBlur" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
 
-  <!-- Top menu bar (zostaje w DOM dla istniejących ID, ale jest ukryty w CSS) -->
+  <!-- Top menu bar (ukryty przez CSS override, ale zostaje jako źródło #batteryPct itd.) -->
   <div class="menubar" role="banner" aria-label="menu bar">
     <div class="left">
       <span class="apple" aria-hidden="true"></span>
@@ -1590,54 +1566,56 @@
     </section>
   </div>
 
-  <!-- Dock -->
-  <div class="dock" id="dock" aria-label="Dock">
-    <!-- Instagram (popup) -->
-    <div class="appicon" id="dockIg" title="Instagram">
-      <img src="Instagram_icon.png" class="dockimg" alt="">
-      <div class="runDot"></div>
-
-      <div class="dockPopup" id="igPopup" role="menu" aria-label="Instagram menu">
-        <div class="dockPopupHeader">Instagram</div>
-        <div class="dockSep"></div>
-
-        <button class="dockItem" type="button" data-ig="gumis">
-          <span class="dockItemLeft">
-            <img src="Instagram_icon.png" class="dockTiny" alt="">
-            <span>Gumis</span>
-          </span>
-          <span class="dockItemHint">tokarz_k</span>
-        </button>
-
-        <button class="dockItem" type="button" data-ig="godwifi">
-          <span class="dockItemLeft">
-            <img src="Instagram_icon.png" class="dockTiny" alt="">
-            <span>god wifi</span>
-          </span>
-          <span class="dockItemHint">god.wifi</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Spotify -->
-    <div class="appicon" id="dockSpotify" title="Spotify">
-      <img src="Spotify_App_Logo.svg.png" class="dockimg" alt="">
-      <div class="runDot"></div>
-    </div>
-
-    <!-- Discord -->
-    <div class="appicon" id="dockDiscord" title="Discord">
-      <img src="discord-logo-icon-editorial-free-vector.png" class="dockimg" alt="">
-      <div class="runDot"></div>
-    </div>
-  </div>
-
-  <!-- Windows/Ubuntu-like taskbar -->
+  <!-- TASKBAR (Windows/Ubuntu) + DOCK przeniesiony do środka -->
   <div class="taskbar" id="taskbar" aria-label="Pasek zadań">
     <div class="taskLeft">
       <button class="startBtn" id="startBtn" type="button" title="Menu">
         <span class="startMark" aria-hidden="true"></span>
       </button>
+    </div>
+
+    <div class="taskCenter">
+      <!-- Dock -->
+      <div class="dock" id="dock" aria-label="Dock">
+        <!-- Instagram (popup) -->
+        <div class="appicon" id="dockIg" title="Instagram">
+          <img src="Instagram_icon.png" class="dockimg" alt="">
+          <div class="runDot"></div>
+
+          <div class="dockPopup" id="igPopup" role="menu" aria-label="Instagram menu">
+            <div class="dockPopupHeader">Instagram</div>
+            <div class="dockSep"></div>
+
+            <button class="dockItem" type="button" data-ig="gumis">
+              <span class="dockItemLeft">
+                <img src="Instagram_icon.png" class="dockTiny" alt="">
+                <span>Gumis</span>
+              </span>
+              <span class="dockItemHint">tokarz_k</span>
+            </button>
+
+            <button class="dockItem" type="button" data-ig="godwifi">
+              <span class="dockItemLeft">
+                <img src="Instagram_icon.png" class="dockTiny" alt="">
+                <span>god wifi</span>
+              </span>
+              <span class="dockItemHint">god.wifi</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Spotify -->
+        <div class="appicon" id="dockSpotify" title="Spotify">
+          <img src="Spotify_App_Logo.svg.png" class="dockimg" alt="">
+          <div class="runDot"></div>
+        </div>
+
+        <!-- Discord -->
+        <div class="appicon" id="dockDiscord" title="Discord">
+          <img src="discord-logo-icon-editorial-free-vector.png" class="dockimg" alt="">
+          <div class="runDot"></div>
+        </div>
+      </div>
     </div>
 
     <div class="taskRight">
@@ -1748,12 +1726,14 @@
     const ua = navigator.userAgent || "";
     const isTouch = navigator.maxTouchPoints > 0;
     const smallScreen = Math.min(window.innerWidth, window.innerHeight) <= 820;
+
     const isMobileLike = /Android|iPhone|iPad|iPod|Windows Phone/i.test(ua) || (isTouch && smallScreen);
 
     function show(){
       block.style.display = "block";
       document.body.style.overflow = "hidden";
     }
+
     function hide(){
       block.style.display = "none";
       document.body.style.overflow = "hidden";
@@ -1763,7 +1743,7 @@
       const device = /iPhone|iPad|iPod/i.test(ua) ? "iOS" :
                      /Android/i.test(ua) ? "Android" :
                      "Mobile";
-      meta.textContent = Wykryto: ${device} · ${window.innerWidth}×${window.innerHeight};
+      meta.textContent = `Wykryto: ${device} · ${window.innerWidth}×${window.innerHeight}`;
       show();
     }
 
@@ -1798,18 +1778,18 @@
 
   const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // ===== Clock =====
+  // ===== Clock (źródło) =====
   const clock = document.getElementById("clock");
   function tick(){
     const d = new Date();
     const hh = String(d.getHours()).padStart(2,"0");
     const mm = String(d.getMinutes()).padStart(2,"0");
-    clock.textContent = ${hh}:${mm};
+    clock.textContent = `${hh}:${mm}`;
   }
   tick();
   setInterval(tick, 1000 * 10);
 
-  // ===== Battery by hour =====
+  // ===== Battery by hour (źródło) =====
   const batteryLevelEl = document.getElementById("batteryLevel");
   const batteryPctEl = document.getElementById("batteryPct");
   const batteryBoltEl = document.getElementById("batteryBolt");
@@ -1826,7 +1806,7 @@
       const t = (h - 16) / 6;
       pct = Math.round(50 - t * 38);
     } else if (h >= 8){
-      const t = (h - 😎 / 8;
+      const t = (h - 8) / 8;
       pct = Math.round(100 - t * 50);
     } else {
       const t = (h - 6) / 2;
@@ -1852,7 +1832,7 @@
   renderBattery();
   setInterval(renderBattery, 1000 * 30);
 
-  // ===== Menu dropdowns =====
+  // ===== Menu dropdowns (nie przeszkadza – menubar i tak ukryty) =====
   const menuItems = Array.from(document.querySelectorAll(".menuItem"));
   function closeAllMenus(){ menuItems.forEach(i => i.classList.remove("active")); }
 
@@ -1973,7 +1953,7 @@
 
   // ===== Window system =====
   const stage = document.getElementById("stage");
-  const MENUBAR_SAFE = 32 + 10;
+  const MENUBAR_SAFE = 10; // <- było 32+10; teraz menubar ukryty
 
   let zCounter = 300;
   function bringToFront(win){
@@ -2012,8 +1992,8 @@
     );
 
     win.animate([
-      { transform: translate(-50%,-50%) translate(${dx}px, ${dy}px) scale(${s}), opacity: 0.0 },
-      { transform: translate(-50%,-50%) translate(var(--x,0px), var(--y,0px)) scale(.985), opacity: 1.0 }
+      { transform: `translate(-50%,-50%) translate(${dx}px, ${dy}px) scale(${s})`, opacity: 0.0 },
+      { transform: `translate(-50%,-50%) translate(var(--x,0px), var(--y,0px)) scale(.985)`, opacity: 1.0 }
     ], {
       duration: 320,
       easing: "cubic-bezier(.2,.9,.2,1)",
@@ -2048,8 +2028,8 @@
     );
 
     const anim = win.animate([
-      { transform: translate(-50%,-50%) translate(var(--x,0px), var(--y,0px)) scale(.985), opacity: 1.0 },
-      { transform: translate(-50%,-50%) translate(${dx}px, ${dy}px) scale(${s}), opacity: 0.0 }
+      { transform: `translate(-50%,-50%) translate(var(--x,0px), var(--y,0px)) scale(.985)`, opacity: 1.0 },
+      { transform: `translate(-50%,-50%) translate(${dx}px, ${dy}px) scale(${s})`, opacity: 0.0 }
     ], {
       duration: 280,
       easing: "cubic-bezier(.2,.9,.2,1)",
@@ -2137,598 +2117,4 @@
   // ===== Launchers + controls =====
   const app = document.getElementById("app");
   const finderWin = document.getElementById("finderWin");
-  const koncertWin = document.getElementById("koncertWin");
-  const mixWin = document.getElementById("mixWin");
-  const gameWin = document.getElementById("gameWin");
-
-  const appLauncher = document.getElementById("appLauncher");
-  const folderLauncher = document.getElementById("folderLauncher");
-  const wifiBtn = document.getElementById("wifiBtn");
-
-  function wireWindowControls(prefix, win, launcherEl, onClose){
-    const closeBtn = document.getElementById(prefix+"Close");
-    const minBtn = document.getElementById(prefix+"Min");
-    const maxBtn = document.getElementById(prefix+"Max");
-
-    let maxed = false;
-
-    if (closeBtn) closeBtn.addEventListener("click", (e)=>{ e.stopPropagation(); minimizeWindow(win, launcherEl, onClose); });
-    if (minBtn) minBtn.addEventListener("click", (e)=>{ e.stopPropagation(); minimizeWindow(win, launcherEl, onClose); });
-    if (maxBtn) maxBtn.addEventListener("click", (e)=>{
-      e.stopPropagation();
-      if (!win.classList.contains("open")) return;
-      maxed = !maxed;
-      if (win.classList.contains("game")){
-        win.style.width = maxed ? "min(980px, 98vw)" : "min(760px, 96vw)";
-      } else if (win.classList.contains("finder")){
-        win.style.width = maxed ? "min(980px, 96vw)" : "min(680px, 92vw)";
-      } else {
-        win.style.width = maxed ? "min(860px, 96vw)" : "min(560px, 92vw)";
-      }
-      resetToCenter(win);
-    });
-  }
-
-  wireWindowControls("app", app, appLauncher, ()=>{ setOpen(false); });
-  wireWindowControls("finder", finderWin, folderLauncher);
-  wireWindowControls("koncert", koncertWin, folderLauncher);
-  wireWindowControls("mix", mixWin, folderLauncher, ()=> stopMix(true));
-  wireWindowControls("game", gameWin, wifiBtn);
-
-  appLauncher.addEventListener("click", (e)=>{
-    e.stopPropagation();
-    closeAllMenus(); closeIgPopup(); setOpen(false);
-    toggleWindow(app, appLauncher, ()=>{ setOpen(false); });
-  });
-
-  folderLauncher.addEventListener("click", (e)=>{
-    e.stopPropagation();
-    closeAllMenus(); closeIgPopup(); setOpen(false);
-    toggleWindow(finderWin, folderLauncher);
-  });
-
-  wifiBtn.addEventListener("click", (e)=>{
-    e.stopPropagation();
-    closeAllMenus(); closeIgPopup(); setOpen(false);
-    toggleWindow(gameWin, wifiBtn);
-    if (gameWin.classList.contains("open")) startOrResumeGame();
-  });
-
-  const openKoncert = document.getElementById("openKoncert");
-  const openMix = document.getElementById("openMix");
-
-  openKoncert.addEventListener("click", (e)=>{
-    e.stopPropagation();
-    if (!finderWin.classList.contains("open")) openWindow(finderWin, folderLauncher);
-    toggleWindow(koncertWin, folderLauncher);
-  });
-
-  openMix.addEventListener("click", (e)=>{
-    e.stopPropagation();
-    if (!finderWin.classList.contains("open")) openWindow(finderWin, folderLauncher);
-    toggleWindow(mixWin, folderLauncher, ()=> stopMix(true));
-  });
-
-  document.addEventListener("click", (e)=>{
-    if (!dockIg.contains(e.target)) closeIgPopup();
-    closeAllMenus();
-    if (app.classList.contains("open") && !app.contains(e.target)) setOpen(false);
-  });
-
-  document.addEventListener("keydown", (e)=>{
-    if (e.key === "Escape"){
-      closeIgPopup();
-      closeAllMenus();
-      setOpen(false);
-    }
-  });
-
-  // ===== MIX PLAYER  =====
-  const MIX_PREVIEW_SECONDS = 20;
-  const MIX_TRACKS = [
-    { title: "Utwór 1", src: "mix1.mp3" },
-    { title: "Utwór 2", src: "mix2.mp3" },
-    { title: "Utwór 3", src: "mix3.mp3" },
-    { title: "Utwór 4", src: "mix4.mp3" },
-    { title: "Utwór 5", src: "mix5.mp3" },
-    { title: "Utwór 6", src: "mix6.mp3" },
-    { title: "Utwór 7", src: "mix7.mp3" },
-    { title: "Utwór 8", src: "mix8.mp3" },
-    { title: "Utwór 9", src: "mix9.mp3" },
-  ];
-
-  const mixAudio = document.getElementById("mixAudio");
-  const mixNowTitle = document.getElementById("mixNowTitle");
-  const mixList = document.getElementById("mixList");
-
-  const mixPlay = document.getElementById("mixPlay");
-  const mixPrev = document.getElementById("mixPrev");
-  const mixNext = document.getElementById("mixNext");
-  const mixShuffleBtn = document.getElementById("mixShuffle");
-  const mixRepeatBtn = document.getElementById("mixRepeat");
-
-  const mixVol = document.getElementById("mixVol");
-
-  const mixPbar = document.getElementById("mixPbar");
-  const mixPfill = document.getElementById("mixPfill");
-  const mixTcur = document.getElementById("mixTcur");
-  const mixTend = document.getElementById("mixTend");
-
-  let mixIndex = 0;
-  let mixShuffle = false;
-  let mixRepeat = false;
-
-  let mixOrder = [...Array(MIX_TRACKS.length).keys()];
-  function reshuffle(){
-    mixOrder = [...Array(MIX_TRACKS.length).keys()];
-    for (let i = mixOrder.length - 1; i > 0; i--){
-      const j = Math.floor(Math.random() * (i + 1));
-      [mixOrder[i], mixOrder[j]] = [mixOrder[j], mixOrder[i]];
-    }
-    if (!mixOrder.includes(mixIndex)) mixOrder[0] = mixIndex;
-  }
-
-  function fmt(sec){
-    const s = Math.max(0, Math.min(MIX_PREVIEW_SECONDS, sec));
-    const m = Math.floor(s/60);
-    const ss = String(Math.floor(s%60)).padStart(2,"0");
-    return ${m}:${ss};
-  }
-
-  function setMixButtons(){
-    mixShuffleBtn.classList.toggle("on", mixShuffle);
-    mixRepeatBtn.classList.toggle("on", mixRepeat);
-    mixPlay.textContent = mixAudio.paused ? "▶︎" : "❚❚";
-  }
-
-  function renderMixList(){
-    mixList.innerHTML = "";
-    MIX_TRACKS.forEach((t,i)=>{
-      const row = document.createElement("div");
-      row.className = "track" + (i===mixIndex ? " active":"");
-      row.innerHTML = `
-        <div class="left">
-          <div class="name">${t.title}</div>
-          <div class="sub">20s preview</div>
-        </div>
-        <div class="right">${(i===mixIndex && !mixAudio.paused) ? "PLAYING" : ""}</div>
-      `;
-      row.addEventListener("click", ()=> loadMix(i, true));
-      mixList.appendChild(row);
-    });
-  }
-
-  function updateMixProgressUI(){
-    const t = Math.min(mixAudio.currentTime || 0, MIX_PREVIEW_SECONDS);
-    const pct = (t / MIX_PREVIEW_SECONDS) * 100;
-    mixPfill.style.width = pct + "%";
-    mixTcur.textContent = fmt(t);
-    mixTend.textContent = fmt(MIX_PREVIEW_SECONDS);
-  }
-
-  function loadMix(i, autoplay=false){
-    mixIndex = (i + MIX_TRACKS.length) % MIX_TRACKS.length;
-    const t = MIX_TRACKS[mixIndex];
-
-    mixNowTitle.textContent = t.title;
-    mixAudio.src = t.src;
-    mixAudio.currentTime = 0;
-
-    renderMixList();
-    setMixButtons();
-    updateMixProgressUI();
-
-    if (autoplay) playMix();
-  }
-
-  function playMix(){
-    mixAudio.currentTime = Math.min(mixAudio.currentTime, MIX_PREVIEW_SECONDS);
-    mixAudio.play();
-    setMixButtons();
-    renderMixList();
-  }
-
-  function pauseMix(){
-    mixAudio.pause();
-    setMixButtons();
-    renderMixList();
-  }
-
-  function stopMix(reset=false){
-    mixAudio.pause();
-    if (reset){
-      mixAudio.currentTime = 0;
-      updateMixProgressUI();
-    }
-    setMixButtons();
-    renderMixList();
-  }
-
-  function nextIndex(){
-    if (!mixShuffle) return (mixIndex + 1) % MIX_TRACKS.length;
-    const pos = mixOrder.indexOf(mixIndex);
-    return mixOrder[(pos + 1) % mixOrder.length];
-  }
-  function prevIndex(){
-    if (!mixShuffle) return (mixIndex - 1 + MIX_TRACKS.length) % MIX_TRACKS.length;
-    const pos = mixOrder.indexOf(mixIndex);
-    return mixOrder[(pos - 1 + mixOrder.length) % mixOrder.length];
-  }
-
-  mixPlay.addEventListener("click", ()=>{
-    if (mixAudio.paused) playMix();
-    else pauseMix();
-  });
-  mixNext.addEventListener("click", ()=> loadMix(nextIndex(), true));
-  mixPrev.addEventListener("click", ()=> loadMix(prevIndex(), true));
-
-  mixShuffleBtn.addEventListener("click", ()=>{
-    mixShuffle = !mixShuffle;
-    if (mixShuffle) reshuffle();
-    setMixButtons();
-  });
-  mixRepeatBtn.addEventListener("click", ()=>{
-    mixRepeat = !mixRepeat;
-    setMixButtons();
-  });
-
-  mixVol.addEventListener("input", ()=>{
-    mixAudio.volume = Number(mixVol.value);
-  });
-
-  mixPbar.addEventListener("click", (e)=>{
-    const r = mixPbar.getBoundingClientRect();
-    const x = Math.max(0, Math.min(r.width, e.clientX - r.left));
-    const pct = x / r.width;
-    mixAudio.currentTime = pct * MIX_PREVIEW_SECONDS;
-    updateMixProgressUI();
-  });
-
-  mixAudio.addEventListener("timeupdate", ()=>{
-    updateMixProgressUI();
-    if (mixAudio.currentTime >= MIX_PREVIEW_SECONDS){
-      if (mixRepeat) loadMix(mixIndex, true);
-      else loadMix(nextIndex(), true);
-    }
-  });
-
-  mixAudio.addEventListener("play", ()=>{ setMixButtons(); renderMixList(); });
-  mixAudio.addEventListener("pause", ()=>{ setMixButtons(); renderMixList(); });
-
-  function isMixOpen(){ return mixWin.classList.contains("open"); }
-
-  window.addEventListener("keydown", (e)=>{
-    if (!isMixOpen()) return;
-    const tag = (document.activeElement && document.activeElement.tagName || "").toLowerCase();
-    if (tag === "input" || tag === "textarea") return;
-
-    const k = e.key.toLowerCase();
-
-    if (e.code === "Space"){
-      e.preventDefault();
-      if (mixAudio.paused) playMix(); else pauseMix();
-      return;
-    }
-    if (e.key === "ArrowRight"){
-      e.preventDefault();
-      loadMix(nextIndex(), true);
-      return;
-    }
-    if (e.key === "ArrowLeft"){
-      e.preventDefault();
-      loadMix(prevIndex(), true);
-      return;
-    }
-    if (k === "s"){
-      mixShuffle = !mixShuffle;
-      if (mixShuffle) reshuffle();
-      setMixButtons();
-      return;
-    }
-    if (k === "r"){
-      mixRepeat = !mixRepeat;
-      setMixButtons();
-      return;
-    }
-  });
-
-  mixAudio.volume = Number(mixVol.value);
-  loadMix(0, false);
-
-  // ===== Dino-like runner game =====
-  const canvas = document.getElementById("dinoCanvas");
-  const ctx = canvas.getContext("2d");
-  const scoreEl = document.getElementById("score");
-  const bestEl = document.getElementById("best");
-  const stateEl = document.getElementById("gameState");
-
-  let best = 0;
-  let running = false;
-  let dead = false;
-
-  const G = 0.9;
-  const groundY = 210;
-
-  const player = { x: 90, y: groundY, w: 26, h: 34, vy: 0, onGround: true };
-  let obstacles = [];
-  let speed = 4.2;
-  let score = 0;
-  let spawnTimer = 0;
-
-  function resetGame(){
-    running = false;
-    dead = false;
-    speed = 4.3;
-    score = 0;
-    spawnTimer = 0;
-    obstacles = [];
-    player.y = groundY;
-    player.vy = 0;
-    player.onGround = true;
-    scoreEl.textContent = "0";
-    stateEl.textContent = "Kliknij / Space aby start";
-  }
-
-  function spawnObstacle(){
-    const h = 18 + Math.random()*22;
-    const w = 14 + Math.random()*20;
-    obstacles.push({ x: canvas.width + 30, y: groundY + (34 - h), w, h });
-  }
-
-  function jump(){
-    if (dead) { startOrResumeGame(true); return; }
-    if (!running){ startOrResumeGame(true); return; }
-    if (player.onGround){
-      player.vy = -14.5;
-      player.onGround = false;
-    }
-  }
-
-  function collide(a,b){
-    return (a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y);
-  }
-
-  function draw(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    ctx.globalAlpha = 0.9;
-    ctx.beginPath();
-    ctx.moveTo(0, groundY+34);
-    ctx.lineTo(canvas.width, groundY+34);
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "rgba(255,255,255,.35)";
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-
-    ctx.fillStyle = "rgba(255,255,255,.92)";
-    ctx.fillRect(player.x, player.y, player.w, player.h);
-
-    ctx.fillStyle = "rgba(255,255,255,.65)";
-    obstacles.forEach(o => ctx.fillRect(o.x, o.y, o.w, o.h));
-
-    ctx.globalAlpha = 0.12;
-    for (let i=0;i<4;i++){
-      const cx = (i*260 + (score*2)%260);
-      ctx.beginPath();
-      ctx.ellipse(cx, 70 + i*8, 42, 18, 0, 0, Math.PI*2);
-      ctx.fillStyle = "rgba(255,255,255,1)";
-      ctx.fill();
-    }
-    ctx.globalAlpha = 1;
-  }
-
-  function step(){
-    if (!running){
-      draw();
-      requestAnimationFrame(step);
-      return;
-    }
-
-    player.vy += G;
-    player.y += player.vy;
-
-    if (player.y >= groundY){
-      player.y = groundY;
-      player.vy = 0;
-      player.onGround = true;
-    }
-
-    spawnTimer -= 1;
-    if (spawnTimer <= 0){
-      spawnObstacle();
-      spawnTimer = 55 + Math.random()*45;
-    }
-
-    obstacles.forEach(o => o.x -= speed);
-    obstacles = obstacles.filter(o => o.x + o.w > -20);
-
-    for (const o of obstacles){
-      if (collide(player, o)){
-        dead = true;
-        running = false;
-        stateEl.textContent = "Game over — Space/klik aby zrestartować";
-        best = Math.max(best, Math.floor(score));
-        bestEl.textContent = String(best);
-        break;
-      }
-    }
-
-    score += 0.18;
-    scoreEl.textContent = String(Math.floor(score));
-    speed += 0.0022;
-
-    draw();
-    requestAnimationFrame(step);
-  }
-
-  function startOrResumeGame(forceRestart=false){
-    if (forceRestart || dead){
-      resetGame();
-      dead = false;
-    }
-    if (!running){
-      running = true;
-      stateEl.textContent = "Grasz…";
-    }
-  }
-
-  window.addEventListener("keydown", (e)=>{
-    if (!gameWin.classList.contains("open")) return;
-    if (e.code === "Space" || e.code === "ArrowUp"){
-      e.preventDefault();
-      jump();
-    }
-  });
-  canvas.addEventListener("pointerdown", (e)=>{ if (!gameWin.classList.contains("open")) return; e.preventDefault(); jump(); });
-
-  resetGame();
-  requestAnimationFrame(step);
-
-  // ===== Notatki =====
-  const notesWin = document.getElementById("notesWin");
-  const openSetlista = document.getElementById("openSetlista");
-
-  openSetlista.addEventListener("click", (e)=>{
-    e.stopPropagation();
-    toggleWindow(notesWin, openSetlista);
-  });
-
-  document.getElementById("notesClose").onclick = ()=> minimizeWindow(notesWin, openSetlista);
-  document.getElementById("notesMin").onclick = ()=> minimizeWindow(notesWin, openSetlista);
-
-  // ===== DRIVE + iCloud Photos =====
-  const driveLauncher = document.getElementById("driveLauncher");
-  const driveWin = document.getElementById("driveWin");
-  const photosWin = document.getElementById("photosWin");
-  const openIcloudPhotos = document.getElementById("openIcloudPhotos");
-
-  wireWindowControls("drive", driveWin, driveLauncher);
-  wireWindowControls("photos", photosWin, driveLauncher);
-
-  driveLauncher.addEventListener("click", (e)=>{
-    e.stopPropagation();
-    closeAllMenus(); closeIgPopup(); setOpen(false);
-    toggleWindow(driveWin, driveLauncher);
-  });
-
-  openIcloudPhotos.addEventListener("click", (e)=>{
-    e.stopPropagation();
-    if (!driveWin.classList.contains("open")) openWindow(driveWin, driveLauncher);
-    openWindow(photosWin, openIcloudPhotos);
-    buildIcloudGrid();
-  });
-
-  // ===== iCloud Grid (80% fake) + viewer =====
-  const icloudGrid = document.getElementById("icloudGrid");
-  const icloudViewer = document.getElementById("icloudViewer");
-  const icloudViewerImg = document.getElementById("icloudViewerImg");
-  const icloudViewerClose = document.getElementById("icloudViewerClose");
-  const icloudViewerTitle = document.getElementById("icloudViewerTitle");
-  const icloudSearch = document.getElementById("icloudSearch");
-  const icloudTabs = Array.from(document.querySelectorAll(".icloudTab"));
-
-  const REAL_PHOTOS = ["p1.jpg","p2.jpg","p3.jpg","p4.jpg","p5.jpg","p6.jpg"];
-  let currentFilter = "";
-
-  function buildIcloudGrid(){
-    if (!icloudGrid) return;
-    icloudGrid.innerHTML = "";
-
-    const totalTiles = 24;
-    const realPhotosFiltered = REAL_PHOTOS.filter(n =>
-      n.toLowerCase().includes(currentFilter.toLowerCase())
-    );
-
-    const realCount = Math.min(realPhotosFiltered.length, 10);
-    const slots = new Set();
-    while (slots.size < realCount){
-      slots.add(Math.floor(Math.random() * totalTiles));
-    }
-
-    let idx = 0;
-
-    for (let i=0; i<totalTiles; i++){
-      const tile = document.createElement("div");
-      tile.className = "photoTile";
-
-      if (slots.has(i) && idx < realCount){
-        const src = realPhotosFiltered[idx++];
-        const img = document.createElement("img");
-        img.src = src;
-        img.alt = "";
-        tile.appendChild(img);
-
-        tile.addEventListener("click", ()=>{
-          icloudViewerImg.src = src;
-          icloudViewerTitle.textContent = src;
-          icloudViewer.classList.add("open");
-          icloudViewer.setAttribute("aria-hidden", "false");
-        });
-      } else {
-        tile.classList.add("loading");
-      }
-
-      icloudGrid.appendChild(tile);
-    }
-  }
-
-  icloudViewerClose.addEventListener("click", ()=>{
-    icloudViewer.classList.remove("open");
-    icloudViewer.setAttribute("aria-hidden", "true");
-    icloudViewerImg.src = "";
-  });
-
-  window.addEventListener("keydown", (e)=>{
-    if (e.key === "Escape" && icloudViewer.classList.contains("open")){
-      icloudViewerClose.click();
-    }
-  });
-
-  icloudSearch?.addEventListener("input", ()=>{
-    currentFilter = icloudSearch.value || "";
-    buildIcloudGrid();
-  });
-
-  icloudTabs.forEach(tab=>{
-    tab.addEventListener("click", ()=>{
-      icloudTabs.forEach(t=> t.classList.remove("active"));
-      tab.classList.add("active");
-      buildIcloudGrid();
-    });
-  });
-
-  // ===== Taskbar mirror (clock + battery + wifi -> game) =====
-  (function(){
-    const tbClock = document.getElementById("tbClock");
-    const tbBat = document.getElementById("tbBat");
-    const tbWifi = document.getElementById("tbWifi");
-
-    function tbTick(){
-      const d = new Date();
-      const hh = String(d.getHours()).padStart(2,"0");
-      const mm = String(d.getMinutes()).padStart(2,"0");
-      if (tbClock) tbClock.textContent = ${hh}:${mm};
-    }
-    tbTick();
-    setInterval(tbTick, 1000 * 10);
-
-    const srcBat = document.getElementById("batteryPct");
-    function mirrorBat(){
-      if (!tbBat) return;
-      if (srcBat && srcBat.textContent) tbBat.textContent = srcBat.textContent;
-    }
-    mirrorBat();
-    setInterval(mirrorBat, 1000 * 5);
-
-    if (tbWifi){
-      tbWifi.style.cursor = "pointer";
-      tbWifi.addEventListener("click", (e)=>{
-        e.stopPropagation();
-        const old = document.getElementById("wifiBtn");
-        if (old) old.click();
-      });
-    }
-  })();
-  </script>
-</body>
-</html>
+  const koncertWin
