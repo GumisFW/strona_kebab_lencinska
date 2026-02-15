@@ -201,6 +201,17 @@
     background: var(--finderHoverBg);
     border-bottom:2px solid rgba(80,150,255,.9);
   }
+  
+  .taskbar-separator{
+    width:1px;
+    height:28px;
+    background: var(--iconBorder);
+    margin:0 4px;
+  }
+  
+  .taskbar-social{
+    display:flex !important;
+  }
 
   .taskbar-icon{
     width:20px;
@@ -1251,6 +1262,24 @@
         <span>🎮</span>
         <span>Wi-Fi Runner</span>
       </div>
+      
+      <!-- Social media apps -->
+      <div class="taskbar-separator"></div>
+      
+      <div class="taskbar-app taskbar-social" id="taskInstagram" title="Instagram">
+        <img src="Instagram_icon.png" class="taskbar-icon" alt="">
+        <span>Instagram</span>
+      </div>
+
+      <div class="taskbar-app taskbar-social" id="taskSpotify" title="Spotify">
+        <img src="Spotify_App_Logo.svg.png" class="taskbar-icon" alt="">
+        <span>Spotify</span>
+      </div>
+
+      <div class="taskbar-app taskbar-social" id="taskDiscord" title="Discord">
+        <img src="discord-logo-icon-editorial-free-vector.png" class="taskbar-icon" alt="">
+        <span>Discord</span>
+      </div>
     </div>
 
     <div class="taskbar-right">
@@ -1417,6 +1446,134 @@
   document.getElementById("discordLink").href = DISCORD_URL;
 
   const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ===== Social media taskbar buttons =====
+  const taskInstagram = document.getElementById("taskInstagram");
+  const taskSpotify = document.getElementById("taskSpotify");
+  const taskDiscord = document.getElementById("taskDiscord");
+  
+  // Instagram - show dropdown menu
+  let igMenuOpen = false;
+  
+  taskInstagram.addEventListener("click", (e) => {
+    e.stopPropagation();
+    
+    // Toggle menu
+    igMenuOpen = !igMenuOpen;
+    
+    if (igMenuOpen) {
+      // Create dropdown menu
+      const menu = document.createElement("div");
+      menu.id = "igTaskMenu";
+      menu.style.cssText = `
+        position: fixed;
+        bottom: 58px;
+        left: ${taskInstagram.getBoundingClientRect().left}px;
+        background: var(--windowBg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        box-shadow: 0 8px 24px rgba(0,0,0,.3);
+        backdrop-filter: blur(20px);
+        padding: 8px;
+        min-width: 200px;
+        z-index: 10000;
+      `;
+      
+      menu.innerHTML = `
+        <div style="padding: 8px 12px; font-size: 12px; opacity: 0.7; color: var(--text);">Instagram</div>
+        <div style="height: 1px; background: var(--iconBorder); margin: 4px 0;"></div>
+        <button class="ig-menu-item" data-url="${IG_GUMIS}" style="
+          width: 100%;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 12px;
+          background: transparent;
+          border: 0;
+          border-radius: 6px;
+          color: var(--text);
+          cursor: pointer;
+          font-size: 13px;
+          text-align: left;
+          transition: .12s ease;
+        ">
+          <img src="Instagram_icon.png" style="width: 18px; height: 18px; border-radius: 4px;" alt="">
+          <div>
+            <div style="font-weight: 600;">Gumis</div>
+            <div style="font-size: 11px; opacity: 0.6;">@tokarz_k</div>
+          </div>
+        </button>
+        <button class="ig-menu-item" data-url="${IG_GODWIFI}" style="
+          width: 100%;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 12px;
+          background: transparent;
+          border: 0;
+          border-radius: 6px;
+          color: var(--text);
+          cursor: pointer;
+          font-size: 13px;
+          text-align: left;
+          transition: .12s ease;
+        ">
+          <img src="Instagram_icon.png" style="width: 18px; height: 18px; border-radius: 4px;" alt="">
+          <div>
+            <div style="font-weight: 600;">god.wifi</div>
+            <div style="font-size: 11px; opacity: 0.6;">@god.wifi</div>
+          </div>
+        </button>
+      `;
+      
+      document.body.appendChild(menu);
+      
+      // Style hover effect
+      const items = menu.querySelectorAll(".ig-menu-item");
+      items.forEach(item => {
+        item.addEventListener("mouseenter", () => {
+          item.style.background = "var(--finderHoverBg)";
+        });
+        item.addEventListener("mouseleave", () => {
+          item.style.background = "transparent";
+        });
+        item.addEventListener("click", () => {
+          const url = item.getAttribute("data-url");
+          window.open(url, "_blank", "noopener");
+          closeIgTaskMenu();
+        });
+      });
+      
+      // Close on outside click
+      setTimeout(() => {
+        document.addEventListener("click", closeIgTaskMenu);
+      }, 0);
+      
+    } else {
+      closeIgTaskMenu();
+    }
+  });
+  
+  function closeIgTaskMenu() {
+    const menu = document.getElementById("igTaskMenu");
+    if (menu) {
+      menu.remove();
+    }
+    igMenuOpen = false;
+    document.removeEventListener("click", closeIgTaskMenu);
+  }
+  
+  // Spotify - direct link
+  taskSpotify.addEventListener("click", (e) => {
+    e.stopPropagation();
+    window.open(SPOTIFY_URL, "_blank", "noopener");
+  });
+  
+  // Discord - direct link
+  taskDiscord.addEventListener("click", (e) => {
+    e.stopPropagation();
+    window.open(DISCORD_URL, "_blank", "noopener");
+  });
 
   // ===== Clock =====
   const clock = document.getElementById("clock");
