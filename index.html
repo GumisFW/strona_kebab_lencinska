@@ -1410,7 +1410,7 @@
         <div class="playerBar">
           <div class="now">
             <div class="title" id="mixNowTitle">—</div>
-            <div class="meta" id="mixNowMeta">20s preview · Space · ←/→ · S · R</div>
+            <div class="meta" id="mixNowMeta">Full track · Space · ←/→ · S · R</div>
           </div>
 
           <div class="ctrl">
@@ -1438,7 +1438,7 @@
         </div>
 
         <div class="trackList" id="mixList"></div>
-        <div class="playerHint">Play startuje dopiero po kliknięciu. Zamknięcie/minimalizacja zatrzymuje muzykę.</div>
+        <div class="playerHint">Pełne utwory. Automatycznie przechodzi do następnego. Zamknięcie/minimalizacja zatrzymuje muzykę.</div>
         <audio id="mixAudio" preload="metadata"></audio>
       </div>
     </section>
@@ -2344,7 +2344,6 @@
   });
 
   // ===== MIX PLAYER =====
-  const MIX_PREVIEW_SECONDS = 20;
   const MIX_TRACKS = [
     { title: "Utwór 1", src: "mix1.mp3" },
     { title: "Utwór 2", src: "mix2.mp3" },
@@ -2386,9 +2385,8 @@
   }
 
   function fmt(sec){
-    const s = Math.max(0, Math.min(MIX_PREVIEW_SECONDS, sec));
-    const m = Math.floor(s/60);
-    const ss = String(Math.floor(s%60)).padStart(2,"0");
+    const m = Math.floor(sec/60);
+    const ss = String(Math.floor(sec%60)).padStart(2,"0");
     return `${m}:${ss}`;
   }
 
@@ -2406,7 +2404,7 @@
       row.innerHTML = `
         <div class="left">
           <div class="name">${t.title}</div>
-          <div class="sub">20s preview</div>
+          <div class="sub">Full track</div>
         </div>
         <div class="right">${(i===mixIndex && !mixAudio.paused) ? "PLAYING" : ""}</div>
       `;
@@ -2416,11 +2414,12 @@
   }
 
   function updateMixProgressUI(){
-    const t = Math.min(mixAudio.currentTime || 0, MIX_PREVIEW_SECONDS);
-    const pct = (t / MIX_PREVIEW_SECONDS) * 100;
+    const t = mixAudio.currentTime || 0;
+    const duration = mixAudio.duration || 0;
+    const pct = duration > 0 ? (t / duration) * 100 : 0;
     mixPfill.style.width = pct + "%";
     mixTcur.textContent = fmt(t);
-    mixTend.textContent = fmt(MIX_PREVIEW_SECONDS);
+    mixTend.textContent = fmt(duration);
   }
 
   function loadMix(i, autoplay=false){
@@ -2436,7 +2435,6 @@
   }
 
   function playMix(){
-    mixAudio.currentTime = Math.min(mixAudio.currentTime, MIX_PREVIEW_SECONDS);
     mixAudio.play();
     setMixButtons();
     renderMixList();
@@ -2496,16 +2494,24 @@
     const r = mixPbar.getBoundingClientRect();
     const x = Math.max(0, Math.min(r.width, e.clientX - r.left));
     const pct = x / r.width;
-    mixAudio.currentTime = pct * MIX_PREVIEW_SECONDS;
+    const duration = mixAudio.duration || 0;
+    mixAudio.currentTime = pct * duration;
     updateMixProgressUI();
+  });
+
+  // Auto-play next track when current track ends
+  mixAudio.addEventListener("ended", ()=>{
+    if (mixRepeat) loadMix(mixIndex, true);
+    else loadMix(nextIndex(), true);
   });
 
   mixAudio.addEventListener("timeupdate", ()=>{
     updateMixProgressUI();
-    if (mixAudio.currentTime >= MIX_PREVIEW_SECONDS){
-      if (mixRepeat) loadMix(mixIndex, true);
-      else loadMix(nextIndex(), true);
-    }
+  });
+
+  // Update duration display when metadata loads
+  mixAudio.addEventListener("loadedmetadata", ()=>{
+    updateMixProgressUI();
   });
 
   mixAudio.addEventListener("play", ()=>{ setMixButtons(); renderMixList(); });
