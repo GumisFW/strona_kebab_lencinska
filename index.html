@@ -107,12 +107,12 @@
   .wallpaper::after{
     content: "Macie tu Wifi?...";
     font-size: clamp(32px, 5vw, 72px);
-    font-weight: 300;
+    font-weight: 400;
     color: var(--wallpaperText);
     letter-spacing: 2px;
     text-align: center;
     padding: 0 20px;
-    font-family: "Segoe UI", Ubuntu, "DejaVu Sans", sans-serif;
+    font-family: Papyrus, "Papyrus", fantasy;
   }
 
   .grain{
@@ -1082,6 +1082,122 @@
     25% { transform: translateX(-10px); }
     75% { transform: translateX(10px); }
   }
+  
+  /* ===== SMS Notification ===== */
+  .sms-notification{
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+    width: min(360px, calc(100vw - 40px));
+    background: var(--windowBg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(0,0,0,.3);
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+    z-index: 8000;
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    transition: all .3s cubic-bezier(.2,.9,.3,1);
+    pointer-events: none;
+  }
+  
+  .sms-notification.show{
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  
+  .sms-header{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--finderBg);
+    border-bottom: 1px solid var(--iconBorder);
+  }
+  
+  .sms-icon{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(80,150,255,.8), rgba(120,100,255,.8));
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  
+  .sms-header-text{
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .sms-title{
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .sms-app-name{
+    font-size: 11px;
+    opacity: .6;
+    color: var(--muted);
+  }
+  
+  .sms-time{
+    font-size: 12px;
+    opacity: .6;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  
+  .sms-body{
+    padding: 16px;
+  }
+  
+  .sms-message{
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  
+  .sms-close{
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    transition: .15s ease;
+    opacity: .6;
+  }
+  
+  .sms-close:hover{
+    background: var(--finderHoverBg);
+    opacity: 1;
+  }
+  
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
 </style>
 </head>
 
@@ -1405,6 +1521,24 @@
     </div>
   </div>
 
+  <!-- SMS Notification -->
+  <div class="sms-notification" id="smsNotification">
+    <button class="sms-close" id="smsClose">×</button>
+    <div class="sms-header">
+      <div class="sms-icon">💬</div>
+      <div class="sms-header-text">
+        <div class="sms-title">
+          <span>hidden_user</span>
+          <span class="sms-app-name">SMS</span>
+        </div>
+      </div>
+      <div class="sms-time" id="smsTime">1 min temu</div>
+    </div>
+    <div class="sms-body">
+      <div class="sms-message">Jakie jest hasło do wifi?</div>
+    </div>
+  </div>
+
   <!-- Login Modal -->
   <div class="login-modal" id="loginModal">
     <div class="login-box">
@@ -1642,6 +1776,40 @@
   document.getElementById("discordLink").href = DISCORD_URL;
 
   const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ===== SMS Notification =====
+  const smsNotification = document.getElementById("smsNotification");
+  const smsClose = document.getElementById("smsClose");
+  const smsTime = document.getElementById("smsTime");
+  
+  function showSMSNotification(){
+    // Calculate time 1 minute ago
+    const now = new Date();
+    const oneMinAgo = new Date(now.getTime() - 60000); // 60000ms = 1 minute
+    const hours = String(oneMinAgo.getHours()).padStart(2, '0');
+    const minutes = String(oneMinAgo.getMinutes()).padStart(2, '0');
+    
+    smsTime.textContent = `${hours}:${minutes}`;
+    
+    // Show notification after a short delay
+    setTimeout(() => {
+      smsNotification.classList.add('show');
+    }, 1500);
+  }
+  
+  function hideSMSNotification(){
+    smsNotification.classList.remove('show');
+  }
+  
+  smsClose.addEventListener('click', hideSMSNotification);
+  
+  // Auto-hide after 10 seconds
+  setTimeout(() => {
+    hideSMSNotification();
+  }, 11500);
+  
+  // Show SMS on page load
+  showSMSNotification();
 
   // ===== Social media taskbar buttons =====
   const taskInstagram = document.getElementById("taskInstagram");
