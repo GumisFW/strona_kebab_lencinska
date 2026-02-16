@@ -1623,6 +1623,40 @@
     </div>
   </div>
 
+  <!-- Photo Login Modal -->
+  <div class="login-modal" id="photoLoginModal">
+    <div class="login-box">
+      <div class="login-header">
+        <div class="login-icon">🔒</div>
+        <div class="login-title">Dostęp do pliku</div>
+        <div class="login-subtitle">Wpisz login i hasło aby otworzyć zdjęcie</div>
+      </div>
+      
+      <div class="login-body">
+        <div class="login-field">
+          <label class="login-label">
+            <span class="lock-icon">👤</span>
+            <span>Login</span>
+          </label>
+          <input type="text" class="login-input" id="photoLoginUsername" placeholder="Wpisz login">
+        </div>
+        
+        <div class="login-field">
+          <label class="login-label">
+            <span class="lock-icon">🔐</span>
+            <span>Hasło</span>
+          </label>
+          <input type="text" class="login-input" id="photoLoginPassword" placeholder="Wpisz hasło" readonly style="cursor: text;">
+        </div>
+        
+        <div class="login-actions">
+          <button class="login-btn cancel" id="photoLoginCancel">Anuluj</button>
+          <button class="login-btn submit" id="photoLoginSubmit">Zaloguj</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Windows-style Taskbar -->
   <div class="taskbar">
     <div class="taskbar-left">
@@ -2255,15 +2289,125 @@
   const openBinPhoto = document.getElementById("openBinPhoto");
   
   openBinPhoto.addEventListener("click", ()=>{
-    // Open the iCloud viewer with the specific photo
-    const viewer = document.getElementById("icloudViewer");
-    const viewerImg = document.getElementById("icloudViewerImg");
-    const viewerTitle = document.getElementById("icloudViewerTitle");
+    // Show photo login modal
+    showPhotoLoginModal();
+  });
+  
+  // ===== Photo Login Modal =====
+  const photoLoginModal = document.getElementById("photoLoginModal");
+  const photoLoginUsername = document.getElementById("photoLoginUsername");
+  const photoLoginPassword = document.getElementById("photoLoginPassword");
+  const photoLoginSubmit = document.getElementById("photoLoginSubmit");
+  const photoLoginCancel = document.getElementById("photoLoginCancel");
+  
+  let photoLoginKeysPressed = 0;
+  const PHOTO_LOGIN_TEXT = "Zanzir";
+  
+  function showPhotoLoginModal(){
+    photoLoginModal.classList.add("open");
+    photoLoginUsername.value = "";
+    photoLoginPassword.value = "";
+    photoLoginKeysPressed = 0;
+    setTimeout(() => photoLoginUsername.focus(), 100);
+  }
+  
+  function hidePhotoLoginModal(){
+    photoLoginModal.classList.remove("open");
+    photoLoginKeysPressed = 0;
+  }
+  
+  function attemptPhotoLogin(){
+    // Check if login is "Zanzir" and password has exactly 8 characters
+    if (photoLoginUsername.value === PHOTO_LOGIN_TEXT && photoLoginPassword.value.length === 8) {
+      hidePhotoLoginModal();
+      
+      // Open the photo viewer
+      const viewer = document.getElementById("icloudViewer");
+      const viewerImg = document.getElementById("icloudViewerImg");
+      const viewerTitle = document.getElementById("icloudViewerTitle");
+      
+      viewerImg.src = "file_00000000b198722f8c3faf98fa197865.png";
+      viewerTitle.textContent = "file_00000000b198722f8c3faf98fa197865.png";
+      viewer.classList.add("open");
+      viewer.setAttribute("aria-hidden", "false");
+    } else {
+      // Shake animation for incorrect login
+      photoLoginModal.querySelector(".login-box").style.animation = "shake 0.3s";
+      setTimeout(() => {
+        photoLoginModal.querySelector(".login-box").style.animation = "";
+      }, 300);
+    }
+  }
+  
+  // Auto-fill login field with "Zanzir" when typing
+  photoLoginUsername.addEventListener("keydown", (e) => {
+    // Prevent default typing
+    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+      e.preventDefault();
+      
+      if (photoLoginKeysPressed < PHOTO_LOGIN_TEXT.length) {
+        photoLoginUsername.value = PHOTO_LOGIN_TEXT.substring(0, photoLoginKeysPressed + 1);
+        photoLoginKeysPressed++;
+        
+        // Auto-focus password field when login is complete
+        if (photoLoginKeysPressed === PHOTO_LOGIN_TEXT.length) {
+          setTimeout(() => photoLoginPassword.focus(), 100);
+        }
+      }
+    }
     
-    viewerImg.src = "file_00000000b198722f8c3faf98fa197865.png";
-    viewerTitle.textContent = "file_00000000b198722f8c3faf98fa197865.png";
-    viewer.classList.add("open");
-    viewer.setAttribute("aria-hidden", "false");
+    // Allow backspace
+    if (e.key === "Backspace") {
+      e.preventDefault();
+      if (photoLoginKeysPressed > 0) {
+        photoLoginKeysPressed--;
+        photoLoginUsername.value = PHOTO_LOGIN_TEXT.substring(0, photoLoginKeysPressed);
+      }
+    }
+    
+    if (e.key === "Enter" && photoLoginUsername.value === PHOTO_LOGIN_TEXT) {
+      photoLoginPassword.focus();
+    }
+    if (e.key === "Escape") hidePhotoLoginModal();
+  });
+  
+  // Password field - accept any 8 characters
+  photoLoginPassword.addEventListener("keydown", (e) => {
+    // Prevent default for regular keys
+    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+      e.preventDefault();
+      
+      if (photoLoginPassword.value.length < 8) {
+        photoLoginPassword.value += "•";
+        
+        // Auto-submit when 8 characters are entered
+        if (photoLoginPassword.value.length === 8) {
+          setTimeout(() => attemptPhotoLogin(), 200);
+        }
+      }
+    }
+    
+    // Allow backspace
+    if (e.key === "Backspace") {
+      e.preventDefault();
+      if (photoLoginPassword.value.length > 0) {
+        photoLoginPassword.value = photoLoginPassword.value.slice(0, -1);
+      }
+    }
+    
+    if (e.key === "Enter") attemptPhotoLogin();
+    if (e.key === "Escape") hidePhotoLoginModal();
+  });
+  
+  photoLoginSubmit.addEventListener("click", attemptPhotoLogin);
+  
+  photoLoginCancel.addEventListener("click", hidePhotoLoginModal);
+  
+  // Close on background click
+  photoLoginModal.addEventListener("click", (e) => {
+    if (e.target === photoLoginModal) {
+      hidePhotoLoginModal();
+    }
   });
 
   // ===== Login Modal =====
