@@ -602,6 +602,13 @@
     height:40px;
     object-fit:contain;
   }
+  
+  /* Smaller notepad icons */
+  .notepad-icon{
+    width:32px;
+    height:32px;
+  }
+  
   .finderItem span{ font-size:12px; }
   .finderPath{
     font-size:12px;
@@ -1485,19 +1492,19 @@
       <div class="finderBody">
         <div class="finderGrid">
           <button class="finderItem">
-            <img src="notepad.png" alt="" class="finderIcon">
+            <img src="notepad.png" alt="" class="finderIcon notepad-icon">
             <span>premiera</span>
             <div class="fileBadge">.txt</div>
           </button>
 
           <button class="finderItem">
-            <img src="notepad.png" alt="" class="finderIcon">
+            <img src="notepad.png" alt="" class="finderIcon notepad-icon">
             <span>koncept</span>
             <div class="fileBadge">.txt</div>
           </button>
 
           <button class="finderItem">
-            <img src="notepad.png" alt="" class="finderIcon">
+            <img src="notepad.png" alt="" class="finderIcon notepad-icon">
             <span>featy</span>
             <div class="fileBadge">.txt</div>
           </button>
@@ -2300,24 +2307,21 @@
   const photoLoginSubmit = document.getElementById("photoLoginSubmit");
   const photoLoginCancel = document.getElementById("photoLoginCancel");
   
-  let photoLoginKeysPressed = 0;
   const PHOTO_LOGIN_TEXT = "Zanzir";
   
   function showPhotoLoginModal(){
     photoLoginModal.classList.add("open");
     photoLoginUsername.value = "";
     photoLoginPassword.value = "";
-    photoLoginKeysPressed = 0;
     setTimeout(() => photoLoginUsername.focus(), 100);
   }
   
   function hidePhotoLoginModal(){
     photoLoginModal.classList.remove("open");
-    photoLoginKeysPressed = 0;
   }
   
   function attemptPhotoLogin(){
-    // Check if login is "Zanzir" and password has exactly 8 characters
+    // Check if login is exactly "Zanzir" and password has exactly 8 characters
     if (photoLoginUsername.value === PHOTO_LOGIN_TEXT && photoLoginPassword.value.length === 8) {
       hidePhotoLoginModal();
       
@@ -2336,42 +2340,44 @@
       setTimeout(() => {
         photoLoginModal.querySelector(".login-box").style.animation = "";
       }, 300);
+      
+      // Show error message temporarily
+      const errorMsg = document.createElement("div");
+      errorMsg.style.cssText = `
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255,59,48,.9);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        z-index: 10001;
+      `;
+      errorMsg.textContent = "Nieprawidłowy login lub hasło!";
+      photoLoginModal.querySelector(".login-box").appendChild(errorMsg);
+      
+      setTimeout(() => {
+        errorMsg.remove();
+      }, 2000);
     }
   }
   
-  // Auto-fill login field with "Zanzir" when typing
+  // Manual typing for username - no auto-fill
   photoLoginUsername.addEventListener("keydown", (e) => {
-    // Prevent default typing
-    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
-      e.preventDefault();
-      
-      if (photoLoginKeysPressed < PHOTO_LOGIN_TEXT.length) {
-        photoLoginUsername.value = PHOTO_LOGIN_TEXT.substring(0, photoLoginKeysPressed + 1);
-        photoLoginKeysPressed++;
-        
-        // Auto-focus password field when login is complete
-        if (photoLoginKeysPressed === PHOTO_LOGIN_TEXT.length) {
-          setTimeout(() => photoLoginPassword.focus(), 100);
-        }
+    if (e.key === "Enter") {
+      if (photoLoginUsername.value === PHOTO_LOGIN_TEXT) {
+        photoLoginPassword.focus();
+      } else {
+        attemptPhotoLogin(); // Try to login (will fail and shake)
       }
-    }
-    
-    // Allow backspace
-    if (e.key === "Backspace") {
-      e.preventDefault();
-      if (photoLoginKeysPressed > 0) {
-        photoLoginKeysPressed--;
-        photoLoginUsername.value = PHOTO_LOGIN_TEXT.substring(0, photoLoginKeysPressed);
-      }
-    }
-    
-    if (e.key === "Enter" && photoLoginUsername.value === PHOTO_LOGIN_TEXT) {
-      photoLoginPassword.focus();
     }
     if (e.key === "Escape") hidePhotoLoginModal();
   });
   
-  // Password field - accept any 8 characters
+  // Password field - accept any 8 characters with bullets
   photoLoginPassword.addEventListener("keydown", (e) => {
     // Prevent default for regular keys
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
