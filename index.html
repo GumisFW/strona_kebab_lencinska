@@ -1900,6 +1900,11 @@
             <img src="Galeria iCloud ikona.png" alt="" class="finderIcon">
             <span>Galeria iCloud</span>
           </button>
+          
+          <button class="finderItem" id="openArchive">
+            <img src="files.png" alt="" class="finderIcon">
+            <span>Archiwum</span>
+          </button>
         </div>
       </div>
     </section>
@@ -1989,6 +1994,53 @@
         </div>
         <canvas id="dinoCanvas" width="900" height="260"></canvas>
         <div class="gameHint">Sterowanie: <b>Space</b> / <b>↑</b> / klik — skok. Po przegranej: Space aby restart.</div>
+      </div>
+    </section>
+
+    <!-- Video Player -->
+    <section class="app finder" id="videoWin" style="width: min(900px, 96vw);">
+      <div class="titlebar" data-drag="videoWin">
+        <div class="title">Odtwarzacz wideo</div>
+        <div class="window-controls">
+          <button class="win-btn minimize" id="videoMin">−</button>
+          <button class="win-btn maximize" id="videoMax">⤢</button>
+          <button class="win-btn close" id="videoClose">×</button>
+        </div>
+      </div>
+
+      <div class="player" style="padding: 12px;">
+        <video id="videoPlayer" controls style="
+          width: 100%;
+          border-radius: 8px;
+          background: #000;
+          max-height: 500px;
+        "></video>
+        
+        <div class="playerBar" style="margin-top: 12px;">
+          <div class="now" style="min-width: 150px;">
+            <div class="title" id="videoNowTitle">—</div>
+            <div class="meta">Kliknij film aby odtworzyć</div>
+          </div>
+
+          <div class="ctrl">
+            <button class="mbtn" id="videoPrev" title="Poprzedni"></button>
+            <button class="mbtn playBig" id="videoPlay" title="Play/Pause"></button>
+            <button class="mbtn" id="videoNext" title="Następny"></button>
+          </div>
+
+          <div class="vol">
+            <div class="vol-icon">
+              <div class="vol-waves">
+                <span class="vol-wave"></span>
+                <span class="vol-wave"></span>
+                <span class="vol-wave"></span>
+              </div>
+            </div>
+            <input id="videoVol" type="range" min="0" max="1" step="0.01" value="0.85" />
+          </div>
+        </div>
+
+        <div class="trackList" id="videoList" style="margin-top: 12px; max-height: 250px; overflow-y: auto;"></div>
       </div>
     </section>
   </div>
@@ -2811,6 +2863,7 @@
   const driveWin = document.getElementById("driveWin");
   const photosWin = document.getElementById("photosWin");
   const binWin = document.getElementById("binWin");
+  const videoWin = document.getElementById("videoWin");
 
   const appLauncher = document.getElementById("appLauncher");
   const folderLauncher = document.getElementById("folderLauncher");
@@ -2832,6 +2885,7 @@
   wireWindowControls("drive", driveWin, driveLauncher);
   wireWindowControls("photos", photosWin, driveLauncher);
   wireWindowControls("bin", binWin, binLauncher);
+  wireWindowControls("video", videoWin, driveLauncher, ()=> stopVideo());
 
   // ===== Launchers =====
   const toggle = document.getElementById("toggle");
@@ -3147,6 +3201,12 @@
     buildIcloudGrid();
   });
 
+  const openArchive = document.getElementById("openArchive");
+  openArchive.addEventListener("click", ()=>{
+    if (!driveWin.classList.contains("open")) openWindow(driveWin, driveLauncher);
+    toggleWindow(videoWin, openArchive);
+  });
+
   // ===== MIX PLAYER =====
   const MIX_TRACKS = [
     { title: "Utwór 1", src: "mix1.mp3" },
@@ -3375,6 +3435,131 @@
 
   mixAudio.volume = Number(mixVol.value);
   loadMix(0, false);
+
+  // ===== VIDEO PLAYER =====
+  const VIDEO_FILES = [
+    { title: "BMX Video 1", src: "bmx1.mp4" },
+    { title: "BMX Video 2", src: "bmx2.mp4" },
+    { title: "BMX Video 3", src: "bmx3.mp4" },
+    // bmx4.mp4 is missing - skip it
+    { title: "BMX Video 5", src: "bmx5.mp4" },
+    { title: "BMX Video 6", src: "bmx6.mp4" },
+    { title: "BMX Video 7", src: "bmx7.mp4" },
+  ];
+
+  const videoPlayer = document.getElementById("videoPlayer");
+  const videoNowTitle = document.getElementById("videoNowTitle");
+  const videoList = document.getElementById("videoList");
+  const videoPlay = document.getElementById("videoPlay");
+  const videoPrev = document.getElementById("videoPrev");
+  const videoNext = document.getElementById("videoNext");
+  const videoVol = document.getElementById("videoVol");
+
+  let videoIndex = 0;
+
+  function renderVideoList(){
+    videoList.innerHTML = "";
+    VIDEO_FILES.forEach((v, i) => {
+      const row = document.createElement("div");
+      row.className = "track" + (i === videoIndex ? " active" : "");
+      row.innerHTML = `
+        <div class="left">
+          <div class="name">${v.title}</div>
+          <div class="sub">${v.src}</div>
+        </div>
+        <div class="right">${(i === videoIndex && !videoPlayer.paused) ? "PLAYING" : ""}</div>
+      `;
+      row.addEventListener("click", () => loadVideo(i, true));
+      videoList.appendChild(row);
+    });
+  }
+
+  function loadVideo(i, autoplay = false){
+    videoIndex = (i + VIDEO_FILES.length) % VIDEO_FILES.length;
+    const v = VIDEO_FILES[videoIndex];
+    
+    videoNowTitle.textContent = v.title;
+    videoPlayer.src = v.src;
+    videoPlayer.currentTime = 0;
+    
+    renderVideoList();
+    updateVideoPlayButton();
+    
+    if (autoplay) playVideo();
+  }
+
+  function playVideo(){
+    videoPlayer.play();
+    updateVideoPlayButton();
+    renderVideoList();
+  }
+
+  function pauseVideo(){
+    videoPlayer.pause();
+    updateVideoPlayButton();
+    renderVideoList();
+  }
+
+  function stopVideo(){
+    videoPlayer.pause();
+    videoPlayer.currentTime = 0;
+    updateVideoPlayButton();
+    renderVideoList();
+  }
+
+  function updateVideoPlayButton(){
+    if (videoPlayer.paused) {
+      videoPlay.classList.remove("playing");
+    } else {
+      videoPlay.classList.add("playing");
+    }
+  }
+
+  function nextVideo(){
+    loadVideo((videoIndex + 1) % VIDEO_FILES.length, true);
+  }
+
+  function prevVideo(){
+    loadVideo((videoIndex - 1 + VIDEO_FILES.length) % VIDEO_FILES.length, true);
+  }
+
+  // Event listeners
+  videoPlay.addEventListener("click", () => {
+    if (videoPlayer.paused) playVideo();
+    else pauseVideo();
+  });
+
+  videoNext.addEventListener("click", nextVideo);
+  videoPrev.addEventListener("click", prevVideo);
+
+  videoVol.addEventListener("input", () => {
+    const volume = Number(videoVol.value);
+    videoPlayer.volume = volume;
+    const percent = volume * 100;
+    videoVol.style.setProperty('--volume-percent', `${percent}%`);
+  });
+
+  // Initialize volume
+  const initialVideoPercent = Number(videoVol.value) * 100;
+  videoVol.style.setProperty('--volume-percent', `${initialVideoPercent}%`);
+
+  // Auto-play next video when current ends
+  videoPlayer.addEventListener("ended", nextVideo);
+
+  // Update play button on play/pause
+  videoPlayer.addEventListener("play", () => {
+    updateVideoPlayButton();
+    renderVideoList();
+  });
+
+  videoPlayer.addEventListener("pause", () => {
+    updateVideoPlayButton();
+    renderVideoList();
+  });
+
+  // Initialize video list
+  videoPlayer.volume = Number(videoVol.value);
+  loadVideo(0, false);
 
   // ===== Game =====
   const canvas = document.getElementById("dinoCanvas");
