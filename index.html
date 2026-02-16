@@ -711,8 +711,9 @@
   .now .meta{ font-size:12px; opacity:.7; margin-top:2px; color: var(--muted); }
   .ctrl{ display:flex; gap:8px; }
   .mbtn{
-    width:32px; height:32px;
-    border-radius:6px;
+    width:36px; 
+    height:36px;
+    border-radius:8px;
     border:1px solid var(--border);
     background: var(--finderBg);
     color: var(--text);
@@ -720,13 +721,199 @@
     display:grid;
     place-items:center;
     transition:.12s ease;
+    font-size:0;
+    position:relative;
   }
-  .mbtn:hover{ background: var(--finderHoverBg); }
-  .mbtn.on{ background: rgba(80,150,255,.6); color: rgba(255,255,255,.95); }
-  .playBig{ width:40px; height:40px; font-weight:700; }
-  .vol{ display:flex; gap:8px; min-width:140px; align-items:center; }
+  
+  /* Modern SVG-like icons using CSS */
+  .mbtn::before{
+    content:"";
+    display:block;
+  }
+  
+  /* Shuffle icon */
+  .mbtn#mixShuffle::before{
+    content:"⤨";
+    font-size:16px;
+  }
+  
+  /* Previous icon */
+  .mbtn#mixPrev::before{
+    width:0;
+    height:0;
+    border-style:solid;
+    border-width:6px 10px 6px 0;
+    border-color:transparent var(--text) transparent transparent;
+    margin-right:2px;
+  }
+  
+  /* Play/Pause icon - will be controlled by JS */
+  .mbtn#mixPlay::before{
+    width:0;
+    height:0;
+    border-style:solid;
+    border-width:7px 0 7px 12px;
+    border-color:transparent transparent transparent var(--text);
+    margin-left:2px;
+  }
+  
+  .mbtn#mixPlay.playing::before{
+    width:10px;
+    height:14px;
+    border:0;
+    border-left:3px solid var(--text);
+    border-right:3px solid var(--text);
+    background:transparent;
+    margin-left:0;
+  }
+  
+  /* Next icon */
+  .mbtn#mixNext::before{
+    width:0;
+    height:0;
+    border-style:solid;
+    border-width:6px 0 6px 10px;
+    border-color:transparent transparent transparent var(--text);
+    margin-left:2px;
+  }
+  
+  /* Repeat icon */
+  .mbtn#mixRepeat::before{
+    content:"↻";
+    font-size:18px;
+  }
+  
+  .mbtn:hover{ 
+    background: var(--finderHoverBg); 
+    transform:translateY(-1px);
+  }
+  .mbtn.on{ 
+    background: rgba(80,150,255,.6); 
+    color: rgba(255,255,255,.95); 
+  }
+  .mbtn.on::before{
+    border-color:transparent transparent transparent rgba(255,255,255,.95);
+  }
+  .mbtn.on#mixPlay.playing::before{
+    border-left-color:rgba(255,255,255,.95);
+    border-right-color:rgba(255,255,255,.95);
+  }
+  
+  .playBig{ 
+    width:44px; 
+    height:44px; 
+    font-weight:700; 
+  }
+  .playBig::before{
+    border-width:9px 0 9px 15px;
+  }
+  .playBig.playing::before{
+    width:12px;
+    height:18px;
+    border-left-width:4px;
+    border-right-width:4px;
+  }
+  
+  .vol{ 
+    display:flex; 
+    gap:10px; 
+    min-width:140px; 
+    align-items:center; 
+  }
+  
+  /* Modern volume icon using CSS */
+  .vol-icon{
+    width:20px;
+    height:20px;
+    position:relative;
+    display:flex;
+    align-items:center;
+  }
+  
+  .vol-icon::before{
+    content:"";
+    width:6px;
+    height:8px;
+    background:var(--text);
+    border-radius:1px 0 0 1px;
+  }
+  
+  .vol-icon::after{
+    content:"";
+    width:0;
+    height:0;
+    border-style:solid;
+    border-width:6px 0 6px 6px;
+    border-color:transparent transparent transparent var(--text);
+    margin-left:-1px;
+  }
+  
+  .vol-waves{
+    position:absolute;
+    left:12px;
+    display:flex;
+    gap:2px;
+  }
+  
+  .vol-wave{
+    width:2px;
+    background:var(--text);
+    border-radius:1px;
+    opacity:.7;
+  }
+  
+  .vol-wave:nth-child(1){ height:6px; }
+  .vol-wave:nth-child(2){ height:10px; }
+  .vol-wave:nth-child(3){ height:6px; }
+  
   .vol span{ font-size:12px; }
-  .vol input[type="range"]{ width:100px; }
+  .vol input[type="range"]{ 
+    width:100px;
+    -webkit-appearance:none;
+    appearance:none;
+    background:transparent;
+    cursor:pointer;
+  }
+  
+  /* Range track */
+  .vol input[type="range"]::-webkit-slider-track{
+    height:4px;
+    background:var(--finderHoverBg);
+    border-radius:2px;
+  }
+  
+  .vol input[type="range"]::-moz-range-track{
+    height:4px;
+    background:var(--finderHoverBg);
+    border-radius:2px;
+  }
+  
+  /* Range thumb */
+  .vol input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:12px;
+    height:12px;
+    background:rgba(80,150,255,.9);
+    border-radius:50%;
+    margin-top:-4px;
+  }
+  
+  .vol input[type="range"]::-moz-range-thumb{
+    width:12px;
+    height:12px;
+    background:rgba(80,150,255,.9);
+    border:0;
+    border-radius:50%;
+  }
+  
+  .vol input[type="range"]:hover::-webkit-slider-thumb{
+    background:rgba(80,150,255,1);
+    transform:scale(1.1);
+  }
+  
+  .vol input[type="range"]:hover::-moz-range-thumb{
+    background:rgba(80,150,255,1);
+  }
   .progress{
     margin-top:12px;
     padding:10px 12px;
@@ -1429,15 +1616,21 @@
           </div>
 
           <div class="ctrl">
-            <button class="mbtn" id="mixShuffle" title="Shuffle (S)">S</button>
-            <button class="mbtn" id="mixPrev" title="Previous (←)">◀︎</button>
-            <button class="mbtn playBig" id="mixPlay" title="Play/Pause (Space)">▶︎</button>
-            <button class="mbtn" id="mixNext" title="Next (→)">▶︎</button>
-            <button class="mbtn" id="mixRepeat" title="Repeat (R)">R</button>
+            <button class="mbtn" id="mixShuffle" title="Shuffle (S)"></button>
+            <button class="mbtn" id="mixPrev" title="Previous (←)"></button>
+            <button class="mbtn playBig" id="mixPlay" title="Play/Pause (Space)"></button>
+            <button class="mbtn" id="mixNext" title="Next (→)"></button>
+            <button class="mbtn" id="mixRepeat" title="Repeat (R)"></button>
           </div>
 
           <div class="vol">
-            <span>🔊</span>
+            <div class="vol-icon">
+              <div class="vol-waves">
+                <span class="vol-wave"></span>
+                <span class="vol-wave"></span>
+                <span class="vol-wave"></span>
+              </div>
+            </div>
             <input id="mixVol" type="range" min="0" max="1" step="0.01" value="0.85" />
           </div>
         </div>
@@ -2614,7 +2807,13 @@
   function setMixButtons(){
     mixShuffleBtn.classList.toggle("on", mixShuffle);
     mixRepeatBtn.classList.toggle("on", mixRepeat);
-    mixPlay.textContent = mixAudio.paused ? "▶︎" : "❚❚";
+    
+    // Toggle playing class for play/pause icon
+    if (mixAudio.paused) {
+      mixPlay.classList.remove("playing");
+    } else {
+      mixPlay.classList.add("playing");
+    }
   }
 
   function renderMixList(){
