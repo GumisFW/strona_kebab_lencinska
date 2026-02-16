@@ -2416,7 +2416,7 @@
     const isCorrect = btn.dataset.correct === 'true';
     const index = parseInt(btn.dataset.index);
     
-    // Disable all options
+    // Disable all options temporarily
     const allOptions = document.querySelectorAll('.sms-option');
     allOptions.forEach(opt => opt.disabled = true);
     
@@ -2436,7 +2436,7 @@
         // Correct password!
         addMessage('Super! Działa, dziękuję! 🎉', 'received', 100);
         
-        // Remove options
+        // Remove all options
         setTimeout(() => {
           const optionsEl = document.getElementById('passwordOptions');
           if (optionsEl) optionsEl.remove();
@@ -2447,15 +2447,23 @@
         // Wrong password
         addMessage('Nie działa 😕', 'received', 100);
         
-        // Remove the tried option and show remaining
+        // Remove only the wrong option and re-enable the rest
         setTimeout(() => {
-          btn.remove();
+          // Remove the wrong button
+          btn.style.opacity = '0';
+          btn.style.transform = 'scale(0.8)';
           
-          // Re-enable remaining options
-          const remainingOptions = document.querySelectorAll('.sms-option:not([disabled])');
-          remainingOptions.forEach(opt => opt.disabled = false);
-          
-          conversationState = 1;
+          setTimeout(() => {
+            btn.remove();
+            
+            // Re-enable all remaining options
+            const remainingOptions = document.querySelectorAll('.sms-option');
+            remainingOptions.forEach(opt => {
+              opt.disabled = false;
+            });
+            
+            conversationState = 1;
+          }, 300);
         }, 800);
       }
     }, 3000);
