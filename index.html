@@ -1424,6 +1424,212 @@
       transform: translateY(0) scale(1);
     }
   }
+  
+  /* ===== SMS Conversation Window ===== */
+  .sms-conversation{
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+    width: min(380px, calc(100vw - 40px));
+    max-height: 500px;
+    background: var(--windowBg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(0,0,0,.3);
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+    z-index: 8500;
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    transition: all .3s cubic-bezier(.2,.9,.3,1);
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .sms-conversation.show{
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  
+  .sms-conv-header{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--finderBg);
+    border-bottom: 1px solid var(--iconBorder);
+  }
+  
+  .sms-conv-icon{
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(80,150,255,.8), rgba(120,100,255,.8));
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  
+  .sms-conv-info{
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .sms-conv-name{
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  
+  .sms-conv-status{
+    font-size: 11px;
+    opacity: .6;
+    color: var(--muted);
+  }
+  
+  .sms-conv-close{
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    transition: .15s ease;
+  }
+  
+  .sms-conv-close:hover{
+    background: var(--finderHoverBg);
+  }
+  
+  .sms-conv-body{
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 350px;
+  }
+  
+  .sms-bubble{
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.4;
+    animation: bubbleIn 0.3s cubic-bezier(.2,.9,.3,1);
+  }
+  
+  @keyframes bubbleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9) translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  
+  .sms-bubble.received{
+    align-self: flex-start;
+    background: var(--finderBg);
+    color: var(--text);
+    border-bottom-left-radius: 4px;
+  }
+  
+  .sms-bubble.sent{
+    align-self: flex-end;
+    background: rgba(80,150,255,.9);
+    color: rgba(255,255,255,.98);
+    border-bottom-right-radius: 4px;
+  }
+  
+  .sms-options{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  
+  .sms-option{
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--finderBg);
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: .15s ease;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .sms-option:hover{
+    background: var(--finderHoverBg);
+    transform: translateX(4px);
+  }
+  
+  .sms-option:disabled{
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .sms-option::before{
+    content: "→";
+    font-size: 16px;
+    opacity: 0.6;
+  }
+  
+  .sms-typing{
+    align-self: flex-start;
+    padding: 12px 16px;
+    background: var(--finderBg);
+    border-radius: 16px;
+    border-bottom-left-radius: 4px;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  
+  .sms-typing-dot{
+    width: 6px;
+    height: 6px;
+    background: var(--muted);
+    border-radius: 50%;
+    animation: typingDot 1.4s infinite;
+  }
+  
+  .sms-typing-dot:nth-child(2){
+    animation-delay: 0.2s;
+  }
+  
+  .sms-typing-dot:nth-child(3){
+    animation-delay: 0.4s;
+  }
+  
+  @keyframes typingDot {
+    0%, 60%, 100% {
+      opacity: 0.3;
+      transform: scale(0.8);
+    }
+    30% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
 </style>
 </head>
 
@@ -1817,6 +2023,21 @@
     </div>
   </div>
 
+  <!-- SMS Conversation Window -->
+  <div class="sms-conversation" id="smsConversation">
+    <div class="sms-conv-header">
+      <div class="sms-conv-icon">💬</div>
+      <div class="sms-conv-info">
+        <div class="sms-conv-name">hidden_user</div>
+        <div class="sms-conv-status">SMS</div>
+      </div>
+      <button class="sms-conv-close" id="smsConvClose">×</button>
+    </div>
+    <div class="sms-conv-body" id="smsConvBody">
+      <div class="sms-bubble received">Jakie jest hasło do wifi?</div>
+    </div>
+  </div>
+
   <!-- Login Modal -->
   <div class="login-modal" id="loginModal">
     <div class="login-box">
@@ -2093,11 +2314,16 @@
   const smsNotification = document.getElementById("smsNotification");
   const smsClose = document.getElementById("smsClose");
   const smsTime = document.getElementById("smsTime");
+  const smsConversation = document.getElementById("smsConversation");
+  const smsConvBody = document.getElementById("smsConvBody");
+  const smsConvClose = document.getElementById("smsConvClose");
+  
+  let conversationState = 0; // 0 = initial, 1 = first option tried, 2 = second option (correct)
   
   function showSMSNotification(){
     // Calculate time 1 minute ago
     const now = new Date();
-    const oneMinAgo = new Date(now.getTime() - 60000); // 60000ms = 1 minute
+    const oneMinAgo = new Date(now.getTime() - 60000);
     const hours = String(oneMinAgo.getHours()).padStart(2, '0');
     const minutes = String(oneMinAgo.getMinutes()).padStart(2, '0');
     
@@ -2113,9 +2339,140 @@
     smsNotification.classList.remove('show');
   }
   
+  function showSMSConversation(){
+    hideSMSNotification();
+    smsConversation.classList.add('show');
+    
+    // Show initial options if not already shown
+    if (conversationState === 0) {
+      setTimeout(() => {
+        showPasswordOptions();
+      }, 300);
+    }
+  }
+  
+  function hideSMSConversation(){
+    smsConversation.classList.remove('show');
+  }
+  
+  function addMessage(text, type = 'received', delay = 0){
+    setTimeout(() => {
+      const bubble = document.createElement('div');
+      bubble.className = `sms-bubble ${type}`;
+      bubble.textContent = text;
+      smsConvBody.appendChild(bubble);
+      smsConvBody.scrollTop = smsConvBody.scrollHeight;
+    }, delay);
+  }
+  
+  function showTypingIndicator(){
+    const typing = document.createElement('div');
+    typing.className = 'sms-typing';
+    typing.id = 'typingIndicator';
+    typing.innerHTML = `
+      <span class="sms-typing-dot"></span>
+      <span class="sms-typing-dot"></span>
+      <span class="sms-typing-dot"></span>
+    `;
+    smsConvBody.appendChild(typing);
+    smsConvBody.scrollTop = smsConvBody.scrollHeight;
+  }
+  
+  function removeTypingIndicator(){
+    const typing = document.getElementById('typingIndicator');
+    if (typing) typing.remove();
+  }
+  
+  function showPasswordOptions(){
+    const optionsContainer = document.createElement('div');
+    optionsContainer.className = 'sms-options';
+    optionsContainer.id = 'passwordOptions';
+    
+    const options = [
+      { text: 'Spróbuj: 22032026', password: '22032026', correct: false },
+      { text: 'Spróbuj: 17042026', password: '17042026', correct: true },
+      { text: 'Spróbuj: 2137420', password: '2137420', correct: false }
+    ];
+    
+    options.forEach((option, index) => {
+      const btn = document.createElement('button');
+      btn.className = 'sms-option';
+      btn.textContent = option.text;
+      btn.dataset.password = option.password;
+      btn.dataset.correct = option.correct;
+      btn.dataset.index = index;
+      
+      btn.addEventListener('click', () => handlePasswordOption(btn));
+      
+      optionsContainer.appendChild(btn);
+    });
+    
+    smsConvBody.appendChild(optionsContainer);
+    smsConvBody.scrollTop = smsConvBody.scrollHeight;
+  }
+  
+  function handlePasswordOption(btn){
+    const password = btn.dataset.password;
+    const isCorrect = btn.dataset.correct === 'true';
+    const index = parseInt(btn.dataset.index);
+    
+    // Disable all options
+    const allOptions = document.querySelectorAll('.sms-option');
+    allOptions.forEach(opt => opt.disabled = true);
+    
+    // Send user message
+    addMessage(password, 'sent', 100);
+    
+    // Show typing indicator
+    setTimeout(() => {
+      showTypingIndicator();
+    }, 800);
+    
+    // Response after 3 seconds
+    setTimeout(() => {
+      removeTypingIndicator();
+      
+      if (isCorrect) {
+        // Correct password!
+        addMessage('Super! Działa, dziękuję! 🎉', 'received', 100);
+        
+        // Remove options
+        setTimeout(() => {
+          const optionsEl = document.getElementById('passwordOptions');
+          if (optionsEl) optionsEl.remove();
+        }, 500);
+        
+        conversationState = 2;
+      } else {
+        // Wrong password
+        addMessage('Nie działa 😕', 'received', 100);
+        
+        // Remove the tried option and show remaining
+        setTimeout(() => {
+          btn.remove();
+          
+          // Re-enable remaining options
+          const remainingOptions = document.querySelectorAll('.sms-option:not([disabled])');
+          remainingOptions.forEach(opt => opt.disabled = false);
+          
+          conversationState = 1;
+        }, 800);
+      }
+    }, 3000);
+  }
+  
   smsClose.addEventListener('click', hideSMSNotification);
   
-  // Auto-hide after 10 seconds
+  // Click notification to open conversation
+  smsNotification.addEventListener('click', (e) => {
+    if (e.target !== smsClose) {
+      showSMSConversation();
+    }
+  });
+  
+  smsConvClose.addEventListener('click', hideSMSConversation);
+  
+  // Auto-hide notification after 10 seconds (but keep conversation available)
   setTimeout(() => {
     hideSMSNotification();
   }, 11500);
