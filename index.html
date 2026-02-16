@@ -869,10 +869,13 @@
   .vol span{ font-size:12px; }
   .vol input[type="range"]{ 
     width:100px;
+    height:4px;
     -webkit-appearance:none;
     appearance:none;
-    background:transparent;
+    background:var(--finderHoverBg);
+    border-radius:2px;
     cursor:pointer;
+    position:relative;
   }
   
   /* Range track */
@@ -888,6 +891,23 @@
     border-radius:2px;
   }
   
+  /* Progress fill (filled part) */
+  .vol input[type="range"]::-webkit-slider-runnable-track{
+    height:4px;
+    background:linear-gradient(to right, 
+      rgba(80,150,255,.9) 0%, 
+      rgba(80,150,255,.9) var(--volume-percent, 85%), 
+      var(--finderHoverBg) var(--volume-percent, 85%), 
+      var(--finderHoverBg) 100%);
+    border-radius:2px;
+  }
+  
+  .vol input[type="range"]::-moz-range-progress{
+    height:4px;
+    background:rgba(80,150,255,.9);
+    border-radius:2px;
+  }
+  
   /* Range thumb */
   .vol input[type="range"]::-webkit-slider-thumb{
     -webkit-appearance:none;
@@ -896,6 +916,8 @@
     background:rgba(80,150,255,.9);
     border-radius:50%;
     margin-top:-4px;
+    box-shadow:0 2px 4px rgba(0,0,0,.2);
+    cursor:pointer;
   }
   
   .vol input[type="range"]::-moz-range-thumb{
@@ -904,15 +926,18 @@
     background:rgba(80,150,255,.9);
     border:0;
     border-radius:50%;
+    box-shadow:0 2px 4px rgba(0,0,0,.2);
+    cursor:pointer;
   }
   
   .vol input[type="range"]:hover::-webkit-slider-thumb{
     background:rgba(80,150,255,1);
-    transform:scale(1.1);
+    transform:scale(1.15);
   }
   
   .vol input[type="range"]:hover::-moz-range-thumb{
     background:rgba(80,150,255,1);
+    transform:scale(1.15);
   }
   .progress{
     margin-top:12px;
@@ -2907,8 +2932,17 @@
   });
 
   mixVol.addEventListener("input", ()=>{
-    mixAudio.volume = Number(mixVol.value);
+    const volume = Number(mixVol.value);
+    mixAudio.volume = volume;
+    
+    // Update CSS variable for gradient fill
+    const percent = volume * 100;
+    mixVol.style.setProperty('--volume-percent', `${percent}%`);
   });
+  
+  // Initialize volume slider fill
+  const initialPercent = Number(mixVol.value) * 100;
+  mixVol.style.setProperty('--volume-percent', `${initialPercent}%`);
 
   mixPbar.addEventListener("click", (e)=>{
     const r = mixPbar.getBoundingClientRect();
