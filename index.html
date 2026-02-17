@@ -1049,24 +1049,21 @@
     border-right-width:4px;
   }
   
-  /* Video player specific button styling */
+  /* Video player specific button styling - show text instead of CSS icons */
+  #videoPlay,
+  #videoPrev,
+  #videoNext{
+    font-size: 14px;
+  }
+  
   #videoPlay::before,
   #videoPrev::before,
   #videoNext::before{
-    border-color: transparent transparent transparent var(--text) !important;
+    display: none !important;
   }
   
-  @media (prefers-color-scheme: dark) {
-    #videoPlay::before,
-    #videoPrev::before,
-    #videoNext::before{
-      border-color: transparent transparent transparent rgba(255,255,255,.9) !important;
-    }
-    
-    #videoPlay.playing::before{
-      border-left-color: rgba(255,255,255,.9) !important;
-      border-right-color: rgba(255,255,255,.9) !important;
-    }
+  #videoPlay.playing::before{
+    display: none !important;
   }
   
   .vol{ 
@@ -2930,10 +2927,7 @@
   
   smsConvClose.addEventListener('click', hideSMSConversation);
   
-  // Auto-hide notification after 10 seconds (but keep conversation available)
-  setTimeout(() => {
-    hideSMSNotification();
-  }, 11500);
+  // SMS notification stays visible until manually closed - no auto-hide
   
   // Show SMS on page load
   showSMSNotification();
@@ -3907,11 +3901,9 @@
 
   function updateVideoPlayButton(){
     if (videoPlayer.paused) {
-      videoPlay.classList.remove("playing");
       videoPlay.textContent = "▶";
     } else {
-      videoPlay.classList.add("playing");
-      videoPlay.textContent = "❚❚";
+      videoPlay.textContent = "⏸";
     }
   }
 
