@@ -66,37 +66,102 @@
     box-shadow: 0 6px 20px rgba(37,99,235,.4);
   }
   
-  /* ===== Glitch Effect ===== */
-  .glitch-overlay{
+  /* ===== Blue Screen of Death ===== */
+  .bluescreen{
     position: fixed;
     inset: 0;
-    background: #000;
+    background: #0078d7;
     z-index: 19999;
     opacity: 0;
     pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+    padding: 40px;
   }
   
-  .glitch-overlay.active{
-    animation: glitchFlash 0.3s steps(4) infinite;
-  }
-  
-  @keyframes glitchFlash {
-    0%, 100% { opacity: 0; }
-    10% { opacity: 1; background: #ff0000; }
-    20% { opacity: 0.8; background: #00ff00; }
-    30% { opacity: 0.6; background: #0000ff; }
-    40% { opacity: 1; background: #ffffff; }
-    50% { opacity: 0.9; background: #000000; }
-    60% { opacity: 0.7; background: #ff00ff; }
-    70% { opacity: 1; background: #00ffff; }
-    80% { opacity: 0.5; background: #ffff00; }
-    90% { opacity: 1; background: #000000; }
-  }
-  
-  .glitch-overlay.black{
+  .bluescreen.active{
     opacity: 1;
+    pointer-events: auto;
+  }
+  
+  .bsod-emoji{
+    font-size: 120px;
+    margin-bottom: 30px;
+  }
+  
+  .bsod-title{
+    font-size: 32px;
+    font-weight: 400;
+    margin-bottom: 20px;
+  }
+  
+  .bsod-text{
+    font-size: 18px;
+    margin-bottom: 40px;
+    opacity: 0.9;
+  }
+  
+  .bsod-error{
+    font-size: 14px;
+    font-family: 'Consolas', monospace;
+    opacity: 0.7;
+    margin-bottom: 20px;
+  }
+  
+  .bsod-percentage{
+    font-size: 24px;
+    margin-top: 20px;
+  }
+  
+  /* ===== Safe Boot Screen ===== */
+  .safeboot-screen{
+    position: fixed;
+    inset: 0;
     background: #000;
-    animation: none;
+    z-index: 19998;
+    display: none;
+    flex-direction: column;
+    padding: 40px;
+    color: #aaa;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 14px;
+    overflow-y: auto;
+  }
+  
+  .safeboot-screen.active{
+    display: flex;
+  }
+  
+  .safeboot-line{
+    margin: 2px 0;
+    opacity: 0;
+    animation: fadeInLine 0.1s ease forwards;
+  }
+  
+  @keyframes fadeInLine {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .safeboot-line.ok::after{
+    content: " [OK]";
+    color: #0f0;
+  }
+  
+  .safeboot-line.failed::after{
+    content: " [FAILED]";
+    color: #f00;
+  }
+  
+  .safeboot-title{
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 20px 0 10px 0;
   }
   
   /* ===== System Loading Screen ===== */
@@ -104,7 +169,7 @@
     position: fixed;
     inset: 0;
     background: #0a0a0a;
-    z-index: 19998;
+    z-index: 19997;
     display: none;
     flex-direction: column;
     align-items: center;
@@ -984,6 +1049,26 @@
     border-right-width:4px;
   }
   
+  /* Video player specific button styling */
+  #videoPlay::before,
+  #videoPrev::before,
+  #videoNext::before{
+    border-color: transparent transparent transparent var(--text) !important;
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    #videoPlay::before,
+    #videoPrev::before,
+    #videoNext::before{
+      border-color: transparent transparent transparent rgba(255,255,255,.9) !important;
+    }
+    
+    #videoPlay.playing::before{
+      border-left-color: rgba(255,255,255,.9) !important;
+      border-right-color: rgba(255,255,255,.9) !important;
+    }
+  }
+  
   .vol{ 
     display:flex; 
     gap:10px; 
@@ -1818,8 +1903,21 @@
     </div>
   </div>
 
-  <!-- Glitch Overlay -->
-  <div class="glitch-overlay" id="glitchOverlay"></div>
+  <!-- Blue Screen of Death -->
+  <div class="bluescreen" id="bluescreen">
+    <div class="bsod-emoji">:(</div>
+    <div class="bsod-title">Your PC ran into a problem and needs to restart.</div>
+    <div class="bsod-text">We're just collecting some error info, and then we'll restart for you.</div>
+    <div class="bsod-percentage" id="bsodPercentage">0% complete</div>
+    <div class="bsod-error">
+      Stop code: CRITICAL_PROCESS_DIED
+    </div>
+  </div>
+
+  <!-- Safe Boot Screen -->
+  <div class="safeboot-screen" id="safebootScreen">
+    <div class="safeboot-title">Starting system in Safe Mode...</div>
+  </div>
 
   <!-- System Loading Screen -->
   <div class="system-loading" id="systemLoading">
@@ -2225,9 +2323,9 @@
           </div>
 
           <div class="ctrl">
-            <button class="mbtn" id="videoPrev" title="Poprzedni"></button>
-            <button class="mbtn playBig" id="videoPlay" title="Play/Pause"></button>
-            <button class="mbtn" id="videoNext" title="Następny"></button>
+            <button class="mbtn" id="videoPrev" title="Poprzedni">◀</button>
+            <button class="mbtn playBig" id="videoPlay" title="Play/Pause">▶</button>
+            <button class="mbtn" id="videoNext" title="Następny">▶</button>
           </div>
 
           <div class="vol">
@@ -2423,7 +2521,7 @@
 
   <script>
   // ====== MAINTENANCE MODE ======
-  const MAINTENANCE = false;
+  const MAINTENANCE = true;
   const PASSWORD = "g0dwifi";
 
   function isUnlocked() {
@@ -2567,7 +2665,9 @@
   // ===== Splash Screen Sequence =====
   const splashScreen = document.getElementById("splashScreen");
   const splashButton = document.getElementById("splashButton");
-  const glitchOverlay = document.getElementById("glitchOverlay");
+  const bluescreen = document.getElementById("bluescreen");
+  const bsodPercentage = document.getElementById("bsodPercentage");
+  const safebootScreen = document.getElementById("safebootScreen");
   const systemLoading = document.getElementById("systemLoading");
   const systemLoginBtn = document.getElementById("systemLoginBtn");
   
@@ -2578,32 +2678,75 @@
     splashScreen.classList.add("hidden");
   }
   
+  const safebootMessages = [
+    "Loading system drivers...",
+    "Initializing hardware...",
+    "Starting ACPI subsystem...",
+    "Loading USB drivers...",
+    "Detecting storage devices...",
+    "Mounting filesystems...",
+    "Starting network services...",
+    "Loading audio drivers...",
+    "Initializing graphics...",
+    "Starting system services...",
+    "Loading kernel modules...",
+    "Checking disk integrity...",
+    "Starting security services...",
+    "Initializing user environment...",
+    "System ready for login..."
+  ];
+  
   splashButton.addEventListener("click", () => {
     // Mark as seen
     sessionStorage.setItem("hasSeenSplash", "true");
     
-    // Start glitch effect
-    glitchOverlay.classList.add("active");
+    // Show bluescreen
+    bluescreen.classList.add("active");
+    splashScreen.style.display = "none";
     
-    // After 1 second of glitching, go black
-    setTimeout(() => {
-      glitchOverlay.classList.remove("active");
-      glitchOverlay.classList.add("black");
+    // Animate percentage from 0 to 100
+    let percent = 0;
+    const percentInterval = setInterval(() => {
+      percent += 3;
+      if (percent > 100) percent = 100;
+      bsodPercentage.textContent = `${percent}% complete`;
       
-      // Hide splash screen
-      splashScreen.style.display = "none";
-      
-      // After 3 seconds of black screen, show system loading
-      setTimeout(() => {
-        glitchOverlay.style.opacity = "0";
-        systemLoading.classList.add("active");
+      if (percent >= 100) {
+        clearInterval(percentInterval);
         
-        // Remove glitch overlay after fade
+        // After reaching 100%, wait 500ms then show safe boot
         setTimeout(() => {
-          glitchOverlay.style.display = "none";
+          bluescreen.classList.remove("active");
+          safebootScreen.classList.add("active");
+          
+          // Add safe boot messages one by one
+          let messageIndex = 0;
+          const messageInterval = setInterval(() => {
+            if (messageIndex < safebootMessages.length) {
+              const line = document.createElement("div");
+              line.className = "safeboot-line ok";
+              line.textContent = safebootMessages[messageIndex];
+              line.style.animationDelay = `${messageIndex * 0.05}s`;
+              safebootScreen.appendChild(line);
+              messageIndex++;
+            } else {
+              clearInterval(messageInterval);
+              
+              // After all messages, transition to system loading
+              setTimeout(() => {
+                safebootScreen.style.opacity = "0";
+                safebootScreen.style.transition = "opacity 0.5s ease";
+                
+                setTimeout(() => {
+                  safebootScreen.classList.remove("active");
+                  systemLoading.classList.add("active");
+                }, 500);
+              }, 500);
+            }
+          }, 100); // Show each message every 100ms
         }, 500);
-      }, 3000);
-    }, 1000);
+      }
+    }, 90); // Update percentage every 90ms (3 seconds total)
   });
   
   systemLoginBtn.addEventListener("click", () => {
@@ -3765,8 +3908,10 @@
   function updateVideoPlayButton(){
     if (videoPlayer.paused) {
       videoPlay.classList.remove("playing");
+      videoPlay.textContent = "▶";
     } else {
       videoPlay.classList.add("playing");
+      videoPlay.textContent = "❚❚";
     }
   }
 
