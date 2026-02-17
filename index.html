@@ -12,6 +12,176 @@
 <link href="https://fonts.googleapis.com/css2?family=Lovers+Quarrel&display=swap" rel="stylesheet">
 
 <style>
+  /* ===== Splash Screen (Missing Person Report) ===== */
+  .splash-screen{
+    position: fixed;
+    inset: 0;
+    background: #ffffff;
+    z-index: 20000;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+  }
+  
+  .splash-screen.hidden{
+    display: none;
+  }
+  
+  .splash-content{
+    text-align: center;
+    max-width: 600px;
+  }
+  
+  .splash-title{
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+    line-height: 1.3;
+  }
+  
+  .splash-subtitle{
+    font-size: clamp(16px, 3vw, 20px);
+    color: #666;
+    margin-bottom: 40px;
+    line-height: 1.6;
+  }
+  
+  .splash-button{
+    padding: 18px 48px;
+    font-size: 18px;
+    font-weight: 600;
+    background: #2563eb;
+    color: white;
+    border: 0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: .2s ease;
+    box-shadow: 0 4px 12px rgba(37,99,235,.3);
+  }
+  
+  .splash-button:hover{
+    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37,99,235,.4);
+  }
+  
+  /* ===== Glitch Effect ===== */
+  .glitch-overlay{
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 19999;
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  .glitch-overlay.active{
+    animation: glitchFlash 0.3s steps(4) infinite;
+  }
+  
+  @keyframes glitchFlash {
+    0%, 100% { opacity: 0; }
+    10% { opacity: 1; background: #ff0000; }
+    20% { opacity: 0.8; background: #00ff00; }
+    30% { opacity: 0.6; background: #0000ff; }
+    40% { opacity: 1; background: #ffffff; }
+    50% { opacity: 0.9; background: #000000; }
+    60% { opacity: 0.7; background: #ff00ff; }
+    70% { opacity: 1; background: #00ffff; }
+    80% { opacity: 0.5; background: #ffff00; }
+    90% { opacity: 1; background: #000000; }
+  }
+  
+  .glitch-overlay.black{
+    opacity: 1;
+    background: #000;
+    animation: none;
+  }
+  
+  /* ===== System Loading Screen ===== */
+  .system-loading{
+    position: fixed;
+    inset: 0;
+    background: #0a0a0a;
+    z-index: 19998;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #00ff00;
+    font-family: 'Courier New', monospace;
+    padding: 20px;
+  }
+  
+  .system-loading.active{
+    display: flex;
+  }
+  
+  .system-logo{
+    font-size: 48px;
+    margin-bottom: 40px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  
+  .system-text{
+    font-size: 16px;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+  
+  .system-progress{
+    width: 300px;
+    height: 4px;
+    background: #1a1a1a;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 30px;
+  }
+  
+  .system-progress-bar{
+    height: 100%;
+    background: #00ff00;
+    width: 0%;
+    animation: loadProgress 3s ease-in-out forwards;
+  }
+  
+  @keyframes loadProgress {
+    0% { width: 0%; }
+    100% { width: 100%; }
+  }
+  
+  .system-login-btn{
+    padding: 16px 64px;
+    font-size: 18px;
+    font-weight: 600;
+    background: #00ff00;
+    color: #0a0a0a;
+    border: 2px solid #00ff00;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    transition: .2s ease;
+    opacity: 0;
+    animation: fadeInBtn 0.5s ease forwards 3s;
+  }
+  
+  @keyframes fadeInBtn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .system-login-btn:hover{
+    background: #0a0a0a;
+    color: #00ff00;
+    box-shadow: 0 0 20px rgba(0,255,0,.3);
+  }
+
   :root{
     --shadow: 0 20px 60px rgba(0,0,0,.25);
     --border: rgba(0,0,0,.15);
@@ -1634,6 +1804,38 @@
 </head>
 
 <body>
+  <!-- Splash Screen - Missing Person Report -->
+  <div class="splash-screen" id="splashScreen">
+    <div class="splash-content">
+      <h1 class="splash-title">Zgłoszenie osoby zaginionej</h1>
+      <p class="splash-subtitle">
+        Jeśli posiadasz informacje o miejscu pobytu osoby zaginionej,<br>
+        prosimy o wypełnienie formularza zgłoszeniowego.
+      </p>
+      <button class="splash-button" id="splashButton">
+        Przejdź do formularza
+      </button>
+    </div>
+  </div>
+
+  <!-- Glitch Overlay -->
+  <div class="glitch-overlay" id="glitchOverlay"></div>
+
+  <!-- System Loading Screen -->
+  <div class="system-loading" id="systemLoading">
+    <div class="system-logo">⚙️</div>
+    <div class="system-text">
+      Inicjalizacja systemu...<br>
+      Ładowanie modułów...
+    </div>
+    <div class="system-progress">
+      <div class="system-progress-bar"></div>
+    </div>
+    <button class="system-login-btn" id="systemLoginBtn">
+      ZALOGUJ
+    </button>
+  </div>
+
   <!-- Mobile block -->
   <div class="mobileBlock" id="mobileBlock">
     <div class="mobileBlockCard">
@@ -2361,6 +2563,59 @@
   document.getElementById("discordLink").href = DISCORD_URL;
 
   const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ===== Splash Screen Sequence =====
+  const splashScreen = document.getElementById("splashScreen");
+  const splashButton = document.getElementById("splashButton");
+  const glitchOverlay = document.getElementById("glitchOverlay");
+  const systemLoading = document.getElementById("systemLoading");
+  const systemLoginBtn = document.getElementById("systemLoginBtn");
+  
+  let hasSeenSplash = sessionStorage.getItem("hasSeenSplash");
+  
+  // Skip splash if already seen in this session
+  if (hasSeenSplash) {
+    splashScreen.classList.add("hidden");
+  }
+  
+  splashButton.addEventListener("click", () => {
+    // Mark as seen
+    sessionStorage.setItem("hasSeenSplash", "true");
+    
+    // Start glitch effect
+    glitchOverlay.classList.add("active");
+    
+    // After 1 second of glitching, go black
+    setTimeout(() => {
+      glitchOverlay.classList.remove("active");
+      glitchOverlay.classList.add("black");
+      
+      // Hide splash screen
+      splashScreen.style.display = "none";
+      
+      // After 3 seconds of black screen, show system loading
+      setTimeout(() => {
+        glitchOverlay.style.opacity = "0";
+        systemLoading.classList.add("active");
+        
+        // Remove glitch overlay after fade
+        setTimeout(() => {
+          glitchOverlay.style.display = "none";
+        }, 500);
+      }, 3000);
+    }, 1000);
+  });
+  
+  systemLoginBtn.addEventListener("click", () => {
+    // Fade out system loading
+    systemLoading.style.opacity = "0";
+    systemLoading.style.transition = "opacity 0.5s ease";
+    
+    setTimeout(() => {
+      systemLoading.classList.remove("active");
+      systemLoading.style.display = "none";
+    }, 500);
+  });
 
   // ===== SMS Notification =====
   const smsNotification = document.getElementById("smsNotification");
