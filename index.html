@@ -18,13 +18,28 @@
     inset: 0;
     background: #ffffff;
     z-index: 20000;
-    display: grid;
-    place-items: center;
-    padding: 20px;
+    display: flex;
+    padding: 0;
   }
   
   .splash-screen.hidden{
     display: none;
+  }
+  
+  .splash-left{
+    flex: 1;
+    background-image: url('E16B01A6-6D20-4129-9A8C-1AE54DC0412E.PNG');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  
+  .splash-right{
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
   }
   
   .splash-content{
@@ -64,6 +79,21 @@
     background: #1d4ed8;
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(37,99,235,.4);
+  }
+  
+  @media (max-width: 768px) {
+    .splash-screen{
+      flex-direction: column;
+    }
+    
+    .splash-left{
+      min-height: 40vh;
+    }
+    
+    .splash-right{
+      flex: 1;
+      padding: 20px;
+    }
   }
   
   /* ===== Blue Screen of Death ===== */
@@ -1888,15 +1918,18 @@
 <body>
   <!-- Splash Screen - Missing Person Report -->
   <div class="splash-screen" id="splashScreen">
-    <div class="splash-content">
-      <h1 class="splash-title">Zgłoszenie osoby zaginionej</h1>
-      <p class="splash-subtitle">
-        Jeśli posiadasz informacje o miejscu pobytu osoby zaginionej,<br>
-        prosimy o wypełnienie formularza zgłoszeniowego.
-      </p>
-      <button class="splash-button" id="splashButton">
-        Przejdź do formularza
-      </button>
+    <div class="splash-left"></div>
+    <div class="splash-right">
+      <div class="splash-content">
+        <h1 class="splash-title">Zgłoszenie osoby zaginionej</h1>
+        <p class="splash-subtitle">
+          Jeśli posiadasz informacje o miejscu pobytu osoby zaginionej,<br>
+          prosimy o wypełnienie formularza zgłoszeniowego.
+        </p>
+        <button class="splash-button" id="splashButton">
+          Przejdź do formularza
+        </button>
+      </div>
     </div>
   </div>
 
