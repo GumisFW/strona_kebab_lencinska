@@ -81,18 +81,323 @@
     box-shadow: 0 6px 20px rgba(37,99,235,.4);
   }
   
+  /* ===== Mobile & Tablet Responsiveness ===== */
+  @media (max-width: 1200px) {
+    .app{
+      width: 95vw !important;
+      max-width: 95vw !important;
+    }
+    
+    .taskbar{
+      font-size: 12px;
+    }
+    
+    .taskbar-app{
+      min-width: 100px;
+      max-width: 140px;
+      padding: 0 8px;
+      font-size: 11px;
+    }
+  }
+  
   @media (max-width: 768px) {
+    /* Splash screen mobile */
     .splash-screen{
       flex-direction: column;
     }
     
     .splash-left{
-      min-height: 40vh;
+      flex: 1;
+      min-height: 50vh;
     }
     
     .splash-right{
       flex: 1;
+      padding: 30px 20px;
+    }
+    
+    .splash-title{
+      font-size: 24px;
+    }
+    
+    .splash-subtitle{
+      font-size: 16px;
+      margin-bottom: 30px;
+    }
+    
+    /* Desktop icons */
+    .icons{
+      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+      gap: 16px;
+      padding: 12px;
+    }
+    
+    .icon{
+      width: 70px;
+      font-size: 11px;
+    }
+    
+    .icon .pic{
+      width: 48px;
+      height: 48px;
+    }
+    
+    /* Windows */
+    .app{
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      max-height: calc(100vh - 56px) !important;
+      border-radius: 0 !important;
+      top: 0 !important;
+      left: 0 !important;
+    }
+    
+    .app.open{
+      transform: none !important;
+    }
+    
+    .titlebar{
+      padding: 8px 12px;
+    }
+    
+    .title{
+      font-size: 14px;
+    }
+    
+    .win-btn{
+      width: 28px;
+      height: 28px;
+      font-size: 12px;
+    }
+    
+    /* Taskbar */
+    .taskbar{
+      height: 56px;
+      padding: 6px 8px;
+    }
+    
+    .taskbar-left{
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    
+    .taskbar-left::-webkit-scrollbar{
+      display: none;
+    }
+    
+    .start-btn{
+      width: 40px;
+      height: 32px;
+      font-size: 18px;
+    }
+    
+    .taskbar-app{
+      min-width: 80px;
+      max-width: 120px;
+      height: 32px;
+      padding: 0 8px;
+      font-size: 11px;
+      gap: 4px;
+    }
+    
+    .taskbar-icon{
+      width: 16px;
+      height: 16px;
+    }
+    
+    .taskbar-separator{
+      display: none;
+    }
+    
+    .taskbar-social{
+      display: none !important;
+    }
+    
+    .taskbar-right{
+      gap: 8px;
+    }
+    
+    .system-tray{
+      gap: 8px;
+    }
+    
+    .tray-icon{
+      padding: 4px 6px;
+    }
+    
+    .battery{
+      font-size: 11px;
+    }
+    
+    #clock{
+      font-size: 12px;
+    }
+    
+    /* Menu */
+    .menuWrap{
+      width: 100vw !important;
+      height: 100vh !important;
+      border-radius: 0 !important;
+      top: 0 !important;
+      left: 0 !important;
+    }
+    
+    .menu{
+      grid-template-columns: 1fr;
+      gap: 12px;
       padding: 20px;
+    }
+    
+    /* Player controls */
+    .playerBar{
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .ctrl{
+      order: 1;
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .vol{
+      order: 2;
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .now{
+      order: 0;
+      width: 100%;
+      text-align: center;
+    }
+    
+    /* Video player */
+    video#videoPlayer{
+      max-height: 300px !important;
+    }
+    
+    /* Notes */
+    .notesWrap{
+      flex-direction: column;
+      height: auto !important;
+      min-height: 300px;
+    }
+    
+    .notesSidebar{
+      width: 100%;
+      border-right: 0;
+      border-bottom: 1px solid var(--iconBorder);
+    }
+    
+    /* Photos grid */
+    .icloudGrid{
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 8px;
+      padding: 12px;
+    }
+    
+    /* Game canvas */
+    canvas#dinoCanvas{
+      height: 180px;
+    }
+    
+    /* SMS notifications */
+    .sms-notification,
+    .sms-conversation{
+      width: calc(100vw - 20px);
+      right: 10px;
+      bottom: 62px;
+    }
+    
+    /* Login modal */
+    .login-modal .login-box{
+      width: 90vw;
+    }
+    
+    /* iCloud viewer */
+    .icloudViewer{
+      padding: 10px;
+    }
+    
+    .icloudViewerTop{
+      padding: 12px;
+    }
+    
+    /* Finder grid */
+    .finderGrid{
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 12px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .splash-title{
+      font-size: 20px;
+    }
+    
+    .splash-subtitle{
+      font-size: 14px;
+    }
+    
+    .splash-button{
+      padding: 14px 32px;
+      font-size: 16px;
+    }
+    
+    .icon{
+      width: 60px;
+      font-size: 10px;
+    }
+    
+    .icon .pic{
+      width: 40px;
+      height: 40px;
+    }
+    
+    .mbtn{
+      width: 32px;
+      height: 32px;
+    }
+    
+    .playBig{
+      width: 38px;
+      height: 38px;
+    }
+    
+    .icloudGrid{
+      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    }
+  }
+  
+  /* Touch improvements */
+  @media (hover: none) and (pointer: coarse) {
+    .mbtn,
+    .win-btn,
+    .icon,
+    .finderItem,
+    .track,
+    .sms-option,
+    .taskbar-app,
+    .start-btn{
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    .mbtn:active,
+    .win-btn:active{
+      transform: scale(0.95);
+    }
+    
+    /* Larger touch targets */
+    .win-btn{
+      width: 32px;
+      height: 32px;
+    }
+    
+    .tray-icon{
+      padding: 8px 10px;
     }
   }
   
@@ -1404,44 +1709,70 @@
   /* ===== Mobile block ===== */
   .mobileBlock{
     position:fixed;
-    inset:0;
-    z-index:9999;
+    bottom: 76px;
+    right: 20px;
+    z-index:8000;
     display:none;
-    padding:20px;
-    background:
-      radial-gradient(800px 500px at 20% 20%, rgba(80,120,255,.18), transparent 60%),
-      linear-gradient(180deg,#0a0c14,#050507);
+    max-width: 400px;
   }
+  
+  .mobileBlock.show{
+    display: block;
+  }
+  
   .mobileBlockCard{
-    max-width:480px;
-    margin:0 auto;
-    border-radius:8px;
-    border:1px solid rgba(255,255,255,.15);
-    background: rgba(40,40,45,.95);
-    box-shadow: 0 30px 90px rgba(0,0,0,.6);
+    border-radius:12px;
+    border:1px solid var(--border);
+    background: var(--windowBg);
+    box-shadow: 0 12px 40px rgba(0,0,0,.3);
+    backdrop-filter: blur(20px);
     padding:20px;
   }
-  .mobileH1{ font-size:18px; margin:0 0 12px; }
-  .mobileP{ margin:0 0 16px; line-height:1.4; font-size:14px; }
-  .mobileActions{ display:flex; gap:10px; flex-wrap:wrap; }
+  .mobileH1{ 
+    font-size:16px; 
+    margin:0 0 12px; 
+    font-weight: 700;
+    color: var(--text);
+  }
+  .mobileP{ 
+    margin:0 0 16px; 
+    line-height:1.5; 
+    font-size:14px; 
+    color: var(--muted);
+  }
+  .mobileActions{ 
+    display:flex; 
+    gap:10px; 
+    flex-wrap:wrap; 
+  }
   .mobileBtn{
-    border:1px solid rgba(255,255,255,.18);
-    background: rgba(255,255,255,.12);
+    border:1px solid var(--border);
+    background: var(--finderBg);
     color: var(--text);
     padding:10px 16px;
-    border-radius:4px;
+    border-radius:8px;
     cursor:pointer;
     font-weight:600;
     font-size:13px;
-    transition:.12s ease;
+    transition:.15s ease;
   }
-  .mobileBtn:hover{ background: rgba(255,255,255,.18); }
+  .mobileBtn:hover{ 
+    background: var(--finderHoverBg); 
+  }
   .mobileBtn.primary{
     background: rgba(88,101,242,.9);
-    border-color: rgba(255,255,255,.2);
+    border-color: rgba(88,101,242,1);
+    color: white;
   }
-  .mobileBtn.primary:hover{ background: rgba(88,101,242,1); }
-  .mobileMeta{ font-size:12px; opacity:.65; margin-top:12px; }
+  .mobileBtn.primary:hover{ 
+    background: rgba(88,101,242,1); 
+  }
+  .mobileMeta{ 
+    font-size:12px; 
+    opacity:.65; 
+    margin-top:12px; 
+    color: var(--muted);
+  }
 
   @media (max-width:520px){
     .finderGrid{ grid-template-columns: repeat(3, minmax(90px, 1fr)); }
@@ -1967,14 +2298,13 @@
   <!-- Mobile block -->
   <div class="mobileBlock" id="mobileBlock">
     <div class="mobileBlockCard">
-      <div class="mobileH1">Nieznane urządzenie</div>
+      <div class="mobileH1">📱 Urządzenie mobilne wykryte</div>
       <p class="mobileP">
-        Ta strona jest zrobiona pod desktop. Na telefonie wygląda słabo i część rzeczy nie działa jak trzeba.
-        Wejdź proszę na komputerze.
+        Strona jest zoptymalizowana dla desktopów, ale możesz korzystać z niej na telefonie. Niektóre funkcje mogą działać lepiej na większym ekranie.
       </p>
       <div class="mobileActions">
-        <button class="mobileBtn primary" id="copyLinkBtn">Skopiuj link</button>
-        <button class="mobileBtn" id="continueAnywayBtn">Kontynuuj mimo to</button>
+        <button class="mobileBtn primary" id="continueAnywayBtn">Rozumiem, kontynuuj</button>
+        <button class="mobileBtn" id="copyLinkBtn">Skopiuj link</button>
       </div>
       <div class="mobileMeta" id="mobileMeta"></div>
     </div>
@@ -2637,7 +2967,7 @@
 </script>
 
 <script>
-  // ===== Mobile blocker =====
+  // ===== Mobile notice =====
   (function(){
     const block = document.getElementById("mobileBlock");
     if (!block) return;
@@ -2652,20 +2982,27 @@
     const isMobileLike = /Android|iPhone|iPad|iPod|Windows Phone/i.test(ua) || (isTouch && smallScreen);
 
     function show(){
-      block.style.display = "block";
-      document.body.style.overflow = "hidden";
+      block.classList.add("show");
     }
 
     function hide(){
-      block.style.display = "none";
-      document.body.style.overflow = "hidden";
+      block.classList.remove("show");
     }
 
     if (isMobileLike){
       const device = /iPhone|iPad|iPod/i.test(ua) ? "iOS" :
                      /Android/i.test(ua) ? "Android" : "Mobile";
       meta.textContent = `Wykryto: ${device} · ${window.innerWidth}×${window.innerHeight}`;
-      show();
+      
+      // Show notice after splash screen sequence
+      setTimeout(() => {
+        show();
+      }, 2000);
+      
+      // Auto-hide after 8 seconds
+      setTimeout(() => {
+        hide();
+      }, 10000);
     }
 
     btnContinue?.addEventListener("click", () => hide());
