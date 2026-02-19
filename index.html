@@ -3725,6 +3725,13 @@
     photoLoginModal.classList.add("open");
     photoLoginUsername.value = "";
     photoLoginPassword.value = "";
+    
+    // On mobile, make password field normal password input
+    if (isMobileDevice) {
+      photoLoginPassword.type = "password";
+      photoLoginPassword.removeAttribute("readonly");
+    }
+    
     setTimeout(() => photoLoginUsername.focus(), 100);
   }
   
@@ -3733,8 +3740,10 @@
   }
   
   function attemptPhotoLogin(){
-    // Check if login is exactly "Zanzir" and password has exactly 8 characters
-    if (photoLoginUsername.value === PHOTO_LOGIN_TEXT && photoLoginPassword.value.length === 8) {
+    // On mobile, accept any password length > 0
+    const requiredPassLength = isMobileDevice ? 1 : 8;
+    
+    if (photoLoginUsername.value === PHOTO_LOGIN_TEXT && photoLoginPassword.value.length >= requiredPassLength) {
       hidePhotoLoginModal();
       
       // Open the photo viewer
@@ -3780,6 +3789,7 @@
   // Manual typing for username - no auto-fill
   photoLoginUsername.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
+      e.preventDefault();
       if (photoLoginUsername.value === PHOTO_LOGIN_TEXT) {
         photoLoginPassword.focus();
       } else {
@@ -3789,23 +3799,31 @@
     if (e.key === "Escape") hidePhotoLoginModal();
   });
   
-  // Password field - accept any 8 characters with bullets
+  // Password field behavior
   photoLoginPassword.addEventListener("keydown", (e) => {
-    // Prevent default for regular keys
+    if (isMobileDevice) {
+      // On mobile, allow normal typing
+      if (e.key === "Enter") {
+        e.preventDefault();
+        attemptPhotoLogin();
+      }
+      if (e.key === "Escape") hidePhotoLoginModal();
+      return;
+    }
+    
+    // Desktop: bullet character behavior
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
       e.preventDefault();
       
       if (photoLoginPassword.value.length < 8) {
         photoLoginPassword.value += "•";
         
-        // Auto-submit when 8 characters are entered
         if (photoLoginPassword.value.length === 8) {
           setTimeout(() => attemptPhotoLogin(), 200);
         }
       }
     }
     
-    // Allow backspace
     if (e.key === "Backspace") {
       e.preventDefault();
       if (photoLoginPassword.value.length > 0) {
@@ -3813,7 +3831,10 @@
       }
     }
     
-    if (e.key === "Enter") attemptPhotoLogin();
+    if (e.key === "Enter") {
+      e.preventDefault();
+      attemptPhotoLogin();
+    }
     if (e.key === "Escape") hidePhotoLoginModal();
   });
   
@@ -3838,11 +3859,22 @@
   let loginKeysPressed = 0;
   const LOGIN_TEXT = "good_wifey";
   
+  // Detect if mobile device
+  const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || 
+                         (navigator.maxTouchPoints > 0 && window.innerWidth < 768);
+  
   function showLoginModal(){
     loginModal.classList.add("open");
     loginUsername.value = "";
     loginPassword.value = "";
     loginKeysPressed = 0;
+    
+    // On mobile, make password field normal input
+    if (isMobileDevice) {
+      loginPassword.type = "password";
+      loginPassword.removeAttribute("readonly");
+    }
+    
     setTimeout(() => loginUsername.focus(), 100);
   }
   
@@ -3852,23 +3884,42 @@
   }
   
   function attemptLogin(){
-    // Check if login is "good_wifey" and password has exactly 8 characters
-    if (loginUsername.value === LOGIN_TEXT && loginPassword.value.length === 8) {
-      hideLoginModal();
-      // Open drive window after successful "login"
-      toggleWindow(driveWin, driveLauncher);
+    // On mobile, accept any password length
+    if (isMobileDevice) {
+      if (loginUsername.value === LOGIN_TEXT && loginPassword.value.length > 0) {
+        hideLoginModal();
+        toggleWindow(driveWin, driveLauncher);
+        return;
+      }
     } else {
-      // Shake animation for incorrect login
-      loginModal.querySelector(".login-box").style.animation = "shake 0.3s";
-      setTimeout(() => {
-        loginModal.querySelector(".login-box").style.animation = "";
-      }, 300);
+      // Desktop: check for exactly 8 characters
+      if (loginUsername.value === LOGIN_TEXT && loginPassword.value.length === 8) {
+        hideLoginModal();
+        toggleWindow(driveWin, driveLauncher);
+        return;
+      }
     }
+    
+    // Shake animation for incorrect login
+    loginModal.querySelector(".login-box").style.animation = "shake 0.3s";
+    setTimeout(() => {
+      loginModal.querySelector(".login-box").style.animation = "";
+    }, 300);
   }
   
-  // Auto-fill login field with "good_wifey" when typing
+  // Auto-fill login field with "good_wifey" when typing (desktop only)
   loginUsername.addEventListener("keydown", (e) => {
-    // Prevent default typing
+    if (isMobileDevice) {
+      // On mobile, allow normal typing
+      if (e.key === "Enter") {
+        e.preventDefault();
+        loginPassword.focus();
+      }
+      if (e.key === "Escape") hideLoginModal();
+      return;
+    }
+    
+    // Desktop: auto-fill behavior
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
       e.preventDefault();
       
@@ -3876,14 +3927,12 @@
         loginUsername.value = LOGIN_TEXT.substring(0, loginKeysPressed + 1);
         loginKeysPressed++;
         
-        // Auto-focus password field when login is complete
         if (loginKeysPressed === LOGIN_TEXT.length) {
           setTimeout(() => loginPassword.focus(), 100);
         }
       }
     }
     
-    // Allow backspace
     if (e.key === "Backspace") {
       e.preventDefault();
       if (loginKeysPressed > 0) {
@@ -3898,23 +3947,31 @@
     if (e.key === "Escape") hideLoginModal();
   });
   
-  // Password field - accept any 8 characters
+  // Password field behavior
   loginPassword.addEventListener("keydown", (e) => {
-    // Prevent default for regular keys
+    if (isMobileDevice) {
+      // On mobile, allow normal typing
+      if (e.key === "Enter") {
+        e.preventDefault();
+        attemptLogin();
+      }
+      if (e.key === "Escape") hideLoginModal();
+      return;
+    }
+    
+    // Desktop: bullet character behavior
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
       e.preventDefault();
       
       if (loginPassword.value.length < 8) {
         loginPassword.value += "•";
         
-        // Auto-submit when 8 characters are entered
         if (loginPassword.value.length === 8) {
           setTimeout(() => attemptLogin(), 200);
         }
       }
     }
     
-    // Allow backspace
     if (e.key === "Backspace") {
       e.preventDefault();
       if (loginPassword.value.length > 0) {
