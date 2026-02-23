@@ -667,6 +667,17 @@
     margin: 20px 0 10px 0;
   }
   
+  /* Desktop visibility control */
+  body.splash-active .wallpaper,
+  body.splash-active .brandBlur,
+  body.splash-active .grain,
+  body.splash-active .icons,
+  body.splash-active .windows,
+  body.splash-active .taskbar{
+    opacity: 0;
+    pointer-events: none;
+  }
+  
   :root{
     --shadow: 0 20px 60px rgba(0,0,0,.25);
     --border: rgba(0,0,0,.15);
@@ -2331,7 +2342,7 @@
 </style>
 </head>
 
-<body>
+<body class="splash-active">
   <!-- Entry Search Screen -->
   <div class="entry-screen" id="entryScreen">
     <div class="entry-question">Czego tu szukasz?</div>
@@ -3132,6 +3143,7 @@
   // Skip entry if already seen in this session
   if (hasSeenEntry) {
     entryScreen.classList.add("hidden");
+    document.body.classList.remove("splash-active");
   }
   
   // Show hint on focus
@@ -3256,7 +3268,7 @@
               } else {
                 clearInterval(messageInterval);
                 
-                // After all messages, go to desktop
+                // After all messages, remove splash-active and show desktop
                 setTimeout(() => {
                   safebootScreen.style.opacity = "0";
                   safebootScreen.style.transition = "opacity 0.5s ease";
@@ -3264,6 +3276,9 @@
                   setTimeout(() => {
                     safebootScreen.classList.remove("active");
                     safebootScreen.style.display = "none";
+                    
+                    // Show desktop
+                    document.body.classList.remove("splash-active");
                   }, 500);
                 }, 500);
               }
