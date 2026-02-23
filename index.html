@@ -3708,9 +3708,53 @@
   const openBinPhoto = document.getElementById("openBinPhoto");
   
   openBinPhoto.addEventListener("click", ()=>{
-    // Show photo login modal
-    showPhotoLoginModal();
+    // On mobile, show error message instead of login
+    if (isMobileDevice) {
+      showMobilePhotoError();
+    } else {
+      // Desktop: show login modal
+      showPhotoLoginModal();
+    }
   });
+  
+  // Show mobile photo error message
+  function showMobilePhotoError(){
+    const errorModal = document.createElement('div');
+    errorModal.className = 'login-modal open';
+    errorModal.style.zIndex = '10000';
+    errorModal.innerHTML = `
+      <div class="login-box" style="text-align: center; max-width: 400px;">
+        <div style="font-size: 48px; margin-bottom: 20px;">📱❌</div>
+        <div style="font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 16px;">
+          Niedostępne na urządzeniu mobilnym
+        </div>
+        <div style="font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 24px;">
+          Ten plik nie może być otwarty na telefonie lub tablecie. 
+          Spróbuj otworzyć go na komputerze stacjonarnym.
+        </div>
+        <button class="login-btn submit" style="width: 100%;" onclick="this.closest('.login-modal').remove()">
+          Rozumiem
+        </button>
+      </div>
+    `;
+    document.body.appendChild(errorModal);
+    
+    // Close on background click
+    errorModal.addEventListener('click', (e) => {
+      if (e.target === errorModal) {
+        errorModal.remove();
+      }
+    });
+    
+    // Close on Escape
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        errorModal.remove();
+        document.removeEventListener('keydown', handleEscape);
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+  }
   
   // ===== Photo Login Modal =====
   const photoLoginModal = document.getElementById("photoLoginModal");
@@ -3879,6 +3923,25 @@
   }
   
   // Auto-fill login field with "good_wifey" when typing
+  loginUsername.addEventListener("input", (e) => {
+    // Also trigger on input event for mobile
+    if (loginUsername.value.length > loginKeysPressed && loginKeysPressed < LOGIN_TEXT.length) {
+      loginKeysPressed = loginUsername.value.length;
+      loginUsername.value = LOGIN_TEXT.substring(0, loginKeysPressed);
+      
+      // Auto-focus password field when login is complete
+      if (loginKeysPressed === LOGIN_TEXT.length) {
+        setTimeout(() => {
+          loginPassword.focus();
+          // On mobile, trigger click to ensure keyboard stays open
+          if (isMobileDevice) {
+            loginPassword.click();
+          }
+        }, 100);
+      }
+    }
+  });
+  
   loginUsername.addEventListener("keydown", (e) => {
     // Prevent default typing
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
@@ -3890,7 +3953,13 @@
         
         // Auto-focus password field when login is complete
         if (loginKeysPressed === LOGIN_TEXT.length) {
-          setTimeout(() => loginPassword.focus(), 100);
+          setTimeout(() => {
+            loginPassword.focus();
+            // On mobile, trigger click to ensure keyboard stays open
+            if (isMobileDevice) {
+              loginPassword.click();
+            }
+          }, 100);
         }
       }
     }
@@ -3905,12 +3974,26 @@
     }
     
     if (e.key === "Enter" && loginUsername.value === LOGIN_TEXT) {
+      e.preventDefault();
       loginPassword.focus();
     }
     if (e.key === "Escape") hideLoginModal();
   });
   
   // Password field - auto-fill with bullets
+  loginPassword.addEventListener("input", (e) => {
+    // Also handle input event for mobile
+    const currentLen = loginPassword.value.length;
+    if (currentLen > loginPasswordKeys && loginPasswordKeys < 8) {
+      loginPasswordKeys = currentLen;
+      loginPassword.value = "•".repeat(loginPasswordKeys);
+      
+      if (loginPasswordKeys === 8) {
+        setTimeout(() => attemptLogin(), 200);
+      }
+    }
+  });
+  
   loginPassword.addEventListener("keydown", (e) => {
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
       e.preventDefault();
@@ -3935,7 +4018,10 @@
       }
     }
     
-    if (e.key === "Enter") attemptLogin();
+    if (e.key === "Enter") {
+      e.preventDefault();
+      attemptLogin();
+    }
     if (e.key === "Escape") hideLoginModal();
   });
   
