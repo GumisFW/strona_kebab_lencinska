@@ -12,6 +12,152 @@
 <link href="https://fonts.googleapis.com/css2?family=Lovers+Quarrel&display=swap" rel="stylesheet">
 
 <style>
+  /* ===== Entry Search Screen ===== */
+  .entry-screen{
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 21000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+  }
+  
+  .entry-screen.hidden{
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  .entry-question{
+    font-family: 'Courier New', monospace;
+    font-size: clamp(24px, 5vw, 48px);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin-bottom: 40px;
+    font-weight: 400;
+  }
+  
+  .entry-search-container{
+    position: relative;
+    width: min(500px, 90vw);
+  }
+  
+  .entry-search{
+    width: 100%;
+    padding: 18px 24px;
+    font-size: 20px;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 8px;
+    color: #fff;
+    font-family: 'Courier New', monospace;
+    outline: none;
+    transition: .3s ease;
+  }
+  
+  .entry-search:focus{
+    border-color: #666;
+    background: #222;
+  }
+  
+  .entry-search::placeholder{
+    color: #555;
+  }
+  
+  .entry-hint{
+    position: absolute;
+    top: 50%;
+    left: 24px;
+    transform: translateY(-50%);
+    color: #888;
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .entry-hint.show{
+    opacity: 1;
+  }
+  
+  /* Coming Soon Screen */
+  .coming-soon-screen{
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 20999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+  }
+  
+  .coming-soon-screen.show{
+    display: flex;
+    animation: fadeIn 0.5s ease forwards;
+  }
+  
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+  
+  .coming-soon-text{
+    font-family: 'Courier New', monospace;
+    font-size: clamp(32px, 8vw, 72px);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 8px;
+    font-weight: 700;
+    animation: pixelate 2s steps(10) infinite;
+  }
+  
+  @keyframes pixelate {
+    0%, 100% {
+      text-shadow: 
+        2px 2px 0 #f0f,
+        -2px -2px 0 #0ff;
+      filter: blur(0px);
+    }
+    50% {
+      text-shadow: 
+        4px 4px 0 #f0f,
+        -4px -4px 0 #0ff,
+        2px -2px 0 #ff0;
+      filter: blur(1px);
+    }
+  }
+  
+  .click-here-text{
+    font-family: 'Courier New', monospace;
+    font-size: clamp(24px, 5vw, 48px);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    cursor: pointer;
+    padding: 20px 40px;
+    border: 2px solid #fff;
+    border-radius: 8px;
+    transition: .3s ease;
+    display: none;
+  }
+  
+  .click-here-text.show{
+    display: block;
+    animation: fadeIn 0.5s ease forwards;
+  }
+  
+  .click-here-text:hover{
+    background: #fff;
+    color: #000;
+    transform: scale(1.05);
+  }
+  
   /* ===== Splash Screen (Missing Person Report) ===== */
   .splash-screen{
     position: fixed;
@@ -499,89 +645,6 @@
     margin: 20px 0 10px 0;
   }
   
-  /* ===== System Loading Screen ===== */
-  .system-loading{
-    position: fixed;
-    inset: 0;
-    background: #0a0a0a;
-    z-index: 19997;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: #00ff00;
-    font-family: 'Courier New', monospace;
-    padding: 20px;
-  }
-  
-  .system-loading.active{
-    display: flex;
-  }
-  
-  .system-logo{
-    font-size: 48px;
-    margin-bottom: 40px;
-    animation: pulse 2s ease-in-out infinite;
-  }
-  
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
-  
-  .system-text{
-    font-size: 16px;
-    margin-bottom: 30px;
-    text-align: center;
-  }
-  
-  .system-progress{
-    width: 300px;
-    height: 4px;
-    background: #1a1a1a;
-    border-radius: 2px;
-    overflow: hidden;
-    margin-bottom: 30px;
-  }
-  
-  .system-progress-bar{
-    height: 100%;
-    background: #00ff00;
-    width: 0%;
-    animation: loadProgress 3s ease-in-out forwards;
-  }
-  
-  @keyframes loadProgress {
-    0% { width: 0%; }
-    100% { width: 100%; }
-  }
-  
-  .system-login-btn{
-    padding: 16px 64px;
-    font-size: 18px;
-    font-weight: 600;
-    background: #00ff00;
-    color: #0a0a0a;
-    border: 2px solid #00ff00;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: 'Courier New', monospace;
-    transition: .2s ease;
-    opacity: 0;
-    animation: fadeInBtn 0.5s ease forwards 3s;
-  }
-  
-  @keyframes fadeInBtn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  .system-login-btn:hover{
-    background: #0a0a0a;
-    color: #00ff00;
-    box-shadow: 0 0 20px rgba(0,255,0,.3);
-  }
-
   :root{
     --shadow: 0 20px 60px rgba(0,0,0,.25);
     --border: rgba(0,0,0,.15);
@@ -2247,6 +2310,21 @@
 </head>
 
 <body>
+  <!-- Entry Search Screen -->
+  <div class="entry-screen" id="entryScreen">
+    <div class="entry-question">Czego tu szukasz?</div>
+    <div class="entry-search-container">
+      <input type="text" class="entry-search" id="entrySearch" placeholder="">
+      <div class="entry-hint" id="entryHint">god.wifi</div>
+    </div>
+  </div>
+
+  <!-- Coming Soon Screen -->
+  <div class="coming-soon-screen" id="comingSoonScreen">
+    <div class="coming-soon-text" id="comingSoonText">Coming Soon...</div>
+    <div class="click-here-text" id="clickHereText">Kliknij tutaj</div>
+  </div>
+
   <!-- Splash Screen - Missing Person Report -->
   <div class="splash-screen" id="splashScreen">
     <div class="splash-left"></div>
@@ -2278,21 +2356,6 @@
   <!-- Safe Boot Screen -->
   <div class="safeboot-screen" id="safebootScreen">
     <div class="safeboot-title">Starting system in Safe Mode...</div>
-  </div>
-
-  <!-- System Loading Screen -->
-  <div class="system-loading" id="systemLoading">
-    <div class="system-logo">⚙️</div>
-    <div class="system-text">
-      Inicjalizacja systemu...<br>
-      Ładowanie modułów...
-    </div>
-    <div class="system-progress">
-      <div class="system-progress-bar"></div>
-    </div>
-    <button class="system-login-btn" id="systemLoginBtn">
-      ZALOGUJ
-    </button>
   </div>
 
   <!-- Mobile block -->
@@ -3029,21 +3092,83 @@
 
   const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // ===== Splash Screen Sequence =====
+  // ===== Entry and Splash Screen Sequence =====
+  const entryScreen = document.getElementById("entryScreen");
+  const entrySearch = document.getElementById("entrySearch");
+  const entryHint = document.getElementById("entryHint");
+  const comingSoonScreen = document.getElementById("comingSoonScreen");
+  const comingSoonText = document.getElementById("comingSoonText");
+  const clickHereText = document.getElementById("clickHereText");
   const splashScreen = document.getElementById("splashScreen");
   const splashButton = document.getElementById("splashButton");
   const bluescreen = document.getElementById("bluescreen");
   const bsodPercentage = document.getElementById("bsodPercentage");
   const safebootScreen = document.getElementById("safebootScreen");
-  const systemLoading = document.getElementById("systemLoading");
-  const systemLoginBtn = document.getElementById("systemLoginBtn");
   
-  let hasSeenSplash = sessionStorage.getItem("hasSeenSplash");
+  let hasSeenEntry = sessionStorage.getItem("hasSeenEntry");
   
-  // Skip splash if already seen in this session
-  if (hasSeenSplash) {
+  // Skip entry if already seen in this session
+  if (hasSeenEntry) {
+    entryScreen.classList.add("hidden");
     splashScreen.classList.add("hidden");
   }
+  
+  // Show hint on focus
+  entrySearch.addEventListener("focus", () => {
+    entryHint.classList.add("show");
+  });
+  
+  entrySearch.addEventListener("blur", () => {
+    entryHint.classList.remove("show");
+  });
+  
+  // Check for "god.wifi" input
+  entrySearch.addEventListener("input", () => {
+    if (entrySearch.value.toLowerCase() === "god.wifi") {
+      handleCorrectSearch();
+    }
+  });
+  
+  entrySearch.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && entrySearch.value.toLowerCase() === "god.wifi") {
+      handleCorrectSearch();
+    }
+  });
+  
+  function handleCorrectSearch(){
+    sessionStorage.setItem("hasSeenEntry", "true");
+    
+    // Fade to black
+    entryScreen.style.transition = "opacity 0.5s ease";
+    entryScreen.style.opacity = "0";
+    
+    setTimeout(() => {
+      entryScreen.classList.add("hidden");
+      
+      // Show coming soon
+      comingSoonScreen.classList.add("show");
+      
+      // After 3 seconds, change to "Kliknij tutaj"
+      setTimeout(() => {
+        comingSoonText.style.display = "none";
+        clickHereText.classList.add("show");
+      }, 3000);
+    }, 500);
+  }
+  
+  // Click here to show splash
+  clickHereText.addEventListener("click", () => {
+    comingSoonScreen.style.transition = "opacity 0.5s ease";
+    comingSoonScreen.style.opacity = "0";
+    
+    setTimeout(() => {
+      comingSoonScreen.style.display = "none";
+      splashScreen.style.display = "flex";
+      setTimeout(() => {
+        splashScreen.style.opacity = "1";
+      }, 50);
+    }, 500);
+  });
   
   const safebootMessages = [
     "Loading system drivers...",
@@ -3064,9 +3189,6 @@
   ];
   
   splashButton.addEventListener("click", () => {
-    // Mark as seen
-    sessionStorage.setItem("hasSeenSplash", "true");
-    
     // Show bluescreen
     bluescreen.classList.add("active");
     splashScreen.style.display = "none";
@@ -3099,14 +3221,14 @@
             } else {
               clearInterval(messageInterval);
               
-              // After all messages, transition to system loading
+              // After all messages, go to desktop
               setTimeout(() => {
                 safebootScreen.style.opacity = "0";
                 safebootScreen.style.transition = "opacity 0.5s ease";
                 
                 setTimeout(() => {
                   safebootScreen.classList.remove("active");
-                  systemLoading.classList.add("active");
+                  safebootScreen.style.display = "none";
                 }, 500);
               }, 500);
             }
@@ -3114,17 +3236,6 @@
         }, 500);
       }
     }, 90); // Update percentage every 90ms (3 seconds total)
-  });
-  
-  systemLoginBtn.addEventListener("click", () => {
-    // Fade out system loading
-    systemLoading.style.opacity = "0";
-    systemLoading.style.transition = "opacity 0.5s ease";
-    
-    setTimeout(() => {
-      systemLoading.classList.remove("active");
-      systemLoading.style.display = "none";
-    }, 500);
   });
 
   // ===== SMS Notification =====
