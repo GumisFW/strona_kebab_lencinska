@@ -3461,8 +3461,23 @@
   
   // SMS notification stays visible until manually closed - no auto-hide
   
-  // Show SMS on page load
-  showSMSNotification();
+  // Show SMS only after splash sequence is complete
+  // Check if splash was skipped (already seen)
+  if (hasSeenEntry) {
+    // If skipped, show SMS immediately
+    showSMSNotification();
+  } else {
+    // If not skipped, wait for splash sequence to complete
+    // SMS will be shown when desktop appears
+    const checkDesktopVisible = setInterval(() => {
+      if (!document.body.classList.contains("splash-active")) {
+        clearInterval(checkDesktopVisible);
+        setTimeout(() => {
+          showSMSNotification();
+        }, 2000); // 2 seconds after desktop appears
+      }
+    }, 500);
+  }
 
   // ===== Social media taskbar buttons =====
   const taskInstagram = document.getElementById("taskInstagram");
