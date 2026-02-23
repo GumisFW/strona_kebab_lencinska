@@ -86,6 +86,10 @@
     opacity: 1;
   }
   
+  .entry-hint.typing{
+    opacity: 0;
+  }
+  
   /* Coming Soon Screen */
   .coming-soon-screen{
     position: fixed;
@@ -114,22 +118,33 @@
     text-transform: uppercase;
     letter-spacing: 8px;
     font-weight: 700;
-    animation: pixelate 2s steps(10) infinite;
+    animation: glitchText 0.3s infinite;
   }
   
-  @keyframes pixelate {
-    0%, 100% {
-      text-shadow: 
-        2px 2px 0 #f0f,
-        -2px -2px 0 #0ff;
-      filter: blur(0px);
+  @keyframes glitchText {
+    0% {
+      transform: translate(0);
+      opacity: 1;
     }
-    50% {
-      text-shadow: 
-        4px 4px 0 #f0f,
-        -4px -4px 0 #0ff,
-        2px -2px 0 #ff0;
-      filter: blur(1px);
+    20% {
+      transform: translate(-2px, 2px);
+      opacity: 0.8;
+    }
+    40% {
+      transform: translate(2px, -2px);
+      opacity: 0.9;
+    }
+    60% {
+      transform: translate(-1px, 1px);
+      opacity: 0.85;
+    }
+    80% {
+      transform: translate(1px, -1px);
+      opacity: 0.95;
+    }
+    100% {
+      transform: translate(0);
+      opacity: 1;
     }
   }
   
@@ -164,12 +179,19 @@
     inset: 0;
     background: #ffffff;
     z-index: 20000;
-    display: flex;
+    display: none;
     padding: 0;
+    opacity: 0;
+    transition: opacity 0.5s ease;
   }
   
   .splash-screen.hidden{
     display: none;
+  }
+  
+  .splash-screen.show{
+    display: flex;
+    opacity: 1;
   }
   
   .splash-left{
@@ -3110,20 +3132,32 @@
   // Skip entry if already seen in this session
   if (hasSeenEntry) {
     entryScreen.classList.add("hidden");
-    splashScreen.classList.add("hidden");
   }
   
   // Show hint on focus
   entrySearch.addEventListener("focus", () => {
-    entryHint.classList.add("show");
+    if (entrySearch.value === "") {
+      entryHint.classList.add("show");
+    }
   });
   
   entrySearch.addEventListener("blur", () => {
     entryHint.classList.remove("show");
   });
   
-  // Check for "god.wifi" input
+  // Hide hint when typing
   entrySearch.addEventListener("input", () => {
+    if (entrySearch.value.length > 0) {
+      entryHint.classList.remove("show");
+      entryHint.classList.add("typing");
+    } else {
+      entryHint.classList.remove("typing");
+      if (document.activeElement === entrySearch) {
+        entryHint.classList.add("show");
+      }
+    }
+    
+    // Check for "god.wifi" input
     if (entrySearch.value.toLowerCase() === "god.wifi") {
       handleCorrectSearch();
     }
@@ -3143,7 +3177,7 @@
     entryScreen.style.opacity = "0";
     
     setTimeout(() => {
-      entryScreen.classList.add("hidden");
+      entryScreen.style.display = "none";
       
       // Show coming soon
       comingSoonScreen.classList.add("show");
@@ -3163,10 +3197,9 @@
     
     setTimeout(() => {
       comingSoonScreen.style.display = "none";
-      splashScreen.style.display = "flex";
-      setTimeout(() => {
-        splashScreen.style.opacity = "1";
-      }, 50);
+      
+      // Show splash screen
+      splashScreen.classList.add("show");
     }, 500);
   });
   
@@ -3189,53 +3222,56 @@
   ];
   
   splashButton.addEventListener("click", () => {
-    // Show bluescreen
-    bluescreen.classList.add("active");
-    splashScreen.style.display = "none";
+    // Hide splash and show bluescreen
+    splashScreen.classList.remove("show");
     
-    // Animate percentage from 0 to 100
-    let percent = 0;
-    const percentInterval = setInterval(() => {
-      percent += 3;
-      if (percent > 100) percent = 100;
-      bsodPercentage.textContent = `${percent}% complete`;
+    setTimeout(() => {
+      bluescreen.classList.add("active");
       
-      if (percent >= 100) {
-        clearInterval(percentInterval);
+      // Animate percentage from 0 to 100
+      let percent = 0;
+      const percentInterval = setInterval(() => {
+        percent += 3;
+        if (percent > 100) percent = 100;
+        bsodPercentage.textContent = `${percent}% complete`;
         
-        // After reaching 100%, wait 500ms then show safe boot
-        setTimeout(() => {
-          bluescreen.classList.remove("active");
-          safebootScreen.classList.add("active");
+        if (percent >= 100) {
+          clearInterval(percentInterval);
           
-          // Add safe boot messages one by one
-          let messageIndex = 0;
-          const messageInterval = setInterval(() => {
-            if (messageIndex < safebootMessages.length) {
-              const line = document.createElement("div");
-              line.className = "safeboot-line ok";
-              line.textContent = safebootMessages[messageIndex];
-              line.style.animationDelay = `${messageIndex * 0.05}s`;
-              safebootScreen.appendChild(line);
-              messageIndex++;
-            } else {
-              clearInterval(messageInterval);
-              
-              // After all messages, go to desktop
-              setTimeout(() => {
-                safebootScreen.style.opacity = "0";
-                safebootScreen.style.transition = "opacity 0.5s ease";
+          // After reaching 100%, wait 500ms then show safe boot
+          setTimeout(() => {
+            bluescreen.classList.remove("active");
+            safebootScreen.classList.add("active");
+            
+            // Add safe boot messages one by one
+            let messageIndex = 0;
+            const messageInterval = setInterval(() => {
+              if (messageIndex < safebootMessages.length) {
+                const line = document.createElement("div");
+                line.className = "safeboot-line ok";
+                line.textContent = safebootMessages[messageIndex];
+                line.style.animationDelay = `${messageIndex * 0.05}s`;
+                safebootScreen.appendChild(line);
+                messageIndex++;
+              } else {
+                clearInterval(messageInterval);
                 
+                // After all messages, go to desktop
                 setTimeout(() => {
-                  safebootScreen.classList.remove("active");
-                  safebootScreen.style.display = "none";
+                  safebootScreen.style.opacity = "0";
+                  safebootScreen.style.transition = "opacity 0.5s ease";
+                  
+                  setTimeout(() => {
+                    safebootScreen.classList.remove("active");
+                    safebootScreen.style.display = "none";
+                  }, 500);
                 }, 500);
-              }, 500);
-            }
-          }, 100); // Show each message every 100ms
-        }, 500);
-      }
-    }, 90); // Update percentage every 90ms (3 seconds total)
+              }
+            }, 100); // Show each message every 100ms
+          }, 500);
+        }
+      }, 90); // Update percentage every 90ms (3 seconds total)
+    }, 100);
   });
 
   // ===== SMS Notification =====
