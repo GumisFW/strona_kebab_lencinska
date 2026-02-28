@@ -12,6 +12,526 @@
 <link href="https://fonts.googleapis.com/css2?family=Lovers+Quarrel&display=swap" rel="stylesheet">
 
 <style>
+  /* ===== MOBILE PHONE INTERFACE (Auto-shows on mobile/tablet devices) ===== */
+  
+  /* Hide mobile by default, show only on mobile devices */
+  .mobile-interface {
+    display: none;
+  }
+  
+  /* Show mobile interface on phones and tablets */
+  @media (max-width: 1024px), (hover: none) and (pointer: coarse) {
+    .mobile-interface {
+      display: block;
+    }
+    
+    /* Hide desktop interface on mobile */
+    body.splash-active .wallpaper,
+    body.splash-active .brandBlur,
+    body.splash-active .grain,
+    body.splash-active .icons,
+    body.splash-active .windows,
+    body.splash-active .taskbar,
+    .desktop-interface,
+    .entry-screen,
+    .fake-browser,
+    .coming-soon-screen,
+    .splash-screen,
+    .bluescreen,
+    .safeboot-screen,
+    .wallpaper,
+    .brandBlur,
+    .grain,
+    .icons,
+    .stage,
+    .taskbar,
+    .icloudViewer,
+    .login-modal,
+    .sms-notification,
+    .sms-conversation,
+    .mobileBlock {
+      display: none !important;
+    }
+  }
+  
+  /* Mobile Phone System UI */
+  .mobile-screen {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    overflow: hidden;
+  }
+  
+  /* Status Bar (iOS/Android style) */
+  .mobile-status-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 44px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.8), transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  
+  .status-left {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .status-time {
+    font-variant-numeric: tabular-nums;
+  }
+  
+  .status-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .status-icon {
+    font-size: 16px;
+  }
+  
+  /* Mobile Home Screen */
+  .mobile-home {
+    position: fixed;
+    inset: 0;
+    padding: 60px 24px 100px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .mobile-wallpaper-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(28px, 8vw, 48px);
+    font-family: Papyrus, "Lovers Quarrel", cursive;
+    color: rgba(255,255,255,0.1);
+    text-align: center;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 0;
+  }
+  
+  .mobile-apps-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px 20px;
+    padding: 20px 0;
+  }
+  
+  .mobile-app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .mobile-app-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    font-size: 32px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease;
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .mobile-app-icon.gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  .mobile-app:active .mobile-app-icon {
+    transform: scale(0.9);
+  }
+  
+  .mobile-app-name {
+    font-size: 12px;
+    color: white;
+    text-align: center;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    font-weight: 500;
+    max-width: 72px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* Dock */
+  .mobile-dock {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    height: 80px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 12px;
+    z-index: 100;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  
+  .dock-app {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .dock-app-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    font-size: 28px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease;
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .dock-app-icon.gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  .dock-app:active .dock-app-icon {
+    transform: scale(0.85);
+  }
+  
+  /* Mobile App Window */
+  .mobile-app-window {
+    position: fixed;
+    inset: 0;
+    background: #1a1a2e;
+    z-index: 9000;
+    display: none;
+    flex-direction: column;
+    transform: scale(1.2);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .mobile-app-window.open {
+    display: flex;
+    transform: scale(1);
+    opacity: 1;
+  }
+  
+  .mobile-app-header {
+    height: 60px;
+    background: rgba(30,30,45,0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    padding-top: 44px;
+  }
+  
+  .mobile-back-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.1);
+    border: 0;
+    color: white;
+    font-size: 20px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .mobile-back-btn:active {
+    background: rgba(255,255,255,0.2);
+  }
+  
+  .mobile-app-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+  }
+  
+  .mobile-app-content {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 20px;
+  }
+  
+  /* Mobile godwifi App */
+  .mobile-godwifi-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding: 40px 20px;
+  }
+  
+  .mobile-logo {
+    width: 200px;
+    height: auto;
+    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.4));
+  }
+  
+  .mobile-menu-btn {
+    width: 100%;
+    max-width: 320px;
+    padding: 18px 24px;
+    border-radius: 16px;
+    border: 0;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .mobile-menu-btn:active {
+    transform: scale(0.95);
+  }
+  
+  .mobile-menu-btn.discord {
+    background: rgba(88,101,242,0.9);
+  }
+  
+  /* Mobile Music Player */
+  .mobile-player {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .mobile-album-art {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: grid;
+    place-items: center;
+    font-size: 80px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+  
+  .mobile-track-info {
+    text-align: center;
+  }
+  
+  .mobile-track-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+  }
+  
+  .mobile-track-artist {
+    font-size: 16px;
+    color: rgba(255,255,255,0.6);
+  }
+  
+  .mobile-progress {
+    width: 100%;
+  }
+  
+  .mobile-progress-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+  
+  .mobile-progress-fill {
+    height: 100%;
+    background: white;
+    width: 0%;
+    transition: width 0.1s linear;
+  }
+  
+  .mobile-progress-time {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    font-variant-numeric: tabular-nums;
+  }
+  
+  .mobile-player-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+  }
+  
+  .mobile-control-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 0;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 24px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .mobile-control-btn.play {
+    width: 72px;
+    height: 72px;
+    background: white;
+    color: #1a1a2e;
+    font-size: 32px;
+  }
+  
+  .mobile-control-btn:active {
+    transform: scale(0.9);
+  }
+  
+  .mobile-track-list {
+    margin-top: 32px;
+  }
+  
+  .mobile-track-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+    margin-bottom: 8px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .mobile-track-item:active {
+    background: rgba(255,255,255,0.1);
+  }
+  
+  .mobile-track-number {
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    width: 24px;
+    text-align: center;
+  }
+  
+  .mobile-track-details {
+    flex: 1;
+  }
+  
+  .mobile-track-item-name {
+    font-size: 15px;
+    color: white;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  
+  .mobile-track-item-duration {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+  }
+  
+  .mobile-track-item.active {
+    background: rgba(102,126,234,0.2);
+  }
+  
+  /* Mobile Photos Grid */
+  .mobile-photos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+  }
+  
+  .mobile-photo-tile {
+    aspect-ratio: 1;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .mobile-photo-tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  /* Mobile Photo Viewer */
+  .mobile-photo-viewer {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 9500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .mobile-photo-viewer.open {
+    display: flex;
+  }
+  
+  .mobile-photo-viewer img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+  
+  .mobile-photo-close {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+    border: 0;
+    color: white;
+    font-size: 24px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    z-index: 10;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* ===== END MOBILE INTERFACE CSS ===== */
+  
   /* ===== Fake Browser (Freelookup) ===== */
   .fake-browser{
     position: fixed;
@@ -2547,6 +3067,207 @@
 </head>
 
 <body class="splash-active">
+  <!-- ===== MOBILE PHONE INTERFACE (Shows on mobile/tablet) ===== -->
+  <div class="mobile-interface">
+    <!-- Status Bar -->
+    <div class="mobile-status-bar">
+      <div class="status-left">
+        <div class="status-time" id="mobileTime">9:41</div>
+      </div>
+      <div class="status-right">
+        <span class="status-icon">📶</span>
+        <span class="status-icon">📡</span>
+        <span class="status-icon" id="mobileBattery">🔋</span>
+      </div>
+    </div>
+
+    <!-- Home Screen -->
+    <div class="mobile-home" id="mobileHome">
+      <div class="mobile-wallpaper-text">Macie tu Wifi?...</div>
+      
+      <div class="mobile-apps-grid">
+        <div class="mobile-app" data-app="godwifi">
+          <div class="mobile-app-icon gradient">📡</div>
+          <div class="mobile-app-name">godwifi</div>
+        </div>
+        
+        <div class="mobile-app" data-app="music">
+          <div class="mobile-app-icon gradient">🎵</div>
+          <div class="mobile-app-name">Music</div>
+        </div>
+        
+        <div class="mobile-app" data-app="photos">
+          <div class="mobile-app-icon gradient">📸</div>
+          <div class="mobile-app-name">Photos</div>
+        </div>
+        
+        <div class="mobile-app" data-app="messages">
+          <div class="mobile-app-icon gradient">💬</div>
+          <div class="mobile-app-name">Messages</div>
+        </div>
+        
+        <div class="mobile-app" data-app="videos">
+          <div class="mobile-app-icon gradient">🎬</div>
+          <div class="mobile-app-name">Videos</div>
+        </div>
+        
+        <div class="mobile-app" data-app="files">
+          <div class="mobile-app-icon gradient">📁</div>
+          <div class="mobile-app-name">Files</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dock -->
+    <div class="mobile-dock">
+      <div class="dock-app" data-app="instagram">
+        <div class="dock-app-icon gradient">📷</div>
+      </div>
+      <div class="dock-app" data-app="spotify">
+        <div class="dock-app-icon gradient">🎶</div>
+      </div>
+      <div class="dock-app" data-app="discord">
+        <div class="dock-app-icon gradient">🎮</div>
+      </div>
+    </div>
+
+    <!-- godwifi App Window -->
+    <div class="mobile-app-window" id="mobileGodwifi">
+      <div class="mobile-app-header">
+        <button class="mobile-back-btn" onclick="closeMobileApp('mobileGodwifi')">←</button>
+        <div class="mobile-app-title">godwifi</div>
+        <div style="width:40px"></div>
+      </div>
+      <div class="mobile-app-content">
+        <div class="mobile-godwifi-content">
+          <img src="freewifi.png" alt="godwifi" class="mobile-logo">
+          
+          <button class="mobile-menu-btn" onclick="window.open('https://instagram.com/tokarz_k', '_blank')">
+            📷 Instagram Gumis
+          </button>
+          
+          <button class="mobile-menu-btn" onclick="window.open('https://instagram.com/god.wifi', '_blank')">
+            📷 Instagram god.wifi
+          </button>
+          
+          <button class="mobile-menu-btn" onclick="window.open('https://open.spotify.com/artist/6iz52ADwFl483ghAI7NuS1', '_blank')">
+            🎵 Spotify
+          </button>
+          
+          <button class="mobile-menu-btn discord" onclick="window.open('https://discord.gg/4PTQRsUq9t', '_blank')">
+            🎮 Discord
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Music App Window -->
+    <div class="mobile-app-window" id="mobileMusic">
+      <div class="mobile-app-header">
+        <button class="mobile-back-btn" onclick="closeMobileApp('mobileMusic')">←</button>
+        <div class="mobile-app-title">Music</div>
+        <div style="width:40px"></div>
+      </div>
+      <div class="mobile-app-content">
+        <div class="mobile-player">
+          <div class="mobile-album-art">🎵</div>
+          
+          <div class="mobile-track-info">
+            <div class="mobile-track-title" id="mobileTrackTitle">Select a track</div>
+            <div class="mobile-track-artist">god.wifi</div>
+          </div>
+          
+          <div class="mobile-progress">
+            <div class="mobile-progress-bar" id="mobileProgressBar">
+              <div class="mobile-progress-fill" id="mobileProgressFill"></div>
+            </div>
+            <div class="mobile-progress-time">
+              <span id="mobileCurrentTime">0:00</span>
+              <span id="mobileDuration">0:00</span>
+            </div>
+          </div>
+          
+          <div class="mobile-player-controls">
+            <button class="mobile-control-btn" onclick="mobilePrevTrack()">⏮</button>
+            <button class="mobile-control-btn play" id="mobilePlayBtn" onclick="mobileTogglePlay()">▶</button>
+            <button class="mobile-control-btn" onclick="mobileNextTrack()">⏭</button>
+          </div>
+          
+          <div class="mobile-track-list" id="mobileTrackList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Photos App Window -->
+    <div class="mobile-app-window" id="mobilePhotos">
+      <div class="mobile-app-header">
+        <button class="mobile-back-btn" onclick="closeMobileApp('mobilePhotos')">←</button>
+        <div class="mobile-app-title">Photos</div>
+        <div style="width:40px"></div>
+      </div>
+      <div class="mobile-app-content">
+        <div class="mobile-photos-grid" id="mobilePhotosGrid"></div>
+      </div>
+    </div>
+
+    <!-- Messages App Window -->
+    <div class="mobile-app-window" id="mobileMessages">
+      <div class="mobile-app-header">
+        <button class="mobile-back-btn" onclick="closeMobileApp('mobileMessages')">←</button>
+        <div class="mobile-app-title">Messages</div>
+        <div style="width:40px"></div>
+      </div>
+      <div class="mobile-app-content">
+        <div style="text-align:center; padding:40px 20px; color:rgba(255,255,255,0.6);">
+          <div style="font-size:48px; margin-bottom:16px;">💬</div>
+          <div style="font-size:16px;">No messages yet</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Videos App Window -->
+    <div class="mobile-app-window" id="mobileVideos">
+      <div class="mobile-app-header">
+        <button class="mobile-back-btn" onclick="closeMobileApp('mobileVideos')">←</button>
+        <div class="mobile-app-title">Videos</div>
+        <div style="width:40px"></div>
+      </div>
+      <div class="mobile-app-content">
+        <div class="mobile-track-list" id="mobileVideosList"></div>
+      </div>
+    </div>
+
+    <!-- Files App Window -->
+    <div class="mobile-app-window" id="mobileFiles">
+      <div class="mobile-app-header">
+        <button class="mobile-back-btn" onclick="closeMobileApp('mobileFiles')">←</button>
+        <div class="mobile-app-title">Files</div>
+        <div style="width:40px"></div>
+      </div>
+      <div class="mobile-app-content">
+        <div style="text-align:center; padding:40px 20px; color:rgba(255,255,255,0.6);">
+          <div style="font-size:48px; margin-bottom:16px;">📁</div>
+          <div style="font-size:16px;">No files</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Photo Viewer -->
+    <div class="mobile-photo-viewer" id="mobilePhotoViewer">
+      <button class="mobile-photo-close" onclick="closeMobilePhotoViewer()">×</button>
+      <img id="mobilePhotoViewerImg" alt="">
+    </div>
+
+    <!-- Video Player -->
+    <div class="mobile-photo-viewer" id="mobileVideoPlayer">
+      <button class="mobile-photo-close" onclick="closeMobileVideoPlayer()">×</button>
+      <video id="mobileVideo" controls style="max-width:100%; max-height:100%;"></video>
+    </div>
+
+    <audio id="mobileAudio" preload="metadata"></audio>
+  </div>
+  <!-- ===== END MOBILE INTERFACE ===== -->
+
   <!-- Entry Search Screen -->
   <div class="entry-screen" id="entryScreen">
     <div class="entry-question">Czego tu szukasz?</div>
@@ -2925,8 +3646,8 @@
       <div class="finderBody">
         <div class="finderGrid">
           <button class="finderItem" id="openIcloudPhotos">
-            <img src="gallery.png" alt="" class="finderIcon">
-            <span>Galeria</span>
+            <img src="Galeria iCloud ikona.png" alt="" class="finderIcon">
+            <span>Galerie</span>
           </button>
           
           <button class="finderItem" id="openArchive">
@@ -5161,6 +5882,322 @@
       buildIcloudGrid();
     });
   });
+</script>
+
+<script>
+// ===== MOBILE PHONE INTERFACE JAVASCRIPT =====
+(function() {
+  const isMobile = window.innerWidth <= 1024 || (navigator.maxTouchPoints > 0 && window.innerWidth <= 1024);
+  
+  if (!isMobile) return; // Skip mobile JS on desktop
+
+  console.log('Mobile interface activated');
+
+  // Mobile Time
+  function updateMobileTime() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const timeEl = document.getElementById('mobileTime');
+    if (timeEl) timeEl.textContent = `${hours}:${minutes}`;
+  }
+  updateMobileTime();
+  setInterval(updateMobileTime, 30000);
+
+  // Mobile Battery
+  function updateMobileBattery() {
+    const hour = new Date().getHours();
+    let icon = '🔋';
+    if (hour >= 22 || hour < 8) icon = '⚡'; // Charging at night
+    else if (hour < 12) icon = '🔋'; // Full in morning
+    else if (hour < 18) icon = '🪫'; // Low in afternoon
+    else icon = '🪫'; // Very low in evening
+    const batteryEl = document.getElementById('mobileBattery');
+    if (batteryEl) batteryEl.textContent = icon;
+  }
+  updateMobileBattery();
+  setInterval(updateMobileBattery, 300000); // Update every 5 minutes
+
+  // Open Mobile App
+  window.openMobileApp = function(appId) {
+    const appWindow = document.getElementById(appId);
+    if (appWindow) {
+      appWindow.classList.add('open');
+    }
+  };
+
+  // Close Mobile App
+  window.closeMobileApp = function(appId) {
+    const appWindow = document.getElementById(appId);
+    if (appWindow) {
+      appWindow.classList.remove('open');
+    }
+  };
+
+  // App Icon Clicks
+  document.querySelectorAll('.mobile-app, .dock-app').forEach(app => {
+    app.addEventListener('click', function() {
+      const appName = this.getAttribute('data-app');
+      
+      switch(appName) {
+        case 'godwifi':
+          openMobileApp('mobileGodwifi');
+          break;
+        case 'music':
+          openMobileApp('mobileMusic');
+          initMobileMusic();
+          break;
+        case 'photos':
+          openMobileApp('mobilePhotos');
+          initMobilePhotos();
+          break;
+        case 'messages':
+          openMobileApp('mobileMessages');
+          break;
+        case 'videos':
+          openMobileApp('mobileVideos');
+          initMobileVideos();
+          break;
+        case 'files':
+          openMobileApp('mobileFiles');
+          break;
+        case 'instagram':
+          window.open('https://instagram.com/god.wifi', '_blank');
+          break;
+        case 'spotify':
+          window.open('https://open.spotify.com/artist/6iz52ADwFl483ghAI7NuS1', '_blank');
+          break;
+        case 'discord':
+          window.open('https://discord.gg/4PTQRsUq9t', '_blank');
+          break;
+      }
+    });
+  });
+
+  // ===== Mobile Music Player =====
+  const MOBILE_TRACKS = [
+    { title: "Utwór 1", src: "mix1.mp3" },
+    { title: "Utwór 2", src: "mix2.mp3" },
+    { title: "Utwór 3", src: "mix3.mp3" },
+    { title: "Utwór 4", src: "mix4.mp3" },
+    { title: "Utwór 5", src: "mix5.mp3" },
+    { title: "Utwór 6", src: "mix6.mp3" },
+    { title: "Utwór 7", src: "mix7.mp3" },
+    { title: "Utwór 8", src: "mix8.mp3" },
+    { title: "Utwór 9", src: "mix9.mp3" },
+  ];
+
+  const mobileAudio = document.getElementById('mobileAudio');
+  let mobileCurrentTrack = 0;
+  let mobileInitialized = false;
+
+  function initMobileMusic() {
+    if (mobileInitialized) return;
+    mobileInitialized = true;
+
+    const trackList = document.getElementById('mobileTrackList');
+    if (!trackList) return;
+    
+    trackList.innerHTML = '';
+
+    MOBILE_TRACKS.forEach((track, index) => {
+      const item = document.createElement('div');
+      item.className = 'mobile-track-item';
+      if (index === 0) item.classList.add('active');
+      
+      item.innerHTML = `
+        <div class="mobile-track-number">${index + 1}</div>
+        <div class="mobile-track-details">
+          <div class="mobile-track-item-name">${track.title}</div>
+          <div class="mobile-track-item-duration">Full track</div>
+        </div>
+      `;
+      
+      item.addEventListener('click', () => {
+        mobileLoadTrack(index, true);
+      });
+      
+      trackList.appendChild(item);
+    });
+
+    mobileLoadTrack(0, false);
+
+    // Progress bar click
+    const progressBar = document.getElementById('mobileProgressBar');
+    if (progressBar) {
+      progressBar.addEventListener('click', (e) => {
+        const rect = progressBar.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const percent = x / rect.width;
+        mobileAudio.currentTime = percent * mobileAudio.duration;
+      });
+    }
+
+    // Audio events
+    mobileAudio.addEventListener('timeupdate', () => {
+      const progress = (mobileAudio.currentTime / mobileAudio.duration) * 100 || 0;
+      const fillEl = document.getElementById('mobileProgressFill');
+      const currentEl = document.getElementById('mobileCurrentTime');
+      const durationEl = document.getElementById('mobileDuration');
+      
+      if (fillEl) fillEl.style.width = progress + '%';
+      if (currentEl) currentEl.textContent = formatTime(mobileAudio.currentTime);
+      if (durationEl) durationEl.textContent = formatTime(mobileAudio.duration);
+    });
+
+    mobileAudio.addEventListener('ended', () => {
+      mobileNextTrack();
+    });
+
+    mobileAudio.addEventListener('play', () => {
+      const playBtn = document.getElementById('mobilePlayBtn');
+      if (playBtn) playBtn.textContent = '⏸';
+    });
+
+    mobileAudio.addEventListener('pause', () => {
+      const playBtn = document.getElementById('mobilePlayBtn');
+      if (playBtn) playBtn.textContent = '▶';
+    });
+  }
+
+  function mobileLoadTrack(index, autoplay) {
+    mobileCurrentTrack = index;
+    const track = MOBILE_TRACKS[index];
+    
+    const titleEl = document.getElementById('mobileTrackTitle');
+    if (titleEl) titleEl.textContent = track.title;
+    
+    mobileAudio.src = track.src;
+    
+    // Update active state
+    document.querySelectorAll('.mobile-track-item').forEach((item, i) => {
+      item.classList.toggle('active', i === index);
+    });
+    
+    if (autoplay) {
+      mobileAudio.play();
+    }
+  }
+
+  window.mobileTogglePlay = function() {
+    if (mobileAudio.paused) {
+      mobileAudio.play();
+    } else {
+      mobileAudio.pause();
+    }
+  };
+
+  window.mobileNextTrack = function() {
+    const next = (mobileCurrentTrack + 1) % MOBILE_TRACKS.length;
+    mobileLoadTrack(next, true);
+  };
+
+  window.mobilePrevTrack = function() {
+    const prev = (mobileCurrentTrack - 1 + MOBILE_TRACKS.length) % MOBILE_TRACKS.length;
+    mobileLoadTrack(prev, true);
+  };
+
+  function formatTime(seconds) {
+    if (!seconds || isNaN(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${String(secs).padStart(2, '0')}`;
+  }
+
+  // ===== Mobile Photos =====
+  const MOBILE_PHOTOS = ["p1.jpg", "p2.jpg", "p3.jpg", "p4.jpg", "p5.jpg", "p6.jpg"];
+  
+  function initMobilePhotos() {
+    const grid = document.getElementById('mobilePhotosGrid');
+    if (!grid || grid.children.length > 0) return; // Already initialized
+
+    MOBILE_PHOTOS.forEach(photo => {
+      const tile = document.createElement('div');
+      tile.className = 'mobile-photo-tile';
+      
+      const img = document.createElement('img');
+      img.src = photo;
+      img.alt = '';
+      
+      tile.appendChild(img);
+      tile.addEventListener('click', () => {
+        const viewerImg = document.getElementById('mobilePhotoViewerImg');
+        const viewer = document.getElementById('mobilePhotoViewer');
+        if (viewerImg) viewerImg.src = photo;
+        if (viewer) viewer.classList.add('open');
+      });
+      
+      grid.appendChild(tile);
+    });
+  }
+
+  window.closeMobilePhotoViewer = function() {
+    const viewer = document.getElementById('mobilePhotoViewer');
+    if (viewer) viewer.classList.remove('open');
+  };
+
+  // ===== Mobile Videos =====
+  const MOBILE_VIDEOS = [
+    { title: "BMX Video 1", src: "bmx1.mp4" },
+    { title: "BMX Video 2", src: "bmx2.mp4" },
+    { title: "BMX Video 3", src: "bmx3.mp4" },
+    { title: "BMX Video 5", src: "bmx5.mp4" },
+    { title: "BMX Video 6", src: "bmx6.mp4" },
+    { title: "BMX Video 7", src: "bmx7.mp4" },
+  ];
+
+  function initMobileVideos() {
+    const videosList = document.getElementById('mobileVideosList');
+    if (!videosList || videosList.children.length > 0) return;
+
+    MOBILE_VIDEOS.forEach((video, index) => {
+      const item = document.createElement('div');
+      item.className = 'mobile-track-item';
+      
+      item.innerHTML = `
+        <div class="mobile-track-number">🎬</div>
+        <div class="mobile-track-details">
+          <div class="mobile-track-item-name">${video.title}</div>
+          <div class="mobile-track-item-duration">BMX footage</div>
+        </div>
+      `;
+      
+      item.addEventListener('click', () => {
+        playMobileVideo(video.src);
+      });
+      
+      videosList.appendChild(item);
+    });
+  }
+
+  function playMobileVideo(src) {
+    const videoEl = document.getElementById('mobileVideo');
+    const player = document.getElementById('mobileVideoPlayer');
+    
+    if (videoEl && player) {
+      videoEl.src = src;
+      player.classList.add('open');
+      videoEl.play();
+    }
+  }
+
+  window.closeMobileVideoPlayer = function() {
+    const player = document.getElementById('mobileVideoPlayer');
+    const videoEl = document.getElementById('mobileVideo');
+    
+    if (player) player.classList.remove('open');
+    if (videoEl) {
+      videoEl.pause();
+      videoEl.src = '';
+    }
+  };
+
+  // Prevent body scroll when mobile interface is active
+  document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.width = '100%';
+  document.body.style.height = '100%';
+})();
 </script>
 </body>
 </html>
