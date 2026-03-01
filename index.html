@@ -62,52 +62,132 @@
     overflow: hidden;
   }
   
-  /* Status Bar (iOS/Android style) */
+  /* Status Bar (iOS style) */
   .mobile-status-bar {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     height: 44px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.8), transparent);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: transparent;
     z-index: 9999;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 20px;
     color: white;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
   }
   
   .status-left {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
   }
   
   .status-time {
     font-variant-numeric: tabular-nums;
+    letter-spacing: -0.3px;
   }
   
   .status-right {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
   }
   
-  .status-icon {
-    font-size: 16px;
+  .status-signal {
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
+  }
+  
+  .signal-bar {
+    width: 3px;
+    background: white;
+    border-radius: 1px;
+  }
+  
+  .signal-bar:nth-child(1) { height: 4px; }
+  .signal-bar:nth-child(2) { height: 6px; }
+  .signal-bar:nth-child(3) { height: 8px; }
+  .signal-bar:nth-child(4) { height: 10px; }
+  
+  .status-wifi {
+    width: 15px;
+    height: 11px;
+    position: relative;
+  }
+  
+  .status-wifi::before {
+    content: '';
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border: 2px solid white;
+    border-radius: 50%;
+    border-bottom: 0;
+    border-left: 0;
+    border-right: 0;
+    top: 0;
+    left: 0;
+  }
+  
+  .status-wifi::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .status-battery {
+    width: 24px;
+    height: 11px;
+    border: 1.5px solid white;
+    border-radius: 2.5px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 1.5px;
+  }
+  
+  .status-battery::before {
+    content: '';
+    position: absolute;
+    right: -3px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.5px;
+    height: 4px;
+    background: white;
+    border-radius: 0 1px 1px 0;
+  }
+  
+  .battery-fill {
+    height: 100%;
+    background: white;
+    border-radius: 1px;
+    transition: width 0.3s ease;
+  }
+  
+  .status-battery-percent {
+    font-size: 12px;
+    margin-left: 4px;
+    font-weight: 600;
   }
   
   /* Mobile Home Screen */
   .mobile-home {
     position: fixed;
     inset: 0;
-    padding: 60px 24px 100px;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    padding: 60px 24px 110px;
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
@@ -117,13 +197,14 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: clamp(28px, 8vw, 48px);
+    font-size: clamp(32px, 9vw, 56px);
     font-family: Papyrus, "Lovers Quarrel", cursive;
-    color: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.08);
     text-align: center;
     white-space: nowrap;
     pointer-events: none;
     z-index: 0;
+    line-height: 1.2;
   }
   
   .mobile-apps-grid {
@@ -131,69 +212,72 @@
     z-index: 1;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 28px 20px;
-    padding: 20px 0;
+    gap: 32px 24px;
+    padding: 24px 0;
   }
   
   .mobile-app {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
   }
   
   .mobile-app-icon {
-    width: 64px;
-    height: 64px;
-    border-radius: 16px;
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
     display: grid;
     place-items: center;
-    font-size: 32px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    transition: transform 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 0.5px rgba(255,255,255,0.1) inset;
+    transition: transform 0.15s ease;
     background-size: cover;
     background-position: center;
+    overflow: hidden;
   }
   
-  .mobile-app-icon.gradient {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  .mobile-app-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   
   .mobile-app:active .mobile-app-icon {
-    transform: scale(0.9);
+    transform: scale(0.88);
   }
   
   .mobile-app-name {
-    font-size: 12px;
+    font-size: 11px;
     color: white;
     text-align: center;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    text-shadow: 0 0 8px rgba(0,0,0,0.8);
     font-weight: 500;
-    max-width: 72px;
+    max-width: 68px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    letter-spacing: -0.2px;
   }
   
   /* Dock */
   .mobile-dock {
     position: fixed;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
-    height: 80px;
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(30px) saturate(180%);
-    -webkit-backdrop-filter: blur(30px) saturate(180%);
-    border-radius: 24px;
+    bottom: 8px;
+    left: 16px;
+    right: 16px;
+    height: 92px;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border-radius: 28px;
     display: flex;
     align-items: center;
     justify-content: space-around;
-    padding: 0 12px;
+    padding: 0 20px;
     z-index: 100;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 0 0 0.5px rgba(255,255,255,0.1) inset;
   }
   
   .dock-app {
@@ -202,37 +286,39 @@
   }
   
   .dock-app-icon {
-    width: 56px;
-    height: 56px;
+    width: 58px;
+    height: 58px;
     border-radius: 14px;
     display: grid;
     place-items: center;
-    font-size: 28px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    transition: transform 0.2s ease;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3), 0 0 0 0.5px rgba(255,255,255,0.15) inset;
+    transition: transform 0.15s ease;
     background-size: cover;
     background-position: center;
+    overflow: hidden;
   }
   
-  .dock-app-icon.gradient {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  .dock-app-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   
   .dock-app:active .dock-app-icon {
-    transform: scale(0.85);
+    transform: scale(0.88);
   }
   
   /* Mobile App Window */
   .mobile-app-window {
     position: fixed;
     inset: 0;
-    background: #1a1a2e;
+    background: linear-gradient(180deg, #1a1825 0%, #0f0e18 100%);
     z-index: 9000;
     display: none;
     flex-direction: column;
-    transform: scale(1.2);
+    transform: scale(1.15);
     opacity: 0;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
   
   .mobile-app-window.open {
@@ -242,39 +328,40 @@
   }
   
   .mobile-app-header {
-    height: 60px;
-    background: rgba(30,30,45,0.95);
+    height: 104px;
+    background: linear-gradient(180deg, rgba(26,24,37,0.98) 0%, rgba(26,24,37,0.95) 100%);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 0.5px solid rgba(255,255,255,0.08);
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
-    padding: 0 16px;
-    padding-top: 44px;
+    padding: 0 16px 12px 16px;
   }
   
   .mobile-back-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    background: rgba(255,255,255,0.1);
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.08);
     border: 0;
-    color: white;
-    font-size: 20px;
+    color: rgba(255,255,255,0.9);
+    font-size: 18px;
     display: grid;
     place-items: center;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
+    font-weight: 300;
   }
   
   .mobile-back-btn:active {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.15);
   }
   
   .mobile-app-title {
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 17px;
+    font-weight: 600;
     color: white;
+    letter-spacing: -0.4px;
   }
   
   .mobile-app-content {
@@ -289,86 +376,109 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 24px;
+    gap: 20px;
     padding: 40px 20px;
   }
   
   .mobile-logo {
-    width: 200px;
+    width: 180px;
     height: auto;
     filter: drop-shadow(0 8px 24px rgba(0,0,0,0.4));
+    margin-bottom: 20px;
   }
   
   .mobile-menu-btn {
     width: 100%;
-    max-width: 320px;
-    padding: 18px 24px;
-    border-radius: 16px;
+    max-width: 340px;
+    padding: 16px 20px;
+    border-radius: 14px;
     border: 0;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.08);
     backdrop-filter: blur(10px);
     color: white;
     font-size: 16px;
     font-weight: 600;
-    text-align: center;
+    text-align: left;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
     -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  
+  .mobile-menu-btn img {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
   }
   
   .mobile-menu-btn:active {
-    transform: scale(0.95);
+    transform: scale(0.97);
+    background: rgba(255,255,255,0.12);
   }
   
   .mobile-menu-btn.discord {
-    background: rgba(88,101,242,0.9);
+    background: linear-gradient(135deg, rgba(88,101,242,0.9) 0%, rgba(71,82,196,0.9) 100%);
   }
   
   /* Mobile Music Player */
   .mobile-player {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 28px;
+    max-width: 400px;
+    margin: 0 auto;
   }
   
   .mobile-album-art {
     width: 100%;
     aspect-ratio: 1;
-    border-radius: 20px;
+    border-radius: 22px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: grid;
     place-items: center;
-    font-size: 80px;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.4), 0 0 0 0.5px rgba(255,255,255,0.1) inset;
+    overflow: hidden;
+  }
+  
+  .mobile-album-art img {
+    width: 80%;
+    height: auto;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
   }
   
   .mobile-track-info {
     text-align: center;
+    padding: 0 20px;
   }
   
   .mobile-track-title {
     font-size: 22px;
     font-weight: 700;
     color: white;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
   }
   
   .mobile-track-artist {
     font-size: 16px;
-    color: rgba(255,255,255,0.6);
+    color: rgba(255,255,255,0.5);
+    font-weight: 500;
   }
   
   .mobile-progress {
     width: 100%;
+    padding: 0 8px;
   }
   
   .mobile-progress-bar {
-    height: 4px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 2px;
+    height: 3px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 1.5px;
     overflow: hidden;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     cursor: pointer;
   }
   
@@ -377,31 +487,34 @@
     background: white;
     width: 0%;
     transition: width 0.1s linear;
+    border-radius: 1.5px;
   }
   
   .mobile-progress-time {
     display: flex;
     justify-content: space-between;
-    font-size: 12px;
-    color: rgba(255,255,255,0.5);
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
     font-variant-numeric: tabular-nums;
+    font-weight: 500;
   }
   
   .mobile-player-controls {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 32px;
+    gap: 24px;
+    padding: 8px 0;
   }
   
   .mobile-control-btn {
-    width: 56px;
-    height: 56px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     border: 0;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.08);
     color: white;
-    font-size: 24px;
+    font-size: 20px;
     display: grid;
     place-items: center;
     cursor: pointer;
@@ -410,42 +523,47 @@
   }
   
   .mobile-control-btn.play {
-    width: 72px;
-    height: 72px;
+    width: 68px;
+    height: 68px;
     background: white;
     color: #1a1a2e;
-    font-size: 32px;
+    font-size: 28px;
+    box-shadow: 0 4px 16px rgba(255,255,255,0.25);
   }
   
   .mobile-control-btn:active {
-    transform: scale(0.9);
+    transform: scale(0.92);
   }
   
   .mobile-track-list {
-    margin-top: 32px;
+    margin-top: 24px;
   }
   
   .mobile-track-item {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 12px;
+    gap: 14px;
+    padding: 12px 14px;
     border-radius: 12px;
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.04);
     margin-bottom: 8px;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
+    border: 0.5px solid transparent;
+    transition: all 0.2s ease;
   }
   
   .mobile-track-item:active {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.08);
+    transform: scale(0.98);
   }
   
   .mobile-track-number {
     font-size: 14px;
-    color: rgba(255,255,255,0.5);
+    color: rgba(255,255,255,0.4);
     width: 24px;
     text-align: center;
+    font-weight: 500;
   }
   
   .mobile-track-details {
@@ -456,32 +574,53 @@
     font-size: 15px;
     color: white;
     font-weight: 600;
-    margin-bottom: 2px;
+    margin-bottom: 3px;
+    letter-spacing: -0.2px;
   }
   
   .mobile-track-item-duration {
     font-size: 13px;
-    color: rgba(255,255,255,0.5);
+    color: rgba(255,255,255,0.4);
+    font-weight: 500;
   }
   
   .mobile-track-item.active {
-    background: rgba(102,126,234,0.2);
+    background: rgba(102,126,234,0.15);
+    border-color: rgba(102,126,234,0.3);
+  }
+  
+  .mobile-track-item.active .mobile-track-number,
+  .mobile-track-item.active .mobile-track-item-name {
+    color: rgba(102,126,234,1);
   }
   
   /* Mobile Photos Grid */
   .mobile-photos-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
+    gap: 3px;
+    margin: -20px;
   }
   
   .mobile-photo-tile {
     aspect-ratio: 1;
-    background: rgba(255,255,255,0.1);
-    border-radius: 4px;
+    background: rgba(255,255,255,0.05);
     overflow: hidden;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
+    position: relative;
+  }
+  
+  .mobile-photo-tile::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0);
+    transition: background 0.2s ease;
+  }
+  
+  .mobile-photo-tile:active::after {
+    background: rgba(0,0,0,0.2);
   }
   
   .mobile-photo-tile img {
@@ -505,7 +644,8 @@
     display: flex;
   }
   
-  .mobile-photo-viewer img {
+  .mobile-photo-viewer img,
+  .mobile-photo-viewer video {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
@@ -513,21 +653,22 @@
   
   .mobile-photo-close {
     position: absolute;
-    top: 60px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
+    top: 56px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.7);
     backdrop-filter: blur(10px);
     border: 0;
     color: white;
-    font-size: 24px;
+    font-size: 22px;
     display: grid;
     place-items: center;
     cursor: pointer;
     z-index: 10;
     -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   }
   
   /* ===== END MOBILE INTERFACE CSS ===== */
@@ -3075,9 +3216,17 @@
         <div class="status-time" id="mobileTime">9:41</div>
       </div>
       <div class="status-right">
-        <span class="status-icon">📶</span>
-        <span class="status-icon">📡</span>
-        <span class="status-icon" id="mobileBattery">🔋</span>
+        <div class="status-signal">
+          <div class="signal-bar"></div>
+          <div class="signal-bar"></div>
+          <div class="signal-bar"></div>
+          <div class="signal-bar"></div>
+        </div>
+        <div class="status-wifi"></div>
+        <div class="status-battery">
+          <div class="battery-fill" id="mobileBatteryFill" style="width: 75%"></div>
+        </div>
+        <div class="status-battery-percent" id="mobileBatteryPercent">75%</div>
       </div>
     </div>
 
@@ -3086,33 +3235,51 @@
       <div class="mobile-wallpaper-text">Macie tu Wifi?...</div>
       
       <div class="mobile-apps-grid">
+        <!-- godwifi App -->
         <div class="mobile-app" data-app="godwifi">
-          <div class="mobile-app-icon gradient">📡</div>
+          <div class="mobile-app-icon">
+            <img src="freewifi.png" alt="godwifi">
+          </div>
           <div class="mobile-app-name">godwifi</div>
         </div>
         
+        <!-- Music App -->
         <div class="mobile-app" data-app="music">
-          <div class="mobile-app-icon gradient">🎵</div>
+          <div class="mobile-app-icon">
+            <img src="music-icon.png" alt="Music">
+          </div>
           <div class="mobile-app-name">Music</div>
         </div>
         
+        <!-- Photos App -->
         <div class="mobile-app" data-app="photos">
-          <div class="mobile-app-icon gradient">📸</div>
+          <div class="mobile-app-icon">
+            <img src="Galeria iCloud ikona.png" alt="Photos">
+          </div>
           <div class="mobile-app-name">Photos</div>
         </div>
         
+        <!-- Messages App -->
         <div class="mobile-app" data-app="messages">
-          <div class="mobile-app-icon gradient">💬</div>
+          <div class="mobile-app-icon">
+            <img src="messages-icon.png" alt="Messages">
+          </div>
           <div class="mobile-app-name">Messages</div>
         </div>
         
+        <!-- Videos App -->
         <div class="mobile-app" data-app="videos">
-          <div class="mobile-app-icon gradient">🎬</div>
+          <div class="mobile-app-icon">
+            <img src="video-icon.png" alt="Videos">
+          </div>
           <div class="mobile-app-name">Videos</div>
         </div>
         
+        <!-- Files App -->
         <div class="mobile-app" data-app="files">
-          <div class="mobile-app-icon gradient">📁</div>
+          <div class="mobile-app-icon">
+            <img src="files.png" alt="Files">
+          </div>
           <div class="mobile-app-name">Files</div>
         </div>
       </div>
@@ -3121,41 +3288,51 @@
     <!-- Dock -->
     <div class="mobile-dock">
       <div class="dock-app" data-app="instagram">
-        <div class="dock-app-icon gradient">📷</div>
+        <div class="dock-app-icon">
+          <img src="Instagram_icon.png" alt="Instagram">
+        </div>
       </div>
       <div class="dock-app" data-app="spotify">
-        <div class="dock-app-icon gradient">🎶</div>
+        <div class="dock-app-icon">
+          <img src="Spotify_App_Logo.svg.png" alt="Spotify">
+        </div>
       </div>
       <div class="dock-app" data-app="discord">
-        <div class="dock-app-icon gradient">🎮</div>
+        <div class="dock-app-icon">
+          <img src="discord-logo-icon-editorial-free-vector.png" alt="Discord">
+        </div>
       </div>
     </div>
 
     <!-- godwifi App Window -->
     <div class="mobile-app-window" id="mobileGodwifi">
       <div class="mobile-app-header">
-        <button class="mobile-back-btn" onclick="closeMobileApp('mobileGodwifi')">←</button>
+        <button class="mobile-back-btn" onclick="closeMobileApp('mobileGodwifi')">‹</button>
         <div class="mobile-app-title">godwifi</div>
-        <div style="width:40px"></div>
+        <div style="width:32px"></div>
       </div>
       <div class="mobile-app-content">
         <div class="mobile-godwifi-content">
           <img src="freewifi.png" alt="godwifi" class="mobile-logo">
           
           <button class="mobile-menu-btn" onclick="window.open('https://instagram.com/tokarz_k', '_blank')">
-            📷 Instagram Gumis
+            <img src="Instagram_icon.png" alt="">
+            Instagram Gumis
           </button>
           
           <button class="mobile-menu-btn" onclick="window.open('https://instagram.com/god.wifi', '_blank')">
-            📷 Instagram god.wifi
+            <img src="Instagram_icon.png" alt="">
+            Instagram god.wifi
           </button>
           
           <button class="mobile-menu-btn" onclick="window.open('https://open.spotify.com/artist/6iz52ADwFl483ghAI7NuS1', '_blank')">
-            🎵 Spotify
+            <img src="Spotify_App_Logo.svg.png" alt="">
+            Spotify
           </button>
           
           <button class="mobile-menu-btn discord" onclick="window.open('https://discord.gg/4PTQRsUq9t', '_blank')">
-            🎮 Discord
+            <img src="discord-logo-icon-editorial-free-vector.png" alt="">
+            Discord
           </button>
         </div>
       </div>
@@ -3164,13 +3341,15 @@
     <!-- Music App Window -->
     <div class="mobile-app-window" id="mobileMusic">
       <div class="mobile-app-header">
-        <button class="mobile-back-btn" onclick="closeMobileApp('mobileMusic')">←</button>
+        <button class="mobile-back-btn" onclick="closeMobileApp('mobileMusic')">‹</button>
         <div class="mobile-app-title">Music</div>
-        <div style="width:40px"></div>
+        <div style="width:32px"></div>
       </div>
       <div class="mobile-app-content">
         <div class="mobile-player">
-          <div class="mobile-album-art">🎵</div>
+          <div class="mobile-album-art">
+            <img src="freewifi.png" alt="Album Art">
+          </div>
           
           <div class="mobile-track-info">
             <div class="mobile-track-title" id="mobileTrackTitle">Select a track</div>
@@ -3201,9 +3380,9 @@
     <!-- Photos App Window -->
     <div class="mobile-app-window" id="mobilePhotos">
       <div class="mobile-app-header">
-        <button class="mobile-back-btn" onclick="closeMobileApp('mobilePhotos')">←</button>
+        <button class="mobile-back-btn" onclick="closeMobileApp('mobilePhotos')">‹</button>
         <div class="mobile-app-title">Photos</div>
-        <div style="width:40px"></div>
+        <div style="width:32px"></div>
       </div>
       <div class="mobile-app-content">
         <div class="mobile-photos-grid" id="mobilePhotosGrid"></div>
@@ -3213,14 +3392,15 @@
     <!-- Messages App Window -->
     <div class="mobile-app-window" id="mobileMessages">
       <div class="mobile-app-header">
-        <button class="mobile-back-btn" onclick="closeMobileApp('mobileMessages')">←</button>
+        <button class="mobile-back-btn" onclick="closeMobileApp('mobileMessages')">‹</button>
         <div class="mobile-app-title">Messages</div>
-        <div style="width:40px"></div>
+        <div style="width:32px"></div>
       </div>
       <div class="mobile-app-content">
-        <div style="text-align:center; padding:40px 20px; color:rgba(255,255,255,0.6);">
-          <div style="font-size:48px; margin-bottom:16px;">💬</div>
-          <div style="font-size:16px;">No messages yet</div>
+        <div style="text-align:center; padding:60px 20px; color:rgba(255,255,255,0.5);">
+          <div style="font-size:72px; margin-bottom:20px; opacity:0.3;">💬</div>
+          <div style="font-size:20px; font-weight:600; margin-bottom:8px;">No Messages</div>
+          <div style="font-size:14px; opacity:0.7;">Send and receive messages</div>
         </div>
       </div>
     </div>
@@ -3228,9 +3408,9 @@
     <!-- Videos App Window -->
     <div class="mobile-app-window" id="mobileVideos">
       <div class="mobile-app-header">
-        <button class="mobile-back-btn" onclick="closeMobileApp('mobileVideos')">←</button>
+        <button class="mobile-back-btn" onclick="closeMobileApp('mobileVideos')">‹</button>
         <div class="mobile-app-title">Videos</div>
-        <div style="width:40px"></div>
+        <div style="width:32px"></div>
       </div>
       <div class="mobile-app-content">
         <div class="mobile-track-list" id="mobileVideosList"></div>
@@ -3240,14 +3420,15 @@
     <!-- Files App Window -->
     <div class="mobile-app-window" id="mobileFiles">
       <div class="mobile-app-header">
-        <button class="mobile-back-btn" onclick="closeMobileApp('mobileFiles')">←</button>
+        <button class="mobile-back-btn" onclick="closeMobileApp('mobileFiles')">‹</button>
         <div class="mobile-app-title">Files</div>
-        <div style="width:40px"></div>
+        <div style="width:32px"></div>
       </div>
       <div class="mobile-app-content">
-        <div style="text-align:center; padding:40px 20px; color:rgba(255,255,255,0.6);">
-          <div style="font-size:48px; margin-bottom:16px;">📁</div>
-          <div style="font-size:16px;">No files</div>
+        <div style="text-align:center; padding:60px 20px; color:rgba(255,255,255,0.5);">
+          <div style="font-size:72px; margin-bottom:20px; opacity:0.3;">📁</div>
+          <div style="font-size:20px; font-weight:600; margin-bottom:8px;">No Files</div>
+          <div style="font-size:14px; opacity:0.7;">Browse and manage files</div>
         </div>
       </div>
     </div>
@@ -5907,13 +6088,31 @@
   // Mobile Battery
   function updateMobileBattery() {
     const hour = new Date().getHours();
-    let icon = '🔋';
-    if (hour >= 22 || hour < 8) icon = '⚡'; // Charging at night
-    else if (hour < 12) icon = '🔋'; // Full in morning
-    else if (hour < 18) icon = '🪫'; // Low in afternoon
-    else icon = '🪫'; // Very low in evening
-    const batteryEl = document.getElementById('mobileBattery');
-    if (batteryEl) batteryEl.textContent = icon;
+    let percent = 100;
+    
+    // Battery model by hour
+    if (hour >= 22 || hour < 8) {
+      // Charging period
+      if (hour >= 22) {
+        const hoursCharging = hour - 22;
+        percent = Math.min(100, 20 + hoursCharging * 15);
+      } else {
+        const hoursCharging = (24 - 22) + hour;
+        percent = Math.min(100, 20 + hoursCharging * 8);
+      }
+    } else {
+      // Discharging period
+      const hoursSinceStart = hour - 8;
+      percent = Math.round(100 - (hoursSinceStart / 14) * 88);
+    }
+    
+    percent = Math.max(15, Math.min(100, percent));
+    
+    const fillEl = document.getElementById('mobileBatteryFill');
+    const percentEl = document.getElementById('mobileBatteryPercent');
+    
+    if (fillEl) fillEl.style.width = percent + '%';
+    if (percentEl) percentEl.textContent = percent + '%';
   }
   updateMobileBattery();
   setInterval(updateMobileBattery, 300000); // Update every 5 minutes
