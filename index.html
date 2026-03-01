@@ -2000,25 +2000,25 @@
     width:56px;
     height:56px;
     margin:0 auto 8px;
-    border-radius:8px;
+    border-radius:14px;
     display:grid;
     place-items:center;
-    background: var(--iconBg);
-    border:1px solid var(--iconBorder);
-    backdrop-filter: blur(8px);
-    box-shadow: var(--iconShadow);
+    background: transparent;
+    border: 0;
+    backdrop-filter: none;
+    box-shadow: none;
     transition:.15s ease;
   }
   .icon:hover .pic{
-    transform: scale(1.05);
-    background: var(--finderHoverBg);
+    transform: scale(1.08);
   }
 
   .deskIconImg{
-    width:65%;
-    height:65%;
+    width:100%;
+    height:100%;
     object-fit:cover;
-    border-radius:12px;
+    border-radius:14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25), 0 0 0 0.5px rgba(255,255,255,0.1) inset;
   }
 
   /* ===== Window system (Windows/Ubuntu hybrid) ===== */
@@ -3610,7 +3610,7 @@
               <img src="Galeria iCloud ikona.png" style="width: 32px; height: 32px; border-radius: 6px;" alt="">
             </div>
             <div style="flex: 1;">
-              <div style="font-size: 16px; font-weight: 600; color: white;">Galerie</div>
+              <div style="font-size: 16px; font-weight: 600; color: white;">Galeria</div>
               <div style="font-size: 13px; color: rgba(255,255,255,0.5);">6 photos</div>
             </div>
             <div style="color: rgba(255,255,255,0.3); font-size: 20px;">›</div>
@@ -3745,7 +3745,7 @@
           
           <div class="mobile-file-item" onclick="showMobileSetlista()">
             <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.15); display: grid; place-items: center;">
-              <img src="drive.png" style="width: 28px; height: 28px;" alt="">
+              <img src="notes.png" style="width: 28px; height: 28px;" alt="">
             </div>
             <div style="flex: 1;">
               <div style="font-size: 16px; font-weight: 600; color: white;">setlista</div>
@@ -3756,7 +3756,7 @@
           
           <div class="mobile-file-item">
             <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.15); display: grid; place-items: center;">
-              <img src="drive.png" style="width: 28px; height: 28px;" alt="">
+              <img src="notes.png" style="width: 28px; height: 28px;" alt="">
             </div>
             <div style="flex: 1;">
               <div style="font-size: 16px; font-weight: 600; color: white;">info</div>
@@ -3796,6 +3796,22 @@
             <li><strong>free wifi</strong> (1:48)</li>
           </ol>
         </div>
+      </div>
+    </div>
+
+    <!-- Mobile Flappy Bird Game -->
+    <div class="mobile-app-window" id="mobileFlappyBird">
+      <div class="mobile-app-header">
+        <button class="mobile-back-btn" onclick="closeMobileApp('mobileFlappyBird'); stopMobileGame();">‹</button>
+        <div class="mobile-app-title">WiFi Runner</div>
+        <div style="width:32px"></div>
+      </div>
+      <div class="mobile-app-content" style="padding: 0; display: flex; flex-direction: column;">
+        <div style="padding: 16px; text-align: center; background: rgba(0,0,0,0.3);">
+          <div style="font-size: 16px; color: white; font-weight: 600;">Score: <span id="mobileGameScore">0</span></div>
+          <div style="font-size: 14px; color: rgba(255,255,255,0.6); margin-top: 4px;" id="mobileGameStatus">Tap to start</div>
+        </div>
+        <canvas id="mobileFlappyCanvas" style="width: 100%; flex: 1; touch-action: none;"></canvas>
       </div>
     </div>
 
@@ -4065,13 +4081,13 @@
           </button>
 
           <button class="finderItem" id="openSetlista">
-            <img src="drive.png" alt="" class="finderIcon">
+            <img src="notes.png" alt="" class="finderIcon notepad-icon">
             <span>setlista</span>
             <div class="fileBadge">plik</div>
           </button>
 
           <button class="finderItem">
-            <img src="drive.png" alt="" class="finderIcon">
+            <img src="notes.png" alt="" class="finderIcon notepad-icon">
             <span>info</span>
             <div class="fileBadge">plik</div>
           </button>
@@ -4194,7 +4210,7 @@
         <div class="finderGrid">
           <button class="finderItem" id="openIcloudPhotos">
             <img src="Galeria iCloud ikona.png" alt="" class="finderIcon">
-            <span>Galerie</span>
+            <span>Galeria</span>
           </button>
           
           <button class="finderItem" id="openArchive">
@@ -6440,6 +6456,32 @@
 
   console.log('Mobile interface activated');
 
+  // ===== Signal Tap Counter (5 taps = Flappy Bird) =====
+  let signalTapCount = 0;
+  let signalTapTimeout = null;
+  
+  const statusSignal = document.querySelector('.status-signal');
+  if (statusSignal) {
+    statusSignal.style.cursor = 'pointer';
+    statusSignal.addEventListener('click', function() {
+      signalTapCount++;
+      
+      if (signalTapTimeout) {
+        clearTimeout(signalTapTimeout);
+      }
+      
+      if (signalTapCount >= 5) {
+        signalTapCount = 0;
+        openMobileApp('mobileFlappyBird');
+        initMobileGame();
+      } else {
+        signalTapTimeout = setTimeout(() => {
+          signalTapCount = 0;
+        }, 2000);
+      }
+    });
+  }
+
   // Mobile Time
   function updateMobileTime() {
     const now = new Date();
@@ -6496,6 +6538,12 @@
     const appWindow = document.getElementById(appId);
     if (appWindow) {
       appWindow.classList.remove('open');
+      
+      // Stop music when leaving Music app
+      if (appId === 'mobileMusic' && mobileAudio && !mobileAudio.paused) {
+        mobileAudio.pause();
+        updateMobilePlayIcon();
+      }
     }
   };
 
@@ -6949,6 +6997,231 @@
       originalCloseMobileApp(appId);
     }
   };
+  
+  // ===== Mobile Flappy Bird Game =====
+  let mobileGameCanvas = null;
+  let mobileGameCtx = null;
+  let mobileGameRunning = false;
+  let mobileGameAnimationFrame = null;
+  let mobileGameScore = 0;
+  let mobileGameBestScore = 0;
+  
+  const MOBILE_GRAVITY = 0.5;
+  const MOBILE_JUMP = -8;
+  const MOBILE_PIPE_SPEED = 3;
+  const MOBILE_PIPE_GAP = 140;
+  
+  let mobileBird = {
+    x: 80,
+    y: 0,
+    velocity: 0,
+    radius: 15
+  };
+  
+  let mobilePipes = [];
+  let mobileFrameCount = 0;
+  
+  function initMobileGame() {
+    mobileGameCanvas = document.getElementById('mobileFlappyCanvas');
+    if (!mobileGameCanvas) return;
+    
+    mobileGameCtx = mobileGameCanvas.getContext('2d');
+    
+    // Set canvas size
+    const container = mobileGameCanvas.parentElement;
+    mobileGameCanvas.width = container.clientWidth;
+    mobileGameCanvas.height = container.clientHeight - 60; // Subtract header height
+    
+    resetMobileGame();
+    
+    // Touch controls
+    mobileGameCanvas.addEventListener('touchstart', handleMobileGameTap);
+    mobileGameCanvas.addEventListener('click', handleMobileGameTap);
+  }
+  
+  function handleMobileGameTap(e) {
+    e.preventDefault();
+    
+    if (!mobileGameRunning) {
+      startMobileGame();
+    } else {
+      mobileBird.velocity = MOBILE_JUMP;
+    }
+  }
+  
+  function startMobileGame() {
+    mobileGameRunning = true;
+    document.getElementById('mobileGameStatus').textContent = 'Playing...';
+    mobileGameLoop();
+  }
+  
+  function resetMobileGame() {
+    mobileGameRunning = false;
+    mobileGameScore = 0;
+    mobileFrameCount = 0;
+    mobilePipes = [];
+    
+    mobileBird.y = mobileGameCanvas.height / 2;
+    mobileBird.velocity = 0;
+    
+    document.getElementById('mobileGameScore').textContent = '0';
+    document.getElementById('mobileGameStatus').textContent = 'Tap to start';
+    
+    drawMobileGame();
+  }
+  
+  window.stopMobileGame = function() {
+    mobileGameRunning = false;
+    if (mobileGameAnimationFrame) {
+      cancelAnimationFrame(mobileGameAnimationFrame);
+      mobileGameAnimationFrame = null;
+    }
+  };
+  
+  function mobileGameLoop() {
+    if (!mobileGameRunning) return;
+    
+    updateMobileGame();
+    drawMobileGame();
+    
+    mobileGameAnimationFrame = requestAnimationFrame(mobileGameLoop);
+  }
+  
+  function updateMobileGame() {
+    // Update bird
+    mobileBird.velocity += MOBILE_GRAVITY;
+    mobileBird.y += mobileBird.velocity;
+    
+    // Ground collision
+    if (mobileBird.y + mobileBird.radius > mobileGameCanvas.height) {
+      gameOver();
+      return;
+    }
+    
+    // Ceiling collision
+    if (mobileBird.y - mobileBird.radius < 0) {
+      mobileBird.y = mobileBird.radius;
+      mobileBird.velocity = 0;
+    }
+    
+    // Spawn pipes
+    mobileFrameCount++;
+    if (mobileFrameCount % 90 === 0) {
+      const minHeight = 50;
+      const maxHeight = mobileGameCanvas.height - MOBILE_PIPE_GAP - 50;
+      const topHeight = minHeight + Math.random() * (maxHeight - minHeight);
+      
+      mobilePipes.push({
+        x: mobileGameCanvas.width,
+        topHeight: topHeight,
+        bottomY: topHeight + MOBILE_PIPE_GAP,
+        scored: false
+      });
+    }
+    
+    // Update pipes
+    for (let i = mobilePipes.length - 1; i >= 0; i--) {
+      const pipe = mobilePipes[i];
+      pipe.x -= MOBILE_PIPE_SPEED;
+      
+      // Remove off-screen pipes
+      if (pipe.x + 60 < 0) {
+        mobilePipes.splice(i, 1);
+        continue;
+      }
+      
+      // Score
+      if (!pipe.scored && pipe.x + 60 < mobileBird.x) {
+        pipe.scored = true;
+        mobileGameScore++;
+        document.getElementById('mobileGameScore').textContent = mobileGameScore;
+        
+        if (mobileGameScore > mobileGameBestScore) {
+          mobileGameBestScore = mobileGameScore;
+        }
+      }
+      
+      // Collision detection
+      const pipeWidth = 60;
+      if (mobileBird.x + mobileBird.radius > pipe.x && 
+          mobileBird.x - mobileBird.radius < pipe.x + pipeWidth) {
+        if (mobileBird.y - mobileBird.radius < pipe.topHeight || 
+            mobileBird.y + mobileBird.radius > pipe.bottomY) {
+          gameOver();
+          return;
+        }
+      }
+    }
+  }
+  
+  function drawMobileGame() {
+    const ctx = mobileGameCtx;
+    const canvas = mobileGameCanvas;
+    
+    // Background
+    ctx.fillStyle = '#1a1825';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Pipes
+    ctx.fillStyle = '#667eea';
+    mobilePipes.forEach(pipe => {
+      // Top pipe
+      ctx.fillRect(pipe.x, 0, 60, pipe.topHeight);
+      // Bottom pipe
+      ctx.fillRect(pipe.x, pipe.bottomY, 60, canvas.height - pipe.bottomY);
+      
+      // Pipe borders
+      ctx.strokeStyle = '#764ba2';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(pipe.x, 0, 60, pipe.topHeight);
+      ctx.strokeRect(pipe.x, pipe.bottomY, 60, canvas.height - pipe.bottomY);
+    });
+    
+    // Bird
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(mobileBird.x, mobileBird.y, mobileBird.radius, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Bird eye
+    ctx.fillStyle = '#1a1825';
+    ctx.beginPath();
+    ctx.arc(mobileBird.x + 5, mobileBird.y - 3, 3, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  
+  function gameOver() {
+    mobileGameRunning = false;
+    document.getElementById('mobileGameStatus').textContent = 'Game Over! Tap to restart';
+    
+    if (mobileGameAnimationFrame) {
+      cancelAnimationFrame(mobileGameAnimationFrame);
+      mobileGameAnimationFrame = null;
+    }
+    
+    // Show game over on canvas
+    const ctx = mobileGameCtx;
+    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    ctx.fillRect(0, 0, mobileGameCanvas.width, mobileGameCanvas.height);
+    
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 32px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Game Over', mobileGameCanvas.width / 2, mobileGameCanvas.height / 2 - 40);
+    
+    ctx.font = '20px sans-serif';
+    ctx.fillText(`Score: ${mobileGameScore}`, mobileGameCanvas.width / 2, mobileGameCanvas.height / 2);
+    ctx.fillText(`Best: ${mobileGameBestScore}`, mobileGameCanvas.width / 2, mobileGameCanvas.height / 2 + 30);
+    
+    ctx.font = '16px sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillText('Tap to restart', mobileGameCanvas.width / 2, mobileGameCanvas.height / 2 + 70);
+    
+    // Allow restart
+    setTimeout(() => {
+      resetMobileGame();
+    }, 100);
+  }
 })();
 </script>
 </body>
