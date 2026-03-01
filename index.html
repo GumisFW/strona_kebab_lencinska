@@ -671,6 +671,107 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   }
   
+  /* Mobile Message Conversation */
+  .mobile-message-conversation {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    margin-bottom: 8px;
+  }
+  
+  .mobile-message-conversation:active {
+    background: rgba(255,255,255,0.08);
+  }
+  
+  /* Mobile SMS Bubble */
+  .mobile-sms-bubble {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 15px;
+    line-height: 1.4;
+    animation: bubbleIn 0.3s ease;
+  }
+  
+  .mobile-sms-bubble.received {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  
+  .mobile-sms-bubble.sent {
+    background: rgba(102,126,234,0.9);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+  
+  /* Mobile SMS Options */
+  .mobile-sms-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  
+  .mobile-sms-option {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .mobile-sms-option:active {
+    background: rgba(255,255,255,0.12);
+    transform: scale(0.98);
+  }
+  
+  .mobile-sms-option::before {
+    content: '→';
+    font-size: 18px;
+    opacity: 0.6;
+  }
+  
+  .mobile-sms-option:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  
+  /* Mobile File Item */
+  .mobile-file-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    margin-bottom: 8px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    border: 0.5px solid rgba(255,255,255,0.05);
+  }
+  
+  .mobile-file-item:active {
+    background: rgba(255,255,255,0.08);
+    transform: scale(0.98);
+  }
+  
   /* ===== END MOBILE INTERFACE CSS ===== */
   
   /* ===== Fake Browser (Freelookup) ===== */
@@ -3367,9 +3468,24 @@
           </div>
           
           <div class="mobile-player-controls">
-            <button class="mobile-control-btn" onclick="mobilePrevTrack()">⏮</button>
-            <button class="mobile-control-btn play" id="mobilePlayBtn" onclick="mobileTogglePlay()">▶</button>
-            <button class="mobile-control-btn" onclick="mobileNextTrack()">⏭</button>
+            <button class="mobile-control-btn" onclick="mobilePrevTrack()">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 20L9 12l10-8v16zM5 19V5"/>
+              </svg>
+            </button>
+            <button class="mobile-control-btn play" id="mobilePlayBtn" onclick="mobileTogglePlay()">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" id="mobilePlayIcon">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" id="mobilePauseIcon" style="display: none;">
+                <path d="M6 4h4v16H6zM14 4h4v16h-4z"/>
+              </svg>
+            </button>
+            <button class="mobile-control-btn" onclick="mobileNextTrack()">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 4l10 8-10 8V4zM19 5v14"/>
+              </svg>
+            </button>
           </div>
           
           <div class="mobile-track-list" id="mobileTrackList"></div>
@@ -3396,11 +3512,37 @@
         <div class="mobile-app-title">Messages</div>
         <div style="width:32px"></div>
       </div>
-      <div class="mobile-app-content">
-        <div style="text-align:center; padding:60px 20px; color:rgba(255,255,255,0.5);">
-          <div style="font-size:72px; margin-bottom:20px; opacity:0.3;">💬</div>
-          <div style="font-size:20px; font-weight:600; margin-bottom:8px;">No Messages</div>
-          <div style="font-size:14px; opacity:0.7;">Send and receive messages</div>
+      <div class="mobile-app-content" style="padding: 0;">
+        <!-- Conversation List -->
+        <div id="mobileMessagesList" style="padding: 12px;">
+          <div class="mobile-message-conversation" onclick="openMobileSMSConversation()">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: grid; place-items: center; font-size: 24px;">💬</div>
+            <div style="flex: 1;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <div style="font-size: 16px; font-weight: 600; color: white;">hidden_user</div>
+                <div style="font-size: 13px; color: rgba(255,255,255,0.5);">now</div>
+              </div>
+              <div style="font-size: 14px; color: rgba(255,255,255,0.6);">Jakie jest hasło do wifi?</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- SMS Conversation View -->
+        <div id="mobileSMSConversation" style="display: none; height: 100%; flex-direction: column;">
+          <div style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 12px;">
+            <button onclick="closeMobileSMSConversation()" style="width: 32px; height: 32px; border-radius: 10px; background: rgba(255,255,255,0.08); border: 0; color: white; font-size: 18px; display: grid; place-items: center;">‹</button>
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: grid; place-items: center; font-size: 18px;">💬</div>
+            <div style="flex: 1;">
+              <div style="font-size: 15px; font-weight: 600; color: white;">hidden_user</div>
+              <div style="font-size: 12px; color: rgba(255,255,255,0.5);">SMS</div>
+            </div>
+          </div>
+          
+          <div id="mobileSMSBody" style="flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+            <div style="max-width: 80%; padding: 12px 16px; border-radius: 18px; background: rgba(255,255,255,0.1); color: white; font-size: 15px; align-self: flex-start; border-bottom-left-radius: 4px;">
+              Jakie jest hasło do wifi?
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -3421,14 +3563,238 @@
     <div class="mobile-app-window" id="mobileFiles">
       <div class="mobile-app-header">
         <button class="mobile-back-btn" onclick="closeMobileApp('mobileFiles')">‹</button>
-        <div class="mobile-app-title">Files</div>
+        <div class="mobile-app-title" id="mobileFilesTitle">Files</div>
         <div style="width:32px"></div>
       </div>
-      <div class="mobile-app-content">
-        <div style="text-align:center; padding:60px 20px; color:rgba(255,255,255,0.5);">
-          <div style="font-size:72px; margin-bottom:20px; opacity:0.3;">📁</div>
-          <div style="font-size:20px; font-weight:600; margin-bottom:8px;">No Files</div>
-          <div style="font-size:14px; opacity:0.7;">Browse and manage files</div>
+      <div class="mobile-app-content" style="padding: 16px;">
+        <!-- Root View -->
+        <div id="mobileFilesRoot">
+          <div class="mobile-file-item" onclick="openMobileFolder('drive')">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.15); display: grid; place-items: center;">
+              <img src="drive.png" style="width: 32px; height: 32px; border-radius: 6px;" alt="">
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 16px; font-weight: 600; color: white;">Dysk</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,0.5);">2 items</div>
+            </div>
+            <div style="color: rgba(255,255,255,0.3); font-size: 20px;">›</div>
+          </div>
+          
+          <div class="mobile-file-item" onclick="openMobileFolder('bin')">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.15); display: grid; place-items: center;">
+              <img src="bin.png" style="width: 32px; height: 32px; border-radius: 6px;" alt="">
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 16px; font-weight: 600; color: white;">Kosz</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,0.5);">4 items</div>
+            </div>
+            <div style="color: rgba(255,255,255,0.3); font-size: 20px;">›</div>
+          </div>
+          
+          <div class="mobile-file-item" onclick="openMobileFolder('folder')">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.15); display: grid; place-items: center;">
+              <img src="files.png" style="width: 32px; height: 32px; border-radius: 6px;" alt="">
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 16px; font-weight: 600; color: white;">Folder</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,0.5);">4 items</div>
+            </div>
+            <div style="color: rgba(255,255,255,0.3); font-size: 20px;">›</div>
+          </div>
+        </div>
+        
+        <!-- Drive Folder -->
+        <div id="mobileFilesDrive" style="display: none;">
+          <div class="mobile-file-item" onclick="openMobileFolder('photos')">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.15); display: grid; place-items: center;">
+              <img src="Galeria iCloud ikona.png" style="width: 32px; height: 32px; border-radius: 6px;" alt="">
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 16px; font-weight: 600; color: white;">Galerie</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,0.5);">6 photos</div>
+            </div>
+            <div style="color: rgba(255,255,255,0.3); font-size: 20px;">›</div>
+          </div>
+          
+          <div class="mobile-file-item" onclick="openMobileFolder('videos')">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.15); display: grid; place-items: center;">
+              <img src="files.png" style="width: 32px; height: 32px; border-radius: 6px;" alt="">
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 16px; font-weight: 600; color: white;">Archiwum</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,0.5);">6 videos</div>
+            </div>
+            <div style="color: rgba(255,255,255,0.3); font-size: 20px;">›</div>
+          </div>
+        </div>
+        
+        <!-- Bin Folder -->
+        <div id="mobileFilesBin" style="display: none;">
+          <div class="mobile-file-item">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.15); display: grid; place-items: center;">
+              <img src="notes.png" style="width: 28px; height: 28px;" alt="">
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 16px; font-weight: 600; color: white;">premiera.txt</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,0.5);">Text file</div>
+            </div>
+          </div>
+          
+          <div class="mobile-file-item">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.15); display: grid; place-items: center;">
+              <img src="notes.png" style="width: 28px; height: 28px;" alt="">
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 16px; font-weight: 600; color: white;">koncept.txt</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,0.5);">Text file</div>
+            </div>
+          </div>
+          
+          <div class="mobile-file-item">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.15); display: grid; place-items: center;">
+              <img src="notes.png" style="width: 28px; height: 28px;" alt="">
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 16px; font-weight: 600; color: white;">featy.txt</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,0.5);">Text file</div>
+            </div>
+          </div>
+          
+          <div class="mobile-file-item" onclick="showMobilePhotoLogin()">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.15); display: grid; place-items: center;">
+              <img src="drive.png" style="width: 28px; height: 28px;" alt="">
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 16px; font-weight: 600; color: white;">file_00000000...</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,0.5);">.png • Locked</div>
+            </div>
+            <div style="color: rgba(255,255,255,0.5); font-size: 18px;">🔒</div>
+          </div>
+        </div>
+        
+        <!-- Folder View -->
+        <div id="mobileFilesFolder" style="display: none;">
+          <div class="mobile-file-item" onclick="openMobileFolder('koncert')">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.15); display: grid; place-items: center;">
+              <img src="files.png" style="width: 32px; height: 32px; border-radius: 6px;" alt="">
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 16px; font-weight: 600; color: white;">koncert</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,0.5);">Folder</div>
+            </div>
+            <div style="color: rgba(255,255,255,0.3); font-size: 20px;">›</div>
+          </div>
+          
+          <div class="mobile-file-item" onclick="openMobileApp('mobileMusic'); initMobileMusic();">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.15); display: grid; place-items: center;">
+              <img src="files.png" style="width: 32px; height: 32px; border-radius: 6px;" alt="">
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 16px; font-weight: 600; color: white;">mix</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,0.5);">Music folder</div>
+            </div>
+            <div style="color: rgba(255,255,255,0.3); font-size: 20px;">🎵</div>
+          </div>
+          
+          <div class="mobile-file-item">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.15); display: grid; place-items: center;">
+              <img src="files.png" style="width: 32px; height: 32px; border-radius: 6px;" alt="">
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 16px; font-weight: 600; color: white;">projekty</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,0.5);">Folder</div>
+            </div>
+            <div style="color: rgba(255,255,255,0.3); font-size: 20px;">›</div>
+          </div>
+          
+          <div class="mobile-file-item">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.15); display: grid; place-items: center;">
+              <img src="files.png" style="width: 32px; height: 32px; border-radius: 6px;" alt="">
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 16px; font-weight: 600; color: white;">grafika</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,0.5);">Folder</div>
+            </div>
+            <div style="color: rgba(255,255,255,0.3); font-size: 20px;">›</div>
+          </div>
+        </div>
+        
+        <!-- Koncert Folder -->
+        <div id="mobileFilesKoncert" style="display: none;">
+          <div class="mobile-file-item">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.15); display: grid; place-items: center;">
+              <img src="files.png" style="width: 32px; height: 32px; border-radius: 6px;" alt="">
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 16px; font-weight: 600; color: white;">zdjęcia</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,0.5);">Folder</div>
+            </div>
+            <div style="color: rgba(255,255,255,0.3); font-size: 20px;">›</div>
+          </div>
+          
+          <div class="mobile-file-item">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.15); display: grid; place-items: center;">
+              <img src="files.png" style="width: 32px; height: 32px; border-radius: 6px;" alt="">
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 16px; font-weight: 600; color: white;">wideo</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,0.5);">Folder</div>
+            </div>
+            <div style="color: rgba(255,255,255,0.3); font-size: 20px;">›</div>
+          </div>
+          
+          <div class="mobile-file-item" onclick="showMobileSetlista()">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.15); display: grid; place-items: center;">
+              <img src="drive.png" style="width: 28px; height: 28px;" alt="">
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 16px; font-weight: 600; color: white;">setlista</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,0.5);">Document</div>
+            </div>
+            <div style="color: rgba(255,255,255,0.3); font-size: 20px;">📄</div>
+          </div>
+          
+          <div class="mobile-file-item">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.15); display: grid; place-items: center;">
+              <img src="drive.png" style="width: 28px; height: 28px;" alt="">
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 16px; font-weight: 600; color: white;">info</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,0.5);">Document</div>
+            </div>
+            <div style="color: rgba(255,255,255,0.3); font-size: 20px;">📄</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Mobile Setlista Viewer -->
+    <div class="mobile-app-window" id="mobileSetlista">
+      <div class="mobile-app-header">
+        <button class="mobile-back-btn" onclick="closeMobileApp('mobileSetlista')">‹</button>
+        <div class="mobile-app-title">setlista</div>
+        <div style="width:32px"></div>
+      </div>
+      <div class="mobile-app-content" style="padding: 24px;">
+        <h2 style="margin: 0 0 20px; font-size: 20px; color: white;">setlista</h2>
+        <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.08);">
+          <ol style="margin: 0; padding-left: 24px; color: rgba(255,255,255,0.9); line-height: 1.8;">
+            <li>warszawa (2:32)</li>
+            <li>7/11 (2:05)</li>
+            <li>sweet (2:04)</li>
+            <li>emoji (1:48)</li>
+            <li>pingwin (2:24) — Żabson, Drabusheyka</li>
+            <li>2late (2:17)</li>
+            <li>hentai haze (1:39) — Chlor</li>
+            <li>moshpit (2:02)</li>
+            <li>dj (1:46)</li>
+            <li>usa (2:09)</li>
+            <li>sms (2:49)</li>
+            <li>pijama party (1:38)</li>
+            <li>everyday (1:37)</li>
+            <li>twilight zone (1:39)</li>
+            <li><strong>free wifi</strong> (1:48)</li>
+          </ol>
         </div>
       </div>
     </div>
@@ -6249,13 +6615,11 @@
     });
 
     mobileAudio.addEventListener('play', () => {
-      const playBtn = document.getElementById('mobilePlayBtn');
-      if (playBtn) playBtn.textContent = '⏸';
+      updateMobilePlayIcon();
     });
 
     mobileAudio.addEventListener('pause', () => {
-      const playBtn = document.getElementById('mobilePlayBtn');
-      if (playBtn) playBtn.textContent = '▶';
+      updateMobilePlayIcon();
     });
   }
 
@@ -6285,6 +6649,19 @@
       mobileAudio.pause();
     }
   };
+  
+  function updateMobilePlayIcon() {
+    const playIcon = document.getElementById('mobilePlayIcon');
+    const pauseIcon = document.getElementById('mobilePauseIcon');
+    
+    if (mobileAudio.paused) {
+      if (playIcon) playIcon.style.display = 'block';
+      if (pauseIcon) pauseIcon.style.display = 'none';
+    } else {
+      if (playIcon) playIcon.style.display = 'none';
+      if (pauseIcon) pauseIcon.style.display = 'block';
+    }
+  }
 
   window.mobileNextTrack = function() {
     const next = (mobileCurrentTrack + 1) % MOBILE_TRACKS.length;
@@ -6396,6 +6773,182 @@
   document.body.style.position = 'fixed';
   document.body.style.width = '100%';
   document.body.style.height = '100%';
+  
+  // ===== Mobile SMS Conversation =====
+  let mobileConversationState = 0;
+  
+  window.openMobileSMSConversation = function() {
+    document.getElementById('mobileMessagesList').style.display = 'none';
+    document.getElementById('mobileSMSConversation').style.display = 'flex';
+    
+    if (mobileConversationState === 0) {
+      setTimeout(showMobilePasswordOptions, 500);
+    }
+  };
+  
+  window.closeMobileSMSConversation = function() {
+    document.getElementById('mobileMessagesList').style.display = 'block';
+    document.getElementById('mobileSMSConversation').style.display = 'none';
+  };
+  
+  function showMobilePasswordOptions() {
+    const body = document.getElementById('mobileSMSBody');
+    if (!body) return;
+    
+    const optionsContainer = document.createElement('div');
+    optionsContainer.className = 'mobile-sms-options';
+    optionsContainer.id = 'mobilePasswordOptions';
+    
+    const options = [
+      { text: 'Spróbuj: 22032026', password: '22032026', correct: false },
+      { text: 'Spróbuj: 17042026', password: '17042026', correct: true },
+      { text: 'Spróbuj: 2137420', password: '2137420', correct: false }
+    ];
+    
+    options.forEach(option => {
+      const btn = document.createElement('button');
+      btn.className = 'mobile-sms-option';
+      btn.textContent = option.text;
+      btn.onclick = () => handleMobilePasswordOption(btn, option.password, option.correct);
+      optionsContainer.appendChild(btn);
+    });
+    
+    body.appendChild(optionsContainer);
+    body.scrollTop = body.scrollHeight;
+  }
+  
+  function handleMobilePasswordOption(btn, password, isCorrect) {
+    const allOptions = document.querySelectorAll('.mobile-sms-option');
+    allOptions.forEach(opt => opt.disabled = true);
+    
+    // Add sent message
+    addMobileSMSBubble(password, 'sent', 100);
+    
+    // Show typing indicator
+    setTimeout(() => {
+      addMobileSMSBubble('...', 'received', 0, true);
+    }, 800);
+    
+    // Response
+    setTimeout(() => {
+      const typingBubbles = document.querySelectorAll('.typing-bubble');
+      typingBubbles.forEach(b => b.remove());
+      
+      if (isCorrect) {
+        addMobileSMSBubble('Super! Działa, dziękuję! 🎉', 'received', 100);
+        setTimeout(() => {
+          const optionsEl = document.getElementById('mobilePasswordOptions');
+          if (optionsEl) optionsEl.remove();
+        }, 500);
+        mobileConversationState = 2;
+      } else {
+        addMobileSMSBubble('Nie działa 😕', 'received', 100);
+        setTimeout(() => {
+          btn.style.opacity = '0';
+          btn.style.transform = 'scale(0.8)';
+          setTimeout(() => {
+            btn.remove();
+            const remainingOptions = document.querySelectorAll('.mobile-sms-option');
+            remainingOptions.forEach(opt => opt.disabled = false);
+            mobileConversationState = 1;
+          }, 300);
+        }, 800);
+      }
+    }, 2500);
+  }
+  
+  function addMobileSMSBubble(text, type, delay, isTyping = false) {
+    setTimeout(() => {
+      const body = document.getElementById('mobileSMSBody');
+      if (!body) return;
+      
+      const bubble = document.createElement('div');
+      bubble.className = `mobile-sms-bubble ${type}`;
+      if (isTyping) bubble.classList.add('typing-bubble');
+      bubble.textContent = text;
+      
+      body.appendChild(bubble);
+      body.scrollTop = body.scrollHeight;
+    }, delay);
+  }
+  
+  // ===== Mobile Files Navigation =====
+  let mobileFilesStack = [];
+  
+  window.openMobileFolder = function(folder) {
+    const titleEl = document.getElementById('mobileFilesTitle');
+    const allViews = ['mobileFilesRoot', 'mobileFilesDrive', 'mobileFilesBin', 'mobileFilesFolder', 'mobileFilesKoncert'];
+    
+    allViews.forEach(view => {
+      const el = document.getElementById(view);
+      if (el) el.style.display = 'none';
+    });
+    
+    switch(folder) {
+      case 'drive':
+        document.getElementById('mobileFilesDrive').style.display = 'block';
+        if (titleEl) titleEl.textContent = 'Dysk';
+        mobileFilesStack.push('drive');
+        break;
+      case 'bin':
+        document.getElementById('mobileFilesBin').style.display = 'block';
+        if (titleEl) titleEl.textContent = 'Kosz';
+        mobileFilesStack.push('bin');
+        break;
+      case 'folder':
+        document.getElementById('mobileFilesFolder').style.display = 'block';
+        if (titleEl) titleEl.textContent = 'Folder';
+        mobileFilesStack.push('folder');
+        break;
+      case 'koncert':
+        document.getElementById('mobileFilesKoncert').style.display = 'block';
+        if (titleEl) titleEl.textContent = 'koncert';
+        mobileFilesStack.push('koncert');
+        break;
+      case 'photos':
+        closeMobileApp('mobileFiles');
+        openMobileApp('mobilePhotos');
+        initMobilePhotos();
+        break;
+      case 'videos':
+        closeMobileApp('mobileFiles');
+        openMobileApp('mobileVideos');
+        initMobileVideos();
+        break;
+    }
+  };
+  
+  window.showMobileSetlista = function() {
+    openMobileApp('mobileSetlista');
+  };
+  
+  window.showMobilePhotoLogin = function() {
+    alert('🔒 Ten plik jest zabezpieczony hasłem.\n\nDla dostępu użyj wersji desktop.');
+  };
+  
+  // Handle back button in Files app
+  const originalCloseMobileApp = window.closeMobileApp;
+  window.closeMobileApp = function(appId) {
+    if (appId === 'mobileFiles' && mobileFilesStack.length > 0) {
+      mobileFilesStack.pop();
+      
+      if (mobileFilesStack.length > 0) {
+        const prevFolder = mobileFilesStack[mobileFilesStack.length - 1];
+        mobileFilesStack.pop();
+        openMobileFolder(prevFolder);
+      } else {
+        const allViews = ['mobileFilesDrive', 'mobileFilesBin', 'mobileFilesFolder', 'mobileFilesKoncert'];
+        allViews.forEach(view => {
+          const el = document.getElementById(view);
+          if (el) el.style.display = 'none';
+        });
+        document.getElementById('mobileFilesRoot').style.display = 'block';
+        document.getElementById('mobileFilesTitle').textContent = 'Files';
+      }
+    } else {
+      originalCloseMobileApp(appId);
+    }
+  };
 })();
 </script>
 </body>
