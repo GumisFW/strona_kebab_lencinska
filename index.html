@@ -20,7 +20,7 @@
   }
   
   /* Show mobile interface on phones and tablets */
-  @media (max-width: 1024px), (hover: none) and (pointer: coarse) {
+  @media (max-width: 1024px), (hover: none) and (pointer: coarse), (-webkit-touch-callout: default) {
     .mobile-interface {
       display: block;
     }
@@ -3884,7 +3884,7 @@
                 <div class="browser-result-path">https://god.wifi › about</div>
               </div>
             </div>
-            <a href="#" class="browser-result-title">About - god.wifi</a>
+            <a href="https://www.youtube.com/watch?v=CYNJYIguniI" target="_blank" class="browser-result-title">About - god.wifi</a>
             <div class="browser-result-snippet">
               Informacje o projekcie god.wifi. Muzyka, art, i więcej...
             </div>
@@ -3898,7 +3898,7 @@
                 <div class="browser-result-path">https://spotify.com › artist › god.wifi</div>
               </div>
             </div>
-            <a href="#" class="browser-result-title">god.wifi - Spotify Artist</a>
+            <a href="https://open.spotify.com/artist/6iz52ADwFl483ghAI7NuS1" target="_blank" class="browser-result-title">god.wifi - Spotify Artist</a>
             <div class="browser-result-snippet">
               Słuchaj muzyki god.wifi na Spotify. Discover new tracks and albums...
             </div>
@@ -4532,7 +4532,10 @@
   </div>
 
   <script>
-  // ====== MAINTENANCE MODE ======
+  // ========================================
+  // MAINTENANCE MODE & PASSWORD CHECK
+  // Password: g0dwifi (can be disabled by setting MAINTENANCE = false)
+  // ========================================
   const MAINTENANCE = true;
   const PASSWORD = "g0dwifi";
 
@@ -4681,7 +4684,21 @@
 
   const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // ===== Entry and Splash Screen Sequence =====
+  // ========================================
+  // ========================================
+  // DESKTOP INTERFACE JAVASCRIPT
+  // Main functionality for desktop/laptop users
+  // ========================================
+ 
+  // ========================================
+  // DESKTOP INTERFACE - ENTRY & SPLASH
+  // ========================================
+  // ========================================
+  
+  // ========================================
+  // 1. ENTRY SEARCH SCREEN
+  // Initial black screen where user types "god.wifi"
+  // ========================================
   const entryScreen = document.getElementById("entryScreen");
   const entrySearch = document.getElementById("entrySearch");
   const entryHint = document.getElementById("entryHint");
@@ -4764,7 +4781,7 @@
     }, 300);
   });
   
-  // WiFi link click - goes to BSOD directly
+  // WiFi link click - goes to Safe Boot directly
   wifiLink.addEventListener("click", (e) => {
     e.preventDefault();
     
@@ -4775,29 +4792,11 @@
     setTimeout(() => {
       fakeBrowser.style.display = "none";
       
-      // Show bluescreen directly
-      bluescreen.classList.add("active");
+      // Show safe boot directly
+      safebootScreen.classList.add("active");
       
-      // Animate percentage from 0 to 100
-      let percent = 0;
-      const percentInterval = setInterval(() => {
-        percent += 3;
-        if (percent > 100) percent = 100;
-        bsodPercentage.textContent = `${percent}% complete`;
-        
-        if (percent >= 100) {
-          clearInterval(percentInterval);
-          
-          // After reaching 100%, wait 500ms then show safe boot
-          setTimeout(() => {
-            bluescreen.classList.remove("active");
-            safebootScreen.classList.add("active");
-            
-            // Add safe boot messages
-            startSafeBoot();
-          }, 500);
-        }
-      }, 90);
+      // Add safe boot messages
+      startSafeBoot();
     }, 300);
   });
   
@@ -4863,32 +4862,14 @@
   }
   
   splashButton.addEventListener("click", () => {
-    // Hide splash and show bluescreen
+    // Hide splash and go directly to safe boot
     splashScreen.classList.remove("show");
     
     setTimeout(() => {
-      bluescreen.classList.add("active");
+      safebootScreen.classList.add("active");
       
-      // Animate percentage from 0 to 100
-      let percent = 0;
-      const percentInterval = setInterval(() => {
-        percent += 3;
-        if (percent > 100) percent = 100;
-        bsodPercentage.textContent = `${percent}% complete`;
-        
-        if (percent >= 100) {
-          clearInterval(percentInterval);
-          
-          // After reaching 100%, wait 500ms then show safe boot
-          setTimeout(() => {
-            bluescreen.classList.remove("active");
-            safebootScreen.classList.add("active");
-            
-            // Add safe boot messages
-            startSafeBoot();
-          }, 500);
-        }
-      }, 90);
+      // Add safe boot messages
+      startSafeBoot();
     }, 100);
   });
 
@@ -6448,13 +6429,18 @@
 </script>
 
 <script>
-// ===== MOBILE PHONE INTERFACE JAVASCRIPT =====
+// ========================================
+// MOBILE PHONE INTERFACE JAVASCRIPT
+// Auto-activates on phones and tablets
+// ========================================
 (function() {
-  const isMobile = window.innerWidth <= 1024 || (navigator.maxTouchPoints > 0 && window.innerWidth <= 1024);
+  // Better mobile detection including iPads and all tablets
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                   (navigator.maxTouchPoints > 0 && window.innerWidth <= 1024);
   
   if (!isMobile) return; // Skip mobile JS on desktop
 
-  console.log('Mobile interface activated');
+  console.log('Mobile interface activated for:', navigator.userAgent);
 
   // ===== Signal Tap Counter (5 taps = Flappy Bird) =====
   let signalTapCount = 0;
@@ -6920,10 +6906,14 @@
     }, delay);
   }
   
-  // ===== Mobile Files Navigation =====
+  // ========================================
+  // MOBILE FILES NAVIGATION
+  // Navigate through folder structure
+  // ========================================
   let mobileFilesStack = [];
   
   window.openMobileFolder = function(folder) {
+    console.log('Opening mobile folder:', folder);
     const titleEl = document.getElementById('mobileFilesTitle');
     const allViews = ['mobileFilesRoot', 'mobileFilesDrive', 'mobileFilesBin', 'mobileFilesFolder', 'mobileFilesKoncert'];
     
@@ -6934,22 +6924,26 @@
     
     switch(folder) {
       case 'drive':
-        document.getElementById('mobileFilesDrive').style.display = 'block';
+        const driveEl = document.getElementById('mobileFilesDrive');
+        if (driveEl) driveEl.style.display = 'block';
         if (titleEl) titleEl.textContent = 'Dysk';
         mobileFilesStack.push('drive');
         break;
       case 'bin':
-        document.getElementById('mobileFilesBin').style.display = 'block';
+        const binEl = document.getElementById('mobileFilesBin');
+        if (binEl) binEl.style.display = 'block';
         if (titleEl) titleEl.textContent = 'Kosz';
         mobileFilesStack.push('bin');
         break;
       case 'folder':
-        document.getElementById('mobileFilesFolder').style.display = 'block';
+        const folderEl = document.getElementById('mobileFilesFolder');
+        if (folderEl) folderEl.style.display = 'block';
         if (titleEl) titleEl.textContent = 'Folder';
         mobileFilesStack.push('folder');
         break;
       case 'koncert':
-        document.getElementById('mobileFilesKoncert').style.display = 'block';
+        const koncertEl = document.getElementById('mobileFilesKoncert');
+        if (koncertEl) koncertEl.style.display = 'block';
         if (titleEl) titleEl.textContent = 'koncert';
         mobileFilesStack.push('koncert');
         break;
@@ -6998,7 +6992,10 @@
     }
   };
   
-  // ===== Mobile Flappy Bird Game =====
+  // ========================================
+  // MOBILE FLAPPY BIRD GAME
+  // Easter egg: Tap signal icon 5 times
+  // ========================================
   let mobileGameCanvas = null;
   let mobileGameCtx = null;
   let mobileGameRunning = false;
@@ -7022,20 +7019,33 @@
   let mobileFrameCount = 0;
   
   function initMobileGame() {
+    console.log('Initializing mobile game...');
     mobileGameCanvas = document.getElementById('mobileFlappyCanvas');
-    if (!mobileGameCanvas) return;
+    if (!mobileGameCanvas) {
+      console.error('Canvas not found!');
+      return;
+    }
     
     mobileGameCtx = mobileGameCanvas.getContext('2d');
     
-    // Set canvas size
-    const container = mobileGameCanvas.parentElement;
-    mobileGameCanvas.width = container.clientWidth;
-    mobileGameCanvas.height = container.clientHeight - 60; // Subtract header height
+    // Set canvas size with retry mechanism
+    function setCanvasSize() {
+      const container = mobileGameCanvas.parentElement;
+      if (container && container.clientWidth > 0) {
+        mobileGameCanvas.width = container.clientWidth;
+        mobileGameCanvas.height = container.clientHeight - 60;
+        console.log('Canvas sized:', mobileGameCanvas.width, 'x', mobileGameCanvas.height);
+        resetMobileGame();
+      } else {
+        // Retry after delay
+        setTimeout(setCanvasSize, 100);
+      }
+    }
     
-    resetMobileGame();
+    setCanvasSize();
     
-    // Touch controls
-    mobileGameCanvas.addEventListener('touchstart', handleMobileGameTap);
+    // Touch controls - prevent default to stop scrolling
+    mobileGameCanvas.addEventListener('touchstart', handleMobileGameTap, { passive: false });
     mobileGameCanvas.addEventListener('click', handleMobileGameTap);
   }
   
